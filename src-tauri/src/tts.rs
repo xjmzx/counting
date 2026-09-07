@@ -175,8 +175,9 @@ impl Backend {
     }
 
     /// Languages this backend will not serve, with the reason in the words the
-    /// user should read. Kept next to `normalise_spd_language`, which does the
-    /// excluding, so the two cannot drift apart.
+    /// user should read. It must agree with `drop_unusable` — the panel's
+    /// reason and the voice list are two statements of one fact — and a test
+    /// asserts they do on whichever machine runs it.
     pub fn unsupported(self) -> Vec<Unsupported> {
         match self {
             Backend::Say => Vec::new(),
@@ -401,10 +402,10 @@ fn drop_unusable(voices: Vec<Voice>, japanese_ok: bool) -> Vec<Voice> {
 
 /// speech-dispatcher's language tag to the app's namespace.
 ///
-/// Returning `None` excludes a language, and that is the only mechanism
-/// needed for a per-language capability matrix: `voicesFor()` already returns
-/// an empty list when nothing acceptable is installed, and the drill already
-/// renders a panel saying so.
+/// A pure mapping, and deliberately ignorant of what is installed. Returning
+/// `None` means "this app does not use that tag"; whether a mapped language is
+/// actually offered is `drop_unusable`'s question, asked where the engine is
+/// known. Deciding both here is what made the diagnostic contradict itself.
 fn normalise_spd_language(tag: &str) -> Option<String> {
     let t = tag.to_ascii_lowercase();
     Some(
@@ -733,20 +734,40 @@ mod tests {
     }
 
     #[test]
-    fn every_excluded_language_is_actually_excluded() {
-        // The reason shown to the user and the mapping that drops the language
-        // are two statements of one fact; if they part company the panel lies.
-        for u in Backend::SpeechDispatcher.unsupported() {
-            assert!(
-                normalise_spd_language(&u.lang).is_none(),
-                "{} is listed as unsupported but still maps",
-                u.lang
-            );
+    fn the_unsupported_list_matches_what_is_actually_dropped() {
+        // The panel's reason and the voice list are two statements of one
+        // fact, and if they part company the app contradicts itself — which
+        // it did: the diagnostic once said "Japanese is offered" directly
+        // above "Japanese  none".
+        //
+        // This asserted the old mechanism, that an excluded language was one
+        // `normalise_spd_language` refused to map. Exclusion moved to
+        // `drop_unusable`, where the installed engine is known, and this test
+        // went on asserting the mechanism instead of the property — passing
+        // while the two halves disagreed, then failing once they were made to
+        // agree. It now checks the property, on whichever machine runs it.
+        let backend = Backend::SpeechDispatcher;
+        let japanese_ok = backend.japanese_module().is_some();
+        let sample = vec![
+            Voice { name: "J".into(), locale: "ja_JP".into(), id: "ja".into() },
+            Voice { name: "F".into(), locale: "fr_FR".into(), id: "fr".into() },
+        ];
+
+        let kept = drop_unusable(sample, japanese_ok);
+        let ja_offered = kept.iter().any(|v| v.locale == "ja_JP");
+        let ja_called_unsupported = backend.unsupported().iter().any(|u| u.lang == "ja");
+        assert_eq!(
+            ja_offered, !ja_called_unsupported,
+            "a language the panel calls unsupported must not be in the voice list"
+        );
+        assert!(kept.iter().any(|v| v.locale == "fr_FR"), "only Japanese is gated");
+
+        for u in backend.unsupported() {
             assert!(!u.reason.trim().is_empty(), "{} has no reason", u.lang);
         }
         assert!(
             Backend::Say.unsupported().is_empty(),
-            "macOS serves all ten; an entry here needs a reason too"
+            "macOS serves all ten; an entry here would need a reason too"
         );
     }
 

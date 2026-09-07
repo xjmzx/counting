@@ -219,10 +219,14 @@ macOS. `release.yml` fires only on a `v*` tag and builds the `.deb` and `.dmg`.
   because speech-dispatcher will not write audio to disk. Two instruments, one
   question — keep their verdicts agreeing.
 - **Measure the audio, not the file.** A rendered file carries whatever silence
-  the engine pads with, and padding is a constant added to every word, so it
-  compresses the spread between words. open-jtalk's padding squeezed a genuine
-  0.10s spread into 0.055s — under the 0.06s threshold this once used, which
-  would have convicted a working engine of being a fallback. `scriptcheck`
+  the engine pads with, and that padding is **not** the same for every word —
+  if it were, it would cancel out of a difference and leave the spread alone.
+  Measured on macOS `say`, where the padding is near-constant, the file spread
+  and the audible spread agree to within 4%. open-jtalk is the case that bites:
+  its padding varies the other way, squeezing a genuine 0.10s spread into
+  0.055s — under the 0.06s threshold this once used, which would have convicted
+  a working engine of being a fallback. Assume nothing about an engine's
+  trailing silence; trim to the audible span and the question does not arise. `scriptcheck`
   trims to the audible span for exactly this reason. The same caution applies
   to `speechprobe` from the other direction: wall-clock timing adds process
   startup, and noise *widens* a spread, so it errs toward clearing a fallback,

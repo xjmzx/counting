@@ -3,7 +3,8 @@ import { Languages } from "lucide-react";
 import { cn } from "./lib/cn";
 import { LANGS, RANGES, SKILLS, type SkillId } from "./lib/langs";
 import { Segmented } from "./components/Segmented";
-import { Drill } from "./components/Drill";
+import { Drill, type DrillSkill } from "./components/Drill";
+import { useVoices } from "./lib/useVoices";
 import { Unbuilt } from "./components/Unbuilt";
 
 export default function App() {
@@ -12,8 +13,14 @@ export default function App() {
   const [skill, setSkill] = useState<SkillId>("read");
   const [max, setMax] = useState(20);
 
+  const { voices, error: voiceError, loading: voicesLoading } = useVoices();
   const lang = LANGS.find((l) => l.code === langCode) ?? LANGS[0]!;
   const current = SKILLS.find((s) => s.id === skill)!;
+
+  // Listening needs a host that can speak. Without one it is unbuilt in
+  // practice, whatever the roster says, so say so rather than showing a mute
+  // play button.
+  const speechUnavailable = skill === "listen" && !voicesLoading && voiceError !== null;
 
   return (
     <div className={cn("min-h-full flex flex-col", upleb && "theme-upleb")}>
@@ -63,12 +70,15 @@ export default function App() {
           so it is the document that scrolls here, not this element. */}
       <main className="flex-1 px-5 py-6 flex">
         <div className="w-full max-w-2xl m-auto">
-          {current.ready ? (
+          {speechUnavailable ? (
+            <Unbuilt label="Listening" heading="Listening needs the app" reason={voiceError ?? ""} />
+          ) : current.ready ? (
             <Drill
               key={`${lang.code}-${skill}-${max}`}
               lang={lang}
-              skill={skill as "read" | "write"}
+              skill={skill as DrillSkill}
               max={max}
+              voices={voices}
             />
           ) : (
             <Unbuilt label={current.label} reason={current.blocked ?? ""} />
@@ -77,7 +87,7 @@ export default function App() {
       </main>
 
       <footer className="px-5 py-3 border-t border-surface/60 text-xs text-muted">
-        0–100, three languages. Listening is next; speaking is a long-term aim.
+        0–100, three languages. Three skills; speaking is a long-term aim.
       </footer>
     </div>
   );

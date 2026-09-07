@@ -10,7 +10,7 @@ present but honestly marked unbuilt.
 ```bash
 make dev        # the app, hot reload
 make web        # frontend only in a browser — the built drills need no Rust
-make check      # data + typecheck + cargo check
+make check      # data + typecheck + cargo test
 make data       # golden forms, invariants, grading — works on a bare clone
 make crosscheck # compare every form against ICU        [macOS only]
 make table      # all 303 forms, side by side
@@ -103,6 +103,11 @@ listening drill has no correct answer. Nothing collides in these three.
 
 ## Known gaps
 
+- **Speech is macOS-only.** `say` is wired up; `espeak-ng` is the intended
+  backend elsewhere but is deliberately unimplemented rather than guessed at —
+  nothing here has been run on Linux, and this repo's own notes are about
+  exactly that mistake. The listening drill reports it rather than showing a
+  mute button.
 - **No speaker of French or German has reviewed the tables.** `make crosscheck`
   now covers most of what that review would catch, but a second implementation
   agreeing is not the same as a person judging what sounds right when counting
@@ -129,12 +134,26 @@ listening drill has no correct answer. Nothing collides in these three.
 |---|---|---|
 | **Read** | see the word → type the number | **working** |
 | **Write** | see the number → type the word | **working** |
-| Listening | hear it → type the number | next — needs a voice, in Rust |
+| **Listen** | hear it → type the number | **working** (macOS) |
 | Speaking | see it → say it → checked | parked — a long-term aim |
 
 The unbuilt two appear in the UI with a panel saying what is missing, rather
 than being hidden. They are part of the plan; pretending otherwise would make
 the app look finished when it is half-built.
+
+**Listening speaks the written form through a system voice.** No phonetic
+transcription is involved — a voice carries its own pronunciation model, so it
+says *soixante-treize* correctly from the string the composer produced. It runs
+in Rust (`src-tauri/src/tts.rs`), not the webview, for the reason `SUITE.md`
+records against `nchat`. There is a normal and a slow replay, because a
+compound like *vierundsiebzig* goes past quickly.
+
+**Picking the voice is not "any voice whose locale starts with the language
+code".** macOS ships `Sinji zh_HK`, which is **Cantonese** — it will read 七十三
+aloud in a language this app does not teach, and nothing on screen would look
+wrong. So `voices.ts` names the acceptable locales per language, best first,
+and excludes everything else. `make data` asserts a Cantonese voice can never
+be offered for Mandarin.
 
 **The queue is weighted, not random.** Uniform random spends as much time on
 the numbers you know as on the one that keeps catching you out. `queue.ts`

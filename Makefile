@@ -9,7 +9,7 @@ SOURCES := compose.ts types.ts golden.ts grade.ts
 help:
 	@echo "Targets:"
 	@echo "  make data       golden forms, invariants, grading — NO install needed"
-	@echo "  make check      data + typecheck + cargo check     (needs 'make deps')"
+	@echo "  make check      data + typecheck + cargo test      (needs 'make deps')"
 	@echo "  make crosscheck compare every form against ICU        [macOS only]"
 	@echo "  make dev        run the app with hot reload"
 	@echo "  make web        frontend only in a browser, no Tauri"
@@ -45,8 +45,10 @@ crosscheck:
 	node tools/crosscheck.ts
 
 # The suite's 'make check' shape: everything that can fail without running.
+# cargo test rather than cargo check — it compiles the same and also runs the
+# tts voice-line parser tests, which cargo check would silently skip.
 check: data typecheck
-	cd src-tauri && cargo check
+	cd src-tauri && cargo test
 
 dev:
 	npm run tauri dev

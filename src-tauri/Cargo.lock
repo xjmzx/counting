@@ -544,6 +544,7 @@ dependencies = [
 name = "counting"
 version = "0.1.0"
 dependencies = [
+ "serde",
  "tauri",
  "tauri-build",
  "tauri-plugin-opener",

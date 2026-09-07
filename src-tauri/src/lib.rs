@@ -1,17 +1,21 @@
-// counting — a window around the drills. There are no commands yet, and that
-// is not an oversight: reading and writing are pure functions of the composed
-// number list, so they belong in the frontend where the data already is.
+// counting — a window around the drills, plus speech for the listening one.
 //
-// The first real command will be speech synthesis for the listening drill,
-// and it has to live here rather than in the webview. SUITE.md records the
-// reason: nchat shipped Web Audio tones that worked on macOS and were silent
-// on Linux, and WebKit2GTK cannot play media from any app URL scheme. Audio
-// in the webview is a bug that only shows up on someone else's machine.
+// Reading and writing are pure functions of the composed number list and live
+// entirely in the frontend, where the data already is. Speech is the one thing
+// that has to be here: see the note at the top of tts.rs.
+
+mod tts;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .manage(tts::Speaker::default())
+        .invoke_handler(tauri::generate_handler![
+            tts::list_voices,
+            tts::speak,
+            tts::stop_speaking
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

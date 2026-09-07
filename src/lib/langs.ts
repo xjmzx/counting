@@ -12,13 +12,7 @@ export type SkillId = "read" | "write" | "listen" | "speak";
 export const SKILLS: { id: SkillId; label: string; ready: boolean; blocked?: string }[] = [
   { id: "read", label: "Read", ready: true },
   { id: "write", label: "Write", ready: true },
-  {
-    id: "listen",
-    label: "Listen",
-    ready: false,
-    blocked:
-      "Next up. It needs a voice speaking the written form and nothing more — a text-to-speech engine has its own pronunciation model, so no phonetic transcription is required to say soixante-treize correctly. The one constraint is where it runs: in Rust, not the webview. SUITE.md records nchat shipping Web Audio that worked on macOS and was silent on Linux, and WebKit2GTK cannot play media from app URL schemes.",
-  },
+  { id: "listen", label: "Listen", ready: true },
   {
     id: "speak",
     label: "Speak",

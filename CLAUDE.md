@@ -22,7 +22,7 @@ so it belongs in Rust, not the webview.
 
 ```
 make data       # golden forms, invariants, grading — bare clone, no install
-make check      # data + typecheck + cargo check — the suite's 'check' shape
+make check      # data + typecheck + cargo test — the suite's 'check' shape
 make dev        # the app, hot reload
 make web        # frontend only in a browser
 make install    # the 'counting' CLI under ~/.local — NOT the app
@@ -88,6 +88,14 @@ tokens in `src/index.css`, taken from `nping`. Do not reach further.
 - **The unbuilt skills stay visible.** Listen and Speak render a panel saying
   what is missing. Do not hide them to make the app look finished, and do not
   wire them up with a browser API — see the audio note above.
+- **Never pick a voice by language prefix.** `zh_HK` is Cantonese, and a
+  Cantonese voice reading Mandarin numbers is wrong in a way nothing on screen
+  shows. `voices.ts` holds an allowlist of acceptable locales per language and
+  `make data` asserts it. Adding a language means adding its locales there.
+- **Speech is macOS-only and says so.** `espeak-ng` is the intended Linux
+  backend but is unimplemented on purpose — an honest error beats untested code
+  that looks like support, which is the whole lesson of the nchat audio note
+  below.
 - **Audio does not need a pronunciation layer.** A TTS voice says
   *soixante-treize* correctly from the written string; IPA is only wanted for
   *showing* a learner how a word sounds. An earlier version of these notes had

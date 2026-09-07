@@ -17,5 +17,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true
   },
-  "include": ["compose.ts", "golden.ts", "grade.ts", "queue.ts", "types.ts", "lang", "tools", "vite.config.ts"]
+  "include": ["compose.ts", "golden.ts", "grade.ts", "queue.ts", "voices.ts", "types.ts", "lang", "tools", "vite.config.ts"]
 }

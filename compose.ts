@@ -10,6 +10,7 @@ import {
   BASE_WEIGHT, EASE_CAP, emptyStat, pickNext, record, solidCount, weightOf,
   type Stats,
 } from "./queue.ts";
+import { pickVoice, voicesFor, LOCALE_PREFERENCE, type Voice } from "./voices.ts";
 
 const LANGS: Language[] = [zh, fr, de];
 const RANGE = Array.from({ length: 101 }, (_, i) => i);
@@ -205,6 +206,49 @@ function check(): boolean {
     if (solidCount(prog, 100) !== 1) { console.error("  ✗ queue: solidCount wrong"); bad++; }
     if (emptyStat().seen !== 0) { console.error("  ✗ queue: emptyStat wrong"); bad++; }
     checked += 12;
+  }
+
+  // Voice selection. Picking a zh_HK voice for Mandarin would read every
+  // answer aloud in Cantonese, and nothing on screen would look wrong.
+  {
+    const sample: Voice[] = [
+      { name: "Sinji", locale: "zh_HK" },
+      { name: "Meijia", locale: "zh_TW" },
+      { name: "Tingting", locale: "zh_CN" },
+      { name: "Amélie", locale: "fr_CA" },
+      { name: "Thomas", locale: "fr_FR" },
+      { name: "Anna", locale: "de_DE" },
+      { name: "Albert", locale: "en_US" },
+    ];
+    if (voicesFor("zh", sample).some((v) => v.locale === "zh_HK")) {
+      console.error("  ✗ voices: offered a Cantonese voice for Mandarin"); bad++;
+    }
+    if (pickVoice("zh", sample)?.name !== "Tingting") {
+      console.error("  ✗ voices: zh should prefer zh_CN"); bad++;
+    }
+    if (pickVoice("fr", sample)?.name !== "Thomas") {
+      console.error("  ✗ voices: fr should prefer fr_FR over fr_CA"); bad++;
+    }
+    if (pickVoice("de", sample)?.name !== "Anna") {
+      console.error("  ✗ voices: de should pick de_DE"); bad++;
+    }
+    if (voicesFor("fr", sample).some((v) => !v.locale.startsWith("fr"))) {
+      console.error("  ✗ voices: leaked a non-French voice into fr"); bad++;
+    }
+    if (pickVoice("zh", []) !== null) {
+      console.error("  ✗ voices: should return null when none are installed"); bad++;
+    }
+    // Hyphenated locales (BCP-47) must match too.
+    if (pickVoice("de", [{ name: "X", locale: "de-DE" }])?.name !== "X") {
+      console.error("  ✗ voices: de-DE not recognised"); bad++;
+    }
+    // Every language the app ships must have a preference list.
+    for (const l of LANGS) {
+      if (!LOCALE_PREFERENCE[l.code]?.length) {
+        console.error(`  ✗ voices: no locale preference for ${l.code}`); bad++;
+      }
+    }
+    checked += 8;
   }
 
   if (parseNumeral("073") !== 73 || parseNumeral("101") !== null || parseNumeral("x") !== null) {

@@ -1,22 +1,34 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Check, X, ArrowRight, RotateCcw } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Check, X, ArrowRight, RotateCcw, Volume2, Rabbit, Turtle } from "lucide-react";
 import type { Item, Language } from "../../types.ts";
 import { isCorrect, parseNumeral } from "../../grade.ts";
 import { pickNext, solidCount } from "../../queue.ts";
+import { voicesFor, type Voice } from "../../voices.ts";
+import { speak, stopSpeaking } from "../lib/tauri";
 import { useProgress } from "../lib/useProgress";
 import { cn } from "../lib/cn";
 import { Breakdown } from "./Breakdown";
 
 type Verdict = { ok: boolean; item: Item; given: string };
 
+export type DrillSkill = "read" | "write" | "listen";
+
+const RATE_NORMAL = 175;
+const RATE_SLOW = 110;
+
+/** Listening and reading both answer with the numeral; writing types the word. */
+const answersWithNumeral = (skill: DrillSkill) => skill !== "write";
+
 export function Drill({
   lang,
   skill,
   max,
+  voices,
 }: {
   lang: Language;
-  skill: "read" | "write";
+  skill: DrillSkill;
   max: number;
+  voices: Voice[];
 }) {
   const { stats, best, answer, reset } = useProgress(lang.code, skill);
   const [n, setN] = useState(() => pickNext(max, stats, null));
@@ -24,23 +36,60 @@ export function Drill({
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [score, setScore] = useState({ right: 0, total: 0 });
   const [streak, setStreak] = useState(0);
+  const [speechError, setSpeechError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Language, skill and range are all in this component's key, so switching
-  // any of them remounts and starts a clean session. No effect needed.
+  const item = lang.compose(n);
+  const langVoices = useMemo(() => voicesFor(lang.code, voices), [lang.code, voices]);
+
+  const [voiceName, setVoiceName] = useState<string>(() => {
+    try {
+      return localStorage.getItem(`counting.voice.${lang.code}`) ?? "";
+    } catch {
+      return "";
+    }
+  });
+
+  // Voices arrive asynchronously, and a remembered choice may no longer be
+  // installed, so fall back to the best available rather than staying silent.
+  useEffect(() => {
+    if (voiceName && langVoices.some((v) => v.name === voiceName)) return;
+    const fallback = langVoices[0]?.name;
+    if (fallback) setVoiceName(fallback);
+  }, [langVoices, voiceName]);
+
+  useEffect(() => {
+    if (!voiceName) return;
+    try {
+      localStorage.setItem(`counting.voice.${lang.code}`, voiceName);
+    } catch {
+      // Not remembering the voice is survivable.
+    }
+  }, [lang.code, voiceName]);
+
+  const say = useCallback(
+    (rate: number) => {
+      if (skill !== "listen" || !voiceName) return;
+      void speak(voiceName, item.form, rate).then(setSpeechError);
+    },
+    [skill, voiceName, item.form],
+  );
+
+  // Speak each new number once, as it comes up.
+  useEffect(() => {
+    say(RATE_NORMAL);
+  }, [say]);
+
+  // Never leave a voice talking into an empty room.
+  useEffect(() => () => void stopSpeaking(), []);
 
   useEffect(() => {
     inputRef.current?.focus();
   }, [n, verdict]);
 
-  const item = lang.compose(n);
-
   const submit = useCallback(() => {
     if (input.trim() === "") return;
-    const ok =
-      skill === "write"
-        ? isCorrect(lang, n, input)
-        : parseNumeral(input) === n;
+    const ok = answersWithNumeral(skill) ? parseNumeral(input) === n : isCorrect(lang, n, input);
     const nextStreak = ok ? streak + 1 : 0;
     setVerdict({ ok, item, given: input });
     setScore((s) => ({ right: s.right + (ok ? 1 : 0), total: s.total + 1 }));
@@ -48,8 +97,6 @@ export function Drill({
     answer(n, ok, nextStreak);
   }, [input, skill, lang, n, item, streak, answer]);
 
-  // Picks from the progress recorded so far: unseen numbers first, then the
-  // ones you keep missing. See queue.ts for the ordering.
   const next = useCallback(() => {
     setN((prev) => pickNext(max, stats, prev));
     setInput("");
@@ -63,28 +110,71 @@ export function Drill({
     else submit();
   };
 
-  const readingHint =
-    skill === "write" && lang.code === "zh" ? "characters or pinyin — tones optional" : null;
+  const noVoice = skill === "listen" && langVoices.length === 0;
 
   return (
     <div className="space-y-4">
       <div className="rounded-lg bg-panel p-6 sm:p-8 space-y-6">
-        {/* prompt */}
-        <div className="space-y-2">
+        <div className="space-y-3">
           <p className="text-xs uppercase tracking-wider text-muted">
-            {skill === "read" ? `Read the ${lang.name} — what number is it?` : `Write it in ${lang.name}`}
+            {skill === "read"
+              ? `Read the ${lang.name} — what number is it?`
+              : skill === "listen"
+                ? `Listen — what number is it?`
+                : `Write it in ${lang.name}`}
           </p>
-          <p
-            className={cn(
-              "font-bold tracking-tight text-fg break-words",
-              skill === "read" ? "text-4xl sm:text-5xl" : "text-6xl sm:text-7xl tabular-nums",
-            )}
-          >
-            {skill === "read" ? item.form : n}
-          </p>
+
+          {skill === "listen" ? (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => say(RATE_NORMAL)}
+                disabled={noVoice}
+                title="Play again"
+                aria-label="Play again"
+                className={cn(
+                  "flex items-center gap-2 px-5 py-4 rounded-md text-bg bg-accent",
+                  "hover:bg-accent/90 disabled:opacity-40 transition-colors",
+                )}
+              >
+                <Volume2 size={24} />
+                <Rabbit size={16} className="opacity-70" />
+              </button>
+              <button
+                onClick={() => say(RATE_SLOW)}
+                disabled={noVoice}
+                title="Play slowly"
+                aria-label="Play slowly"
+                className={cn(
+                  "flex items-center gap-2 px-4 py-4 rounded-md text-fg bg-surface",
+                  "hover:bg-surfaceHover disabled:opacity-40 transition-colors",
+                )}
+              >
+                <Volume2 size={20} />
+                <Turtle size={16} className="opacity-70" />
+              </button>
+            </div>
+          ) : (
+            <p
+              className={cn(
+                "font-bold tracking-tight text-fg break-words",
+                skill === "read" ? "text-4xl sm:text-5xl" : "text-6xl sm:text-7xl tabular-nums",
+              )}
+            >
+              {skill === "read" ? item.form : n}
+            </p>
+          )}
         </div>
 
-        {/* answer */}
+        {noVoice && (
+          <p className="text-sm text-warn/90 leading-relaxed max-w-prose">
+            No {lang.name} voice is installed. Add one in System Settings →
+            Accessibility → Spoken Content → System Voice → Manage Voices.
+          </p>
+        )}
+        {speechError && !noVoice && (
+          <p className="text-sm text-alert/90 leading-relaxed max-w-prose">{speechError}</p>
+        )}
+
         <div className="flex flex-col sm:flex-row gap-2">
           <input
             ref={inputRef}
@@ -92,12 +182,12 @@ export function Drill({
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={onKeyDown}
             readOnly={verdict !== null}
-            inputMode={skill === "read" ? "numeric" : "text"}
+            inputMode={answersWithNumeral(skill) ? "numeric" : "text"}
             autoComplete="off"
             autoCorrect="off"
             autoCapitalize="off"
             spellCheck={false}
-            placeholder={skill === "read" ? `0–${max}` : "type the word"}
+            placeholder={answersWithNumeral(skill) ? `0–${max}` : "type the word"}
             aria-label="Your answer"
             className={cn(
               "flex-1 min-w-0 px-4 py-3 rounded-md bg-surface text-fg placeholder:text-muted",
@@ -124,9 +214,27 @@ export function Drill({
           </button>
         </div>
 
-        {readingHint && !verdict && <p className="text-xs text-muted">{readingHint}</p>}
+        {skill === "write" && lang.code === "zh" && !verdict && (
+          <p className="text-xs text-muted">characters or pinyin — tones optional</p>
+        )}
 
-        {/* feedback */}
+        {skill === "listen" && langVoices.length > 1 && (
+          <label className="flex items-center gap-2 text-xs text-muted">
+            Voice
+            <select
+              value={voiceName}
+              onChange={(e) => setVoiceName(e.target.value)}
+              className="bg-surface text-fg rounded px-2 py-1 outline-none max-w-[16rem]"
+            >
+              {langVoices.map((v) => (
+                <option key={v.name} value={v.name}>
+                  {v.name} · {v.locale}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+
         {verdict && (
           <div className="space-y-3 pt-1">
             <div
@@ -139,7 +247,9 @@ export function Drill({
               {verdict.ok ? "Correct" : `Not quite — you wrote “${verdict.given.trim()}”`}
             </div>
 
-            {!verdict.ok && (
+            {/* Listening always reveals the spelling: hearing it right and
+                being able to read it are different things. */}
+            {(!verdict.ok || skill === "listen") && (
               <p className="text-lg">
                 <span className="tabular-nums text-muted">{n}</span>
                 <span className="text-muted mx-2">is</span>
@@ -147,9 +257,7 @@ export function Drill({
               </p>
             )}
 
-            {verdict.item.reading && (
-              <p className="text-sm text-muted">{verdict.item.reading}</p>
-            )}
+            {verdict.item.reading && <p className="text-sm text-muted">{verdict.item.reading}</p>}
 
             <Breakdown lang={lang} item={verdict.item} />
 
@@ -162,17 +270,13 @@ export function Drill({
         )}
       </div>
 
-      {/* score */}
       <div className="flex items-center gap-4 text-sm text-muted font-mono tabular-nums px-1">
         <span>
           <span className="text-fg">{score.right}</span>/{score.total}
         </span>
         {streak > 1 && <span className="text-accent">streak {streak}</span>}
         {best > 1 && <span title="Best streak, remembered">best {best}</span>}
-        <span
-          className="ml-auto"
-          title="Numbers you have answered correctly and not missed since"
-        >
+        <span className="ml-auto" title="Numbers you have answered correctly and not missed since">
           <span className="text-fg">{solidCount(stats, max)}</span>/{max + 1} solid
         </span>
         <button

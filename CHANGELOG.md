@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+- **The listening drill works.** A system voice speaks the composed form; a
+  normal and a slow replay are offered. Speech runs in Rust
+  (`src-tauri/src/tts.rs`), not the webview.
+- **Voice choice is an allowlist, not a prefix match.** macOS ships
+  `Sinji zh_HK`, which is Cantonese — picking it would read Mandarin numbers
+  aloud in the wrong language with nothing on screen looking wrong. `voices.ts`
+  names acceptable locales per language and `make data` asserts the exclusion.
+  Four Rust unit tests cover the `say -v '?'` parser, whose entries include
+  multi-word names like `Eddy (German (Germany))`.
+- macOS only. `espeak-ng` is the intended Linux backend but is left
+  unimplemented rather than guessed at; the drill reports that instead of
+  showing a mute button. `make web` says the same, since a browser has no host.
+
 - **`./install.sh`** builds a release `.app` and installs it to
   `/Applications`, quitting any running copy and relaunching — so the app can
   be pinned to the Dock or found in Spotlight. `make install-app` and

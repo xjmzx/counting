@@ -7,6 +7,7 @@ import { de } from "./lang/de.ts";
 import { pt } from "./lang/pt.ts";
 import { es } from "./lang/es.ts";
 import { it } from "./lang/it.ts";
+import { ja } from "./lang/ja.ts";
 import { golden } from "./golden.ts";
 import { accepted, isCorrect, parseNumeral, fold } from "./grade.ts";
 import {
@@ -16,7 +17,7 @@ import {
 import { pickVoice, voicesFor, LOCALE_PREFERENCE, type Voice } from "./voices.ts";
 import { SOUND_RULES, hintsFor } from "./sounds.ts";
 
-const LANGS: Language[] = [zh, fr, it, pt, es, de];
+const LANGS: Language[] = [zh, fr, it, pt, es, de, ja];
 const RANGE = Array.from({ length: 101 }, (_, i) => i);
 
 const all = (l: Language): Item[] => RANGE.map((n) => l.compose(n));
@@ -112,6 +113,13 @@ function check(): boolean {
     ["de", 5, "funf"],
     ["zh", 73, "qi shi san"],         // pinyin without tone marks
     ["zh", 73, "七十三"],
+    ["ja", 23, "二十三"],          // kanji
+    ["ja", 23, "にじゅうさん"],      // kana, for anyone with an IME
+    ["ja", 23, "nijūsan"],         // romaji with a macron
+    ["ja", 23, "nijuusan"],        // and without one
+    ["ja", 4, "shi"],              // the other reading, standing alone, is real
+    ["ja", 0, "ゼロ"],
+    ["ja", 0, "〇"],
   ];
   for (const [code, n, typed] of tolerances) {
     const l = LANGS.find((x) => x.code === code)!;
@@ -127,6 +135,10 @@ function check(): boolean {
     ["de", 16, "sechszehn"],
     ["zh", 73, "qi shi si"],
     ["fr", 21, ""],
+    // The other readings are wrong *in compounds* — counting says yonjūnana,
+    // not yonjūshichi. Accepting them would defeat the point of the drill.
+    ["ja", 23, "nijuushi"],
+    ["ja", 47, "yonjuushichi"],
   ];
   for (const [code, n, typed] of rejects) {
     const l = LANGS.find((x) => x.code === code)!;

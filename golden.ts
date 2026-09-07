@@ -43,6 +43,23 @@ export const golden: Record<string, Record<number, string>> = {
     99: "quatre-vingt-dix-neuf",
     100: "cent",
   },
+  ja: {
+    0: "零",
+    4: "四",
+    7: "七",
+    9: "九",
+    10: "十",
+    11: "十一",   // ten-one, not one-ten-one
+    19: "十九",
+    20: "二十",
+    23: "二十三",
+    40: "四十",
+    47: "四十七",
+    70: "七十",
+    90: "九十",
+    99: "九十九",
+    100: "百",    // never 一百, unlike Chinese
+  },
   es: {
     0: "cero",
     15: "quince",

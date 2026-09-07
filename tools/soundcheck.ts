@@ -37,6 +37,18 @@ function voices(): Voice[] {
     .filter((v): v is Voice => v !== null);
 }
 
+/** Rendered length in seconds, via afinfo. */
+function duration(voice: string, text: string): number {
+  const f = join(tmpdir(), `counting-dur-${process.pid}.aiff`);
+  try {
+    say(["-v", voice, "-o", f, text]);
+    const info = execFileSync("afinfo", [f], { encoding: "utf8" });
+    return Number(/estimated duration:\s*([\d.]+)/.exec(info)?.[1] ?? NaN);
+  } finally {
+    rmSync(f, { force: true });
+  }
+}
+
 function digest(voice: string, text: string): string {
   const f = join(tmpdir(), `counting-sound-${process.pid}.aiff`);
   try {
@@ -56,6 +68,21 @@ for (const [code, rules] of Object.entries(SOUND_RULES)) {
   const voice = pickVoice(code, all);
   console.log(`\n${code}${voice ? `  (${voice.name} · ${voice.locale})` : "  — no voice installed"}`);
   for (const r of rules) {
+    if (r.durationEvidence) {
+      if (!voice) { console.log(`  ?  ${r.id} — cannot test, no voice`); continue; }
+      probed++;
+      const [word, alt] = r.durationEvidence;
+      const a = duration(voice.name, word);
+      const b = duration(voice.name, alt);
+      // 15ms: comfortably inside the gap between a one-mora and two-mora
+      // reading, which is where this test has to discriminate.
+      const ok = Math.abs(a - b) < 0.015;
+      if (ok) confirmed++;
+      console.log(
+        `  ${ok ? "✓" : "✗"}  ${r.id}  ${word} ≈ ${alt} by length (${a.toFixed(3)}s vs ${b.toFixed(3)}s)`,
+      );
+      continue;
+    }
     const pair = r.evidence ?? r.contrast;
     if (!pair) {
       console.log(`  ·  ${r.id} — no probe`);

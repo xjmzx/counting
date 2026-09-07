@@ -24,6 +24,7 @@ export const LOCALE_PREFERENCE: Record<string, string[]> = {
   // Brazilian leads, matching the spellings the tables use.
   pt: ["pt_BR", "pt_PT"],
   it: ["it_IT", "it_CH"],
+  ja: ["ja_JP"],
 };
 
 const norm = (locale: string) => locale.replace("-", "_").trim();

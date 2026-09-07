@@ -116,6 +116,11 @@ every other language surveyed scored 69% or more.
 - **The unbuilt skills stay visible.** Listen and Speak render a panel saying
   what is missing. Do not hide them to make the app look finished, and do not
   wire them up with a browser API — see the audio note above.
+- **Byte-comparison probes do not work for Japanese.** The voice renders kanji
+  and kana with different timing even for identical phonemes, so 百 and ひゃく
+  produce different files while plainly being the same word. Use
+  `durationEvidence` there; it discriminates a one-mora reading from a
+  two-mora one, which is what the counting readings turn on.
 - **`make soundcheck` is one-way, and the code says so.** A confirmed probe is
   real evidence; a failed one means no clean probe exists, not that the rule is
   wrong. Never delete a rule because its probe fails, and never make soundcheck

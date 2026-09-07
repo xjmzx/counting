@@ -1,6 +1,7 @@
 # counting
 
-0–100 in Mandarin, French, German, Spanish, Portuguese and Italian, generated
+0–100 in Mandarin, French, German, Spanish, Portuguese, Italian and Japanese,
+generated
 from a small table of lexical atoms plus one rule set per language. Groundwork for a Tauri app that drills
 the four skills — reading, writing, listening, speaking — over that range.
 
@@ -56,6 +57,7 @@ rule changes, the diff shows exactly which of the 303 forms moved.
 | Spanish | 25 | 6 |
 | Portuguese | 29 | 6 |
 | Italian | 29 | 4 |
+| Japanese | 12 | 5 |
 
 Portuguese is the most regular of the six after Mandarin — *tens* + *e* + *ones*
 with no exception anywhere. Spanish splits in two: 16–29 fuse into one word and
@@ -94,9 +96,9 @@ say *why* an answer was wrong rather than just marking it red.
 ## Verification
 
 **`make crosscheck` is the check that is not marking its own homework.** It
-compares all 606 forms against ICU's rule-based spell-out via Foundation — a
-separate implementation of the same six languages, by people who are not us.
-All 606 agree, and the three Romance tables matched on the first run. French matches on every one of its 101 forms, including the
+compares all 707 forms against ICU's rule-based spell-out via Foundation — a
+separate implementation of the same seven languages, by people who are not us.
+All 707 agree; the Romance and Japanese tables matched on the first run. French matches on every one of its 101 forms, including the
 awkward ones (71, 80, 81, 91, 97).
 
 Two differences are settled rather than fixed, because both forms are correct:
@@ -178,8 +180,15 @@ speaker would guess, and `make data` asserts each language explains at least
 **`make soundcheck` proves the rules that can be proved.** Each rule may carry
 an alternative spelling that should sound identical; the tool speaks both and
 compares the audio byte for byte. `vier` and `fier` produce the same file, so
-⟨v⟩ = /f/ is a fact about the engine's phonemes, not an opinion. 15 of 16
-probes confirm. **The test is one-way**: a mismatch proves nothing, since the
+⟨v⟩ = /f/ is a fact about the engine's phonemes, not an opinion. 21 of 22 probes confirm. There are three kinds. `evidence` claims two spellings sound the same;
+`contrast` claims they must differ (Italian *sette* against *sete* — if those
+matched, the rule saying gemination is real would be false); and
+`durationEvidence` compares rendered length instead of bytes, which is the only
+one that works for Japanese, where the voice times kanji and kana differently
+even for identical phonemes. That last is how 九 was established as kyū: it
+renders in 0.366s, matching きゅう exactly, where く is 0.239s.
+
+**The test is one-way**: a mismatch proves nothing, since the
 alternative spelling may simply be invalid orthography — German ⟨z⟩ *is* /ts/,
 so "zieben" reads as "tsieben" and the probe fails while the rule stays true.
 Rules without a probe are not weaker claims, just ones with no clean test.

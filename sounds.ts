@@ -37,6 +37,15 @@ export type SoundRule = {
    * consonant matters would be false.
    */
   contrast?: [string, string];
+  /**
+   * [word, spelling whose *duration* should match]. Weaker than `evidence` but
+   * it works where byte comparison does not: the Japanese voice renders kanji
+   * and kana with different timing even for identical phonemes, so 百 and
+   * ひゃく produce different files while plainly being the same word. Length
+   * still discriminates — 九 is 0.366s, matching きゅう exactly, where く is
+   * 0.239s. That is how the counting readings were established.
+   */
+  durationEvidence?: [string, string];
 };
 
 export const SOUND_RULES: Record<string, SoundRule[]> = {
@@ -322,9 +331,44 @@ export const SOUND_RULES: Record<string, SoundRule[]> = {
     },
   ],
 
-  // No audio probe works here: the alternative-spelling trick needs two
-  // spellings in one script, and these are facts about pinyin, which the voice
-  // is not reading. Unverified by anything but description.
+  ja: [
+    {
+      id: "ja-counting-readings",
+      test: /四|七|九/,
+      hint: "Counting uses yon, nana and kyū — 四 is not shi here, 七 not shichi, 九 not ku. All six are real readings of those characters; only the first of each is what you count with.",
+      durationEvidence: ["九", "きゅう"],
+    },
+    {
+      id: "ja-long-vowel",
+      test: /十|九|百/,
+      hint: "The ū of jū and kyū is held for two beats, not one. Length is not decoration in Japanese — it distinguishes words.",
+    },
+    {
+      id: "ja-r",
+      test: /六|零/,
+      hint: "Japanese ⟨r⟩ is a single tap of the tongue, somewhere between an English r and an l — roku, rei.",
+    },
+    {
+      id: "ja-hyaku",
+      test: /百/,
+      hint: "百 is hyaku: a light breath of h, then “yaku” as one smooth syllable.",
+    },
+    {
+      id: "ja-ichi",
+      test: /一/,
+      hint: "一 is ichi, and the final i is often devoiced almost to a whisper — closer to “eech” than “ee-chee”.",
+    },
+    // Last, and true of every number: the safety net.
+    {
+      id: "ja-pitch",
+      test: /./,
+      hint: "Japanese has pitch accent, not stress. Every syllable takes the same time; it is the pitch pattern that differs, not the loudness.",
+    },
+  ],
+
+  // No probe works here: the alternative-spelling trick needs two spellings in
+  // one script, and these are facts about pinyin, which the voice is not
+  // reading. Unverified by anything but description.
   zh: [
     {
       id: "zh-q",

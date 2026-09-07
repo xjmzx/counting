@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- **Japanese.** Structurally Mandarin — 二十三 is “two ten three” — but the
+  difficulty sits in the readings: counting uses yon, nana and kyū, not shi,
+  shichi and ku. Answers are accepted as kanji, kana or romaji with or without
+  macrons. The other readings are accepted for a standalone digit, where they
+  are real, and rejected inside a compound, where counting does not use them.
+- **`durationEvidence` probes.** Byte comparison fails for Japanese: the voice
+  times kanji and kana differently even for identical phonemes, so 百 and ひゃく
+  differ as files. Comparing rendered length works, and established that 九 is
+  kyū — 0.366s against きゅう's 0.366s, where く is 0.239s.
+- Cross-check now covers 707 forms; Japanese matched ICU on the first run.
+
 - **The language picker groups by family** — Sinitic, Romance, Germanic — one
   pill per family with a gap between. `Language` gained a `family` field, and
   `make data` fails if a family is split across the roster, since the picker

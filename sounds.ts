@@ -331,6 +331,29 @@ export const SOUND_RULES: Record<string, SoundRule[]> = {
     },
   ],
 
+  en: [
+    {
+      id: "en-teen-ty",
+      test: /teen|ty/,
+      hint: "thirteen and thirty differ mainly in stress — thir-TEEN rises at the end, THIR-ty falls. Native speakers mishear these on the phone, so the -n is worth listening for.",
+    },
+    {
+      id: "en-th",
+      test: /th/,
+      hint: "⟨th⟩ in three, thirteen and thirty is a tongue-between-the-teeth sound that most languages do not have. It is not a t, and it is not an s.",
+    },
+    {
+      id: "en-silent",
+      test: /eigh/,
+      hint: "⟨eigh⟩ in eight and eighty is just “ay” — the gh is silent, a fossil of a sound English stopped making centuries ago.",
+    },
+    {
+      id: "en-schwa",
+      test: /./,
+      hint: "Unstressed vowels collapse toward a neutral “uh”: seven is “SEV-uhn”, not “SEV-en”. English reduces almost every syllable it does not stress.",
+    },
+  ],
+
   hi: [
     {
       id: "hi-no-composition",

@@ -153,6 +153,23 @@ export const golden: Record<string, Record<number, string>> = {
     99: "novantanove",
     100: "cento",
   },
+  en: {
+    0: "zero",
+    12: "twelve",
+    13: "thirteen",   // three -> thir
+    14: "fourteen",   // but four keeps its u here
+    15: "fifteen",
+    18: "eighteen",
+    20: "twenty",     // two -> twen
+    21: "twenty-one",
+    30: "thirty",
+    40: "forty",      // and loses the u here. The trap.
+    50: "fifty",
+    80: "eighty",
+    90: "ninety",
+    99: "ninety-nine",
+    100: "one hundred",
+  },
   de: {
     0: "null",
     1: "eins",

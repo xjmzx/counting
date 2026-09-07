@@ -11,6 +11,7 @@ import { ja } from "./lang/ja.ts";
 import { th } from "./lang/th.ts";
 import { vi } from "./lang/vi.ts";
 import { hi } from "./lang/hi.ts";
+import { en } from "./lang/en.ts";
 import { golden } from "./golden.ts";
 import { accepted, isCorrect, parseNumeral, fold } from "./grade.ts";
 import {
@@ -20,7 +21,7 @@ import {
 import { pickVoice, voicesFor, LOCALE_PREFERENCE, type Voice } from "./voices.ts";
 import { SOUND_RULES, SCRIPT_RULES, hintsFor, scriptHintsFor } from "./sounds.ts";
 
-const LANGS: Language[] = [zh, fr, it, pt, es, de, hi, ja, th, vi];
+const LANGS: Language[] = [zh, fr, it, pt, es, en, de, hi, ja, th, vi];
 const RANGE = Array.from({ length: 101 }, (_, i) => i);
 
 const all = (l: Language): Item[] => RANGE.map((n) => l.compose(n));

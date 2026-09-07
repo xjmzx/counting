@@ -21,10 +21,11 @@ import { ja } from "../lang/ja.ts";
 import { th } from "../lang/th.ts";
 import { vi } from "../lang/vi.ts";
 import { hi } from "../lang/hi.ts";
+import { en } from "../lang/en.ts";
 import { accepted, fold } from "../grade.ts";
 
 const LANGS: Record<string, Language> = {
-  zh_CN: zh, fr_FR: fr, de_DE: de, pt_BR: pt, es_ES: es, it_IT: it, ja_JP: ja, th_TH: th, vi_VN: vi, hi_IN: hi,
+  zh_CN: zh, fr_FR: fr, de_DE: de, pt_BR: pt, es_ES: es, it_IT: it, ja_JP: ja, th_TH: th, vi_VN: vi, hi_IN: hi, en_GB: en,
 };
 
 /** Settled: both forms are correct, and we prefer ours for counting. */

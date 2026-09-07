@@ -37,6 +37,7 @@ export const LOCALE_PREFERENCE: Record<string, string[]> = {
   // Brazilian leads, matching the spellings the tables use.
   pt: ["pt_BR", "pt_PT"],
   it: ["it_IT", "it_CH"],
+  en: ["en_GB", "en_US", "en_IE", "en_AU"],
   ja: ["ja_JP"],
   th: ["th_TH"],
   vi: ["vi_VN"],

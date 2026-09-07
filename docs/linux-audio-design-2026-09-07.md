@@ -1,18 +1,38 @@
 # Linux audio: design notes
 
-**Status:** built, and **unverified on Linux**. The backend is written, its
-parsing and locale mapping are unit-tested on every platform, and macOS is
-unaffected. What has *not* happened is anyone running `spd-say` through it.
-Until that is done the honest description is "written, not working".
+**Status:** built, and **verified on Linux** 2026-09-07. Both checks this
+section previously listed as outstanding have been run on Ubuntu / X11, and
+both pass. Nine languages speak; Japanese is excluded by design and the drill
+says so.
 
-Two things specifically need checking on a Linux box:
+1. **The `spd-say -L` output format** — `parse_spd_line` handles real output.
+   All nine mapped languages resolve, 101 voices each, and `ja` is dropped as
+   intended while `yue` maps to `zh_HK` so the allowlist rejects it for the
+   documented reason.
 
-1. **The `spd-say -L` output format.** `parse_spd_line` scans from the right
-   for a token that looks like a language tag, so it tolerates two or three
-   columns and names containing spaces — but it was written against the
-   documented shape, not against real output. `spd-say -L | head` settles it.
-2. **That `spd-say -l <tag> -r <n> -- <text>` speaks.** The argument order and
-   the `--` are from the manual.
+   One quirk the manual does not mention: **`spd-say -L` is not lossless.** Its
+   fixed-width columns overflow on long variant names and butt the language
+   field against the variant — `afHalf-LifeAnnouncementSystem` — which
+   `looks_like_language` correctly refuses. About 1,000 of 13,000 lines drop
+   this way. All are joke character variants and no target language loses a
+   voice, so this needs no fix; it is recorded so that a future voice count
+   that looks short is not mistaken for a parser bug.
+2. **That `spd-say -l <tag> -r <n> -- <text>` speaks** — it does; confirmed by
+   ear, across the nine.
+
+**One defect found in the confirming, still open.** A language excluded from a
+backend and a machine with nothing installed are different situations, and the
+drill currently shows the same panel for both. On Linux, Japanese reads:
+
+    No Japanese voice is available. Install a synthesiser speech-dispatcher
+    can drive — `sudo apt install espeak-ng` covers most languages.
+
+espeak-ng is already installed, and installing it can never fix Japanese —
+it is precisely the engine that cannot read kanji. The advice is not merely
+unhelpful, it sends someone to do a thing that will not work and cannot tell
+them why. The reason is written in `normalise_spd_language`, in this document
+and in `CLAUDE.md`; the one place it does not reach is the person looking at
+the panel. An exclusion needs to carry its own sentence.
 
 Originally: Written 2026-09-07, on Ubuntu / X11 / WebKitGTK 2.52.6.
 

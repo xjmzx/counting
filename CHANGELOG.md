@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- **Hindi**, added as the deliberate word-list exception. Its numbers do not
+  compose — तेईस holds nothing of तीन or बीस — so it costs 101 atoms for 101
+  numbers, `parts` carries one entry and the breakdown stays empty. The app
+  reports that rather than hiding it.
+- **Its verification is weaker, and the tooling says so.** Every other table is
+  generated from a rule written without reference to ICU, so agreement is
+  evidence. A word list has no rule, so this one was written from knowledge and
+  then diffed: 96 of 101 matched exactly. The five that did not — 15, 44, 63,
+  79 and 100 — now carry both spellings, and `make crosscheck` prints a note
+  that Hindi's agreement is partly circular.
+
 - **Thai and Vietnamese**, taking the roster to nine. All 202 new forms agreed
   with ICU on the first run; the cross-check now covers 909.
 - Thai: twenty is ยี่สิบ, using a word for two found nowhere else in the

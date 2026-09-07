@@ -1,7 +1,7 @@
 # counting
 
-0–100 in nine languages — Mandarin, French, German, Spanish, Portuguese,
-Italian, Japanese, Thai and Vietnamese — generated
+0–100 in ten languages — Mandarin, French, German, Spanish, Portuguese,
+Italian, Japanese, Thai, Vietnamese and Hindi — generated
 from a small table of lexical atoms plus one rule set per language. Groundwork for a Tauri app that drills
 the four skills — reading, writing, listening, speaking — over that range.
 
@@ -61,6 +61,7 @@ rule changes, the diff shows exactly which of the 303 forms moved.
 | Japanese | 12 | 5 |
 | Thai | 12 | 3 |
 | Vietnamese | 12 | 5 |
+| **Hindi** | **101** | — |
 
 Portuguese is the most regular of the six after Mandarin — *tens* + *e* + *ones*
 with no exception anywhere. Spanish splits in two: 16–29 fuse into one word and
@@ -99,9 +100,16 @@ say *why* an answer was wrong rather than just marking it red.
 ## Verification
 
 **`make crosscheck` is the check that is not marking its own homework.** It
-compares all 909 forms against ICU's rule-based spell-out via Foundation — a
-separate implementation of the same nine languages, by people who are not us.
-All 909 agree, and every table since the first three matched on the first run. French matches on every one of its 101 forms, including the
+compares all 1010 forms against ICU's rule-based spell-out via Foundation — a
+separate implementation of the same ten languages, by people who are not us.
+All 1010 agree, and every generated table matched on the first run.
+
+**Hindi is the exception, and `crosscheck` says so when it runs.** Every other
+table comes from a rule written without reference to ICU, so agreement means
+something. A word list has no rule: this table was written out from knowledge
+and then diffed, 96 of 101 matching first time, and the five that differed now
+carry both spellings. Agreement there is partly circular, and the tool prints
+that rather than counting Hindi as verified. French matches on every one of its 101 forms, including the
 awkward ones (71, 80, 81, 91, 97).
 
 Two differences are settled rather than fixed, because both forms are correct:

@@ -65,6 +65,10 @@ Five places, and `make data` fails until all of them are done:
 Then `make crosscheck` for free verification against ICU, and `make soundcheck`
 for whatever the audio probes can confirm.
 
+**Hindi is the one language exempt from the compositionality bar**, and it is
+exempt on purpose rather than by oversight. Do not "fix" its atom count or
+invent a decomposition for `parts`; 101 atoms is the true answer and the point.
+
 **Check compositionality before starting.** If the word for 23 does not contain
 the word for 3, the composer contributes nothing and the language is a word
 list wearing the app's clothes. Hindi is the example: 0% ones-visibility, where

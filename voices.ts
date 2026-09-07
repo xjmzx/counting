@@ -27,6 +27,7 @@ export const LOCALE_PREFERENCE: Record<string, string[]> = {
   ja: ["ja_JP"],
   th: ["th_TH"],
   vi: ["vi_VN"],
+  hi: ["hi_IN"],
 };
 
 const norm = (locale: string) => locale.replace("-", "_").trim();

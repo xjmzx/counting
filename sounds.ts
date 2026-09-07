@@ -331,6 +331,34 @@ export const SOUND_RULES: Record<string, SoundRule[]> = {
     },
   ],
 
+  hi: [
+    {
+      id: "hi-no-composition",
+      test: /./,
+      hint: "Hindi numbers do not build from parts — तेईस holds nothing of तीन or बीस. Every one from 1 to 100 is its own word, so this is memory rather than pattern.",
+    },
+    {
+      id: "hi-retroflex",
+      test: /[टठडढणड़]/,
+      hint: "The retroflex consonants are made with the tongue curled back to the roof of the mouth — a sound English does not have. आठ, सड़सठ.",
+    },
+    {
+      id: "hi-aspiration",
+      test: /[खघछझठढथधफभ]/,
+      hint: "The aspirated consonants carry an audible puff of air, and it changes the word — छह and छब्बीस begin with one.",
+    },
+    {
+      id: "hi-nasal-vowel",
+      test: /[ंँ]/,
+      hint: "The dot or crescent above nasalises the vowel — पाँच is “paanch” through the nose, not with a separate n.",
+    },
+    {
+      id: "hi-long-vowel",
+      test: /[ाीूै ो]/,
+      hint: "Vowel length is meaningful, not decorative — the ा in चार is held roughly twice as long as a short a.",
+    },
+  ],
+
   th: [
     {
       id: "th-yi",

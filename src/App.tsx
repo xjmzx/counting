@@ -20,7 +20,10 @@ function shortVersion(v: string): string {
   return v.split(/[-+]/)[0] ?? v;
 }
 
-const COUNT_WORD = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+const COUNT_WORD = [
+  "no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
+  "ten", "eleven", "twelve",
+];
 const spell = (n: number) => COUNT_WORD[n] ?? String(n);
 
 export default function App() {

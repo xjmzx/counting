@@ -20,10 +20,11 @@ import { it } from "../lang/it.ts";
 import { ja } from "../lang/ja.ts";
 import { th } from "../lang/th.ts";
 import { vi } from "../lang/vi.ts";
+import { hi } from "../lang/hi.ts";
 import { accepted, fold } from "../grade.ts";
 
 const LANGS: Record<string, Language> = {
-  zh_CN: zh, fr_FR: fr, de_DE: de, pt_BR: pt, es_ES: es, it_IT: it, ja_JP: ja, th_TH: th, vi_VN: vi,
+  zh_CN: zh, fr_FR: fr, de_DE: de, pt_BR: pt, es_ES: es, it_IT: it, ja_JP: ja, th_TH: th, vi_VN: vi, hi_IN: hi,
 };
 
 /** Settled: both forms are correct, and we prefer ours for counting. */
@@ -62,6 +63,13 @@ if (settled.length) {
   console.log("Settled differences (both forms correct):");
   settled.forEach((s) => console.log(s));
 }
+console.log(
+  "\nNote: Hindi is not independently verified here. Every other table is\n" +
+    "generated from a rule written without reference to ICU, so agreement means\n" +
+    "something. Hindi is a word list, so its table was written out and then\n" +
+    "corrected against ICU — 96 of 101 matched first — and the five that differed\n" +
+    "now carry both spellings. Agreement is therefore partly circular.",
+);
 console.log(
   unexplained === 0
     ? `✓ ${compared} forms agree with ICU (or differ only where settled)`

@@ -112,7 +112,10 @@ impl Backend {
     fn parse(self, raw: &str) -> Vec<Voice> {
         match self {
             Backend::Say => raw.lines().filter_map(parse_say_line).collect(),
-            Backend::SpeechDispatcher => raw.lines().filter_map(parse_spd_line).collect(),
+            Backend::SpeechDispatcher => drop_unusable(
+                raw.lines().filter_map(parse_spd_line).collect(),
+                self.japanese_module().is_some(),
+            ),
         }
     }
 
@@ -146,17 +149,29 @@ impl Backend {
             .collect()
     }
 
-    /// An open-jtalk output module, if speech-dispatcher has one.
+    /// An open-jtalk output module that can actually speak, if there is one.
     ///
     /// This is what decides whether Japanese is offered on Linux. espeak-ng
     /// cannot read kanji; open-jtalk can, and `mecab` — the expensive half —
     /// is already present on a stock desktop. So the exclusion is a property
     /// of the *module*, not of the language, and installing open-jtalk should
     /// simply make Japanese work.
+    ///
+    /// **The name in `spd-say -O` proves nothing.** `sd_openjtalk` ships with
+    /// speech-dispatcher itself, while the dictionary and the voice come from
+    /// separate packages — so the module is listed on a stock box that has
+    /// neither, registers happily, and synthesises silence. Trusting the name
+    /// would offer Japanese, route it to a module with no data, and play
+    /// nothing at all while the drill waited to grade an answer: the same
+    /// silent-wrongness the exclusion exists to prevent, only quieter than
+    /// before. So ask the module's own config what files it needs, and check
+    /// they are there.
     pub fn japanese_module(self) -> Option<String> {
-        self.modules()
+        let name = self
+            .modules()
             .into_iter()
-            .find(|m| m.to_ascii_lowercase().contains("jtalk"))
+            .find(|m| m.to_ascii_lowercase().contains("jtalk"))?;
+        module_data_is_installed(&name).then_some(name)
     }
 
     /// Languages this backend will not serve, with the reason in the words the
@@ -314,18 +329,74 @@ fn parse_spd_line(line: &str) -> Option<Voice> {
         return None;
     }
     let tag = toks[idx];
-    // Unmapped tags are dropped rather than guessed at. Japanese is the one
-    // that matters: espeak-ng has no kanji dictionary and announces the
-    // character class once per character, so a ja voice here would play
-    // "Chinese letter" three times while the drill showed 七十三 and graded
-    // the answer. Nothing on screen would look wrong. Dropping it makes the
-    // existing no-voice panel fire instead, which is the truth.
+    // Unmapped tags are dropped rather than guessed at. Japanese is mapped
+    // here but may still be filtered out afterwards by `drop_unusable`: with
+    // only espeak-ng installed it has no kanji dictionary and announces the
+    // character class once per character, so a ja voice would play "Chinese
+    // letter" three times while the drill showed 七十三 and graded the answer.
+    // Nothing on screen would look wrong. Removing it makes the existing
+    // no-voice panel fire instead, which is the truth.
     let locale = normalise_spd_language(tag)?;
     Some(Voice {
         name: toks[..idx].join(" "),
         locale,
         id: tag.to_string(),
     })
+}
+
+/// Read one `Key "value"` setting out of a speech-dispatcher module config.
+///
+/// Pure so it can be tested without a machine that has open-jtalk installed,
+/// which is the whole difficulty with this corner: the interesting case is the
+/// box that does *not* have it.
+fn conf_path_value(conf: &str, key: &str) -> Option<String> {
+    conf.lines()
+        .map(str::trim)
+        .filter(|l| !l.starts_with('#'))
+        .find_map(|l| {
+            let rest = l.strip_prefix(key)?;
+            let start = rest.find('"')? + 1;
+            let end = rest[start..].find('"')? + start;
+            Some(rest[start..end].to_string())
+        })
+}
+
+/// Does this module have the data it needs, or is it a registered shell?
+///
+/// A user config wins over the system one, matching speech-dispatcher's own
+/// precedence. If no config can be found the answer is "no": under-offering a
+/// language is recoverable, and silence in a listening drill is not.
+fn module_data_is_installed(module: &str) -> bool {
+    let name = format!("{module}.conf");
+    let mut candidates = Vec::new();
+    if let Ok(home) = std::env::var("HOME") {
+        candidates.push(format!("{home}/.config/speech-dispatcher/modules/{name}"));
+    }
+    candidates.push(format!("/etc/speech-dispatcher/modules/{name}"));
+
+    let Some(conf) = candidates.iter().find_map(|p| std::fs::read_to_string(p).ok()) else {
+        return false;
+    };
+    // Both are required: a voice with no dictionary cannot turn kanji into
+    // readings, and a dictionary with no voice has nothing to say them with.
+    ["OpenjtalkVoice", "OpenjtalkDictionaryDirectory"]
+        .iter()
+        .all(|k| {
+            conf_path_value(&conf, k)
+                .is_some_and(|v| std::path::Path::new(&v).exists())
+        })
+}
+
+/// Remove voices for languages this backend cannot actually serve.
+///
+/// Separate from `normalise_spd_language`, which is a pure mapping and has no
+/// business knowing what is installed, and pure itself so the excluded case is
+/// testable on a machine where the engine *is* present.
+fn drop_unusable(voices: Vec<Voice>, japanese_ok: bool) -> Vec<Voice> {
+    voices
+        .into_iter()
+        .filter(|v| japanese_ok || v.locale != "ja_JP")
+        .collect()
 }
 
 /// speech-dispatcher's language tag to the app's namespace.
@@ -363,7 +434,10 @@ fn normalise_spd_language(tag: &str) -> Option<String> {
             "vi" | "vi-vn" => "vi_VN",
             "vi-vn-x-central" | "vi-vn-x-south" => "vi_VN",
             "hi" | "hi-in" => "hi_IN",
-            // "ja" is deliberately absent. See parse_spd_line.
+            // Mapped rather than dropped. Whether Japanese is *offered* is a
+            // question about the installed engine, which this function cannot
+            // see — it is decided in `Backend::parse` via `drop_unusable`.
+            "ja" | "ja-jp" => "ja_JP",
             _ => return None,
         }
         .to_string(),
@@ -617,15 +691,45 @@ mod tests {
     }
 
     #[test]
-    fn japanese_is_not_served_by_the_default_module() {
-        // espeak-ng has no kanji dictionary: every character renders in the
-        // same 1.04s and it says "Chinese letter". Offering it would be the
-        // Cantonese trap wearing a different hat. An open-jtalk module lifts
-        // the exclusion at runtime — see Backend::unsupported — but nothing
-        // maps `ja` into the voice list either way, because the module is
-        // selected by name rather than chosen from that list.
-        assert!(parse_spd_line("Japanese   ja   none").is_none());
-        assert!(normalise_spd_language("ja").is_none());
+    fn japanese_is_mapped_but_gated_on_the_engine() {
+        // `ja` maps like any other tag. Whether it survives is a question
+        // about the installed engine, and is answered by drop_unusable.
+        assert_eq!(normalise_spd_language("ja").as_deref(), Some("ja_JP"));
+        assert!(parse_spd_line("Japanese   ja   none").is_some());
+
+        let ja = parse_spd_line("Japanese   ja   none").unwrap();
+        let fr = parse_spd_line("French   fr   none").unwrap();
+
+        // With only espeak-ng, Japanese must not reach the picker: it has no
+        // kanji dictionary and announces the character class once per
+        // character. Offering it is the Cantonese trap in a new costume.
+        let without = drop_unusable(vec![ja.clone(), fr.clone()], false);
+        assert_eq!(without.len(), 1);
+        assert_eq!(without[0].locale, "fr_FR");
+
+        // With open-jtalk, it must reach the picker — otherwise installing the
+        // engine changes nothing and the offer is a claim the app cannot keep.
+        let with = drop_unusable(vec![ja, fr], true);
+        assert_eq!(with.len(), 2);
+        assert!(with.iter().any(|v| v.locale == "ja_JP"));
+    }
+
+    #[test]
+    fn a_module_config_is_read_for_the_files_it_needs() {
+        let conf = "# a comment\n\
+                    OpenjtalkDictionaryDirectory \"/var/lib/mecab/dic/x\"\n\
+                    OpenjtalkVoice \"/usr/share/hts-voice/y.htsvoice\"\n";
+        assert_eq!(
+            conf_path_value(conf, "OpenjtalkVoice").as_deref(),
+            Some("/usr/share/hts-voice/y.htsvoice")
+        );
+        assert_eq!(
+            conf_path_value(conf, "OpenjtalkDictionaryDirectory").as_deref(),
+            Some("/var/lib/mecab/dic/x")
+        );
+        assert!(conf_path_value(conf, "NotPresent").is_none());
+        // A commented-out setting is not a setting.
+        assert!(conf_path_value("# OpenjtalkVoice \"/nope\"", "OpenjtalkVoice").is_none());
     }
 
     #[test]

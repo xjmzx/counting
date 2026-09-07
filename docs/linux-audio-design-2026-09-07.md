@@ -285,3 +285,79 @@ That is precisely the failure `tts.rs` was written to avoid, and the reason the
 error message there is worth keeping until this is done properly. **An honest
 error beats untested code that looks like support** — and now that the quality
 is measured rather than assumed, the only part still untested is Japanese.
+
+## Open JTalk, measured — and the state of Linux synthesis (2026-09-08)
+
+Written for whoever is working on macOS, because none of this is visible from
+there. Japanese now works on Linux, and the way it works has three consequences
+worth knowing before the next language or the next engine.
+
+### It genuinely reads kanji
+
+Installed with `sudo apt install open-jtalk open-jtalk-mecab-naist-jdic
+hts-voice-nitech-jp-atr503-m001`, then measured on silence-trimmed audio:
+
+| | kanji | its kana | |
+|---|---|---|---|
+| 3 | 三 0.30s | さん 0.26s | agrees |
+| 10 | 十 0.20s | じゅう 0.20s | agrees |
+| 100 | 百 0.30s | ひゃく 0.30s | agrees |
+| 73 | 七十三 0.69s | ななじゅうさん 0.66s | agrees |
+
+Four out of four, against espeak-ng's 3.00s versus 0.80s for the same pair.
+Distinct kanji spread 0.10s where espeak-ng was flat at 0.00. The gate's
+premise is sound.
+
+### There is exactly one voice, and there will not be another
+
+`hts-voice-nitech-jp-atr503-m001` is the **only** open-jtalk voice packaged for
+Ubuntu — no MMDAgent voices, no alternatives. It is a single male HMM voice
+built on 2003-era research data: correct, and audibly of its time.
+
+Two things follow. Japanese cannot offer a voice choice on Linux the way the
+other languages do, and *any* effort spent improving Japanese synthesis here
+has a low ceiling. **A recorded clip beats it outright**, which is the argument
+for Japanese being the next language recorded after English rather than a
+language to tune an engine for.
+
+### Three faults it exposed, all now fixed
+
+- **A registered module is not a working one.** `sd_openjtalk` ships with
+  speech-dispatcher itself while the dictionary and voice are separate
+  packages, so `spd-say -O` lists `openjtalk` on a stock box with nothing
+  behind it. Detection reads the module's own config and checks the files
+  exist. (Merged in `v0.5.0`.)
+- **The picker offered 101 Japanese voices that were all one voice.**
+  `spd-say -L` enumerates espeak-ng, so Japanese arrived as `Japanese+Adam` and
+  friends while `speak` sends `-o openjtalk -l ja` and never passes a variant.
+  Replaced with one honest entry, `Open JTalk`; the drill already hides the
+  `<select>` when there is only one.
+- **English was mute on Linux.** No `en` in `normalise_spd_language`, so the
+  language carrying all 101 recordings reported no audio and disabled its
+  buttons before a clip was reached. The checklist in
+  `CLAUDE.md` now has a sixth step because of it.
+
+### Is Linux synthesis handled correctly now?
+
+Yes for ten of eleven languages, with one structural gap left open.
+
+**`noVoice` does not know about clips.** It is `langVoices.length === 0`, so a
+language with a complete set of recordings and no synthesiser counts as having
+no audio at all — buttons disabled, and a panel advising an install that would
+make things worse rather than better. English hid this behind a second fault
+and stopped being an example the moment `en` was mapped; the next clips-only
+language will surface it again, and on the current direction there will be one.
+
+The fix belongs with whoever owns the clip feature, because it is a design
+question rather than a mapping: `SpeechInfo` already crosses the IPC boundary
+and could carry which languages have clips, but *what a clips-only language
+should do about the slow-playback button* is a real decision. A recording has
+one speed.
+
+Two smaller notes for the same reader. `speechcheck` keeps its own copy of the
+language list and its own `acceptable()` mirroring `voices.ts` — a third place
+to drift, and it did drift for English. And `spd-say -L` is not lossless: its
+fixed-width columns overflow on long variant names, so roughly a thousand of
+thirteen thousand rows are unparseable. All are joke character variants and no
+target language loses a voice, but a voice count that looks short is that,
+not a parser bug.

@@ -53,7 +53,8 @@ tokens in `src/index.css`, taken from `nping`. Do not reach further.
 
 ## Adding a language
 
-Five places, and `make data` fails until all of them are done:
+Six places. `make data` fails until the first five are done — and **the sixth
+is the one it cannot catch**, because it is Rust and it is platform-specific.
 
 1. `lang/xx.ts` — atoms plus `compose(n)`; its `family` (top-level, e.g.
    Indo-European), `branch` (Romance, Tai…) and `numerals` (where the number
@@ -68,6 +69,23 @@ Five places, and `make data` fails until all of them are done:
    family contiguous**, since the picker groups by runs and `make data` fails
    on a split family — plus the locale in `tools/spell.swift` and
    `tools/crosscheck.ts`.
+6. **`normalise_spd_language` in `src-tauri/src/tts.rs`, or the language is
+   mute on Linux** — plus the two tables in `src-tauri/examples/speechcheck.rs`
+   so the diagnostic can see it too.
+
+**Why the sixth is easy to miss, and why nothing red will tell you.** macOS
+enumerates its own voices: `say -v '?'` reports `en_GB` and the language works
+the moment `voices.ts` accepts it. speech-dispatcher reports espeak's tags
+instead, and every tag this app does not explicitly map is dropped — so on
+Linux the language has no voices, the drill disables its play buttons, and the
+panel offers to install a synthesiser that is already installed. Everything
+passes: `make data` does not read Rust, `cargo test` does not know the language
+list, and a developer on macOS sees a working app.
+
+This has happened. English shipped with all 101 recordings and could not be
+listened to on Linux at all, because the recordings sit *behind* the voice
+check. Adding a language means adding it here as well, and `make speechcheck`
+on a Linux box is what shows you whether you did.
 
 Then `make crosscheck` for free verification against ICU, and `make soundcheck`
 for whatever the audio probes can confirm.

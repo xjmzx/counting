@@ -17,16 +17,23 @@ make table      # all 303 forms, side by side
 make stats      # what each language actually costs in atoms
 make emit       # regenerate numbers.json + numbers.tsv
 
-make install    # put a 'counting' command on PATH under ~/.local
-make uninstall  # remove it
+./install.sh    # build the .app and put it in /Applications   [macOS]
+make install    # put the 'counting' CLI on PATH under ~/.local
+make uninstall  # remove the CLI
 ```
+
+**Two different installs, and they are not alternatives.** `./install.sh`
+(also `make install-app`) does a release `tauri build`, quits any running copy,
+puts `counting.app` in `/Applications` and relaunches it — that is the one to
+make a Dock or Spotlight shortcut to. `make install` puts the *command-line*
+composer on your PATH; it has no bundle, no icon and nothing the Dock will
+show. `./install.sh --skip-build` reinstalls the last build without rebuilding.
 
 `make install` copies the sources to `$PREFIX/share/counting` and drops a
 `counting` wrapper in `$PREFIX/bin`, so `counting table` works from anywhere.
-Unlike the Tauri repos there is no `install-guard` and no `install.sh`: with no
-bundle and no `.desktop` entry, the same target is correct on macOS and Linux.
-The wrapper refuses to run on Node older than 23, where the types would not be
-stripped.
+It stays unguarded by platform — the CLI has no bundle and no `.desktop` entry,
+so one target is correct on macOS and Linux. The wrapper refuses to run on Node
+older than 23, where the types would not be stripped.
 
 Node 26 strips the types natively, so `node compose.ts` runs the TypeScript
 directly with no build step and no dependencies. The two devDependencies exist

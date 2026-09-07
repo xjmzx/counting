@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- **`./install.sh`** builds a release `.app` and installs it to
+  `/Applications`, quitting any running copy and relaunching — so the app can
+  be pinned to the Dock or found in Spotlight. `make install-app` and
+  `npm run install:app` are the same thing. macOS only; it checks the composer
+  before building.
+- `make help` now separates the two installs explicitly, because `make install`
+  (the CLI) and `./install.sh` (the app) are not alternatives and the names
+  gave no hint of that.
+
 - **The drill queue is weighted.** Unseen numbers come first, missed ones come
   back sooner, and getting them right walks them back down. A single slip does
   not outrank unseen material; a second miss does. `queue.ts` is at the repo

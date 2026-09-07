@@ -4,7 +4,7 @@ LIBDIR ?= $(PREFIX)/share/counting
 
 SOURCES := compose.ts types.ts golden.ts grade.ts
 
-.PHONY: help deps data crosscheck typecheck check dev web build table stats emit install uninstall clean
+.PHONY: help deps data crosscheck typecheck check dev web build table stats emit install install-app uninstall clean
 
 help:
 	@echo "Targets:"
@@ -17,9 +17,12 @@ help:
 	@echo "  make table      print all 303 forms side by side"
 	@echo "  make stats      atom counts and irregularity coverage"
 	@echo "  make emit       regenerate numbers.json and numbers.tsv"
-	@echo "  make install    put the 'counting' CLI on PATH under PREFIX"
-	@echo "                  (the app bundle comes from 'make build', not this)"
-	@echo "  make uninstall  remove the CLI"
+	@echo ""
+	@echo "  Two different installs. They are not alternatives:"
+	@echo "  make install-app  the .app -> /Applications, for a Dock or"
+	@echo "                    Spotlight shortcut                     [macOS only]"
+	@echo "  make install      the 'counting' CLI -> PREFIX/bin, terminal only"
+	@echo "  make uninstall    remove the CLI (not the .app)"
 	@echo "  make deps       npm install + cargo fetch"
 	@echo "  make clean      remove node_modules, dist and src-tauri/target"
 
@@ -88,12 +91,19 @@ install: data
 	@echo "installed to $(PREFIX)"
 	@echo "  command -> $(BINDIR)/counting"
 	@echo "  sources -> $(LIBDIR)/"
+	@echo "  this is the CLI only — for the app, run 'make install-app'"
 	@command -v counting >/dev/null 2>&1 || echo "  note: $(BINDIR) is not on your PATH"
+
+# The .app, not the CLI. Needs a full `tauri build` — `make build` alone
+# produces a bundle but does not place it, quit the old copy, or relaunch.
+install-app:
+	bash ./install.sh
 
 uninstall:
 	rm -f $(BINDIR)/counting
 	rm -rf $(LIBDIR)
-	@echo "uninstalled from $(PREFIX)"
+	@echo "uninstalled the CLI from $(PREFIX)"
+	@echo "  the .app, if installed, is at /Applications/counting.app"
 
 clean:
 	rm -rf node_modules dist src-tauri/target

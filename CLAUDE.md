@@ -25,7 +25,8 @@ make data       # golden forms, invariants, grading — bare clone, no install
 make check      # data + typecheck + cargo check — the suite's 'check' shape
 make dev        # the app, hot reload
 make web        # frontend only in a browser
-make install    # the 'counting' CLI under ~/.local — NOT the app bundle
+make install    # the 'counting' CLI under ~/.local — NOT the app
+./install.sh    # the .app into /Applications — this is the shortcut target
 ```
 
 `make data` has no dependencies: Node 26 strips the types natively, so
@@ -61,11 +62,12 @@ tokens in `src/index.css`, taken from `nping`. Do not reach further.
   form, a listening drill has no correct answer. `check` asserts it.
 - **`noUncheckedIndexedAccess` is on.** Do not turn it off to quiet an array
   access; it has already caught one unproven index here.
-- **`make install` is deliberately not guarded by platform.** The Tauri repos
-  split it (`make install` for the Linux bare-binary layout, `./install.sh` for
-  a macOS `.app`) because they produce a bundle and a `.desktop` entry. This
-  produces neither, so one target is correct on both. Do not copy the guard
-  across.
+- **Two installs, easily confused.** `make install` is the *CLI* and is
+  deliberately unguarded by platform — it ships no bundle and no `.desktop`
+  entry, so one target is right on macOS and Linux. `./install.sh` is the
+  *app*, is macOS-only, and is what a Dock or Spotlight shortcut points at. Do
+  not merge them, and do not let `make install` start producing a bundle: the
+  CLI install must keep working without a Rust toolchain.
 - **`queue.ts` and `grade.ts` live at the repo root, not in `src/`.** It is pure, it has no
   DOM, and `compose.ts check` tests it. Moved into `src/` it would become the
   one piece of load-bearing logic with no test. Same for anything else the

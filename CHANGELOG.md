@@ -1,5 +1,54 @@
 # Changelog
 
+## v0.5.0 — Linux
+
+- **The app runs on Linux.** Built, packaged and verified there rather than
+  assumed to work: `make check` passes, the window opens, and `make build`
+  produces a `.deb` carrying a desktop entry and hicolor icons. The bundle
+  ships its own desktop file because the app and the `counting` CLI both want
+  that name and `~/.local/bin` comes first on a normal PATH — with a bare
+  `Exec` the menu entry starts the composer instead, and `Terminal=false`
+  means it fails invisibly. There is no AppImage: it is built from the same
+  file tree as the `.deb` and needs the opposite thing from that file.
+- **Speech on Linux**, through speech-dispatcher rather than one particular
+  synthesiser — the OS's own speech layer, so a better engine installed later
+  is picked up without a rebuild. Nine of the ten languages speak. Nothing is
+  behind a platform `#[cfg]` except which binary is spawned, so both backends
+  compile and are tested everywhere, which is how untested code that looks
+  like support gets caught rather than shipped.
+- **Japanese is gated on the engine, not on the language.** espeak-ng has no
+  kanji dictionary: it announces the character class once per character —
+  audibly, "Chinese letter" — so 七十三 is not mispronounced but unpronounced,
+  while the drill would still play audio and grade an answer with nothing on
+  screen looking wrong. Install `open-jtalk` and a voice, and Japanese simply
+  appears. The check is on the data those packages provide rather than on the
+  module's name, because speech-dispatcher registers the open-jtalk module on
+  every machine whether or not anything is behind it.
+- **A recorded clip is preferred over synthesis** wherever one exists, with the
+  voice as the fallback. A native recording is not a better synthesiser, it is
+  the thing itself, and for a pronunciation drill that is the point.
+- **The drill says which source you just heard**, so a clip and a synthesised
+  voice are never silently interchangeable.
+- **A language that cannot be served says which of the two reasons applies.**
+  An excluded language and a machine with nothing installed are different
+  situations and used to show the same panel — so Linux advised installing
+  espeak-ng for Japanese, which was already installed and is precisely the
+  engine that cannot read it.
+- **Releases build themselves.** A `v*` tag publishes a GitHub Release with a
+  `.deb` for Linux and a `.dmg` for macOS arm64; the Linux job owns the release
+  notes and macOS appends its asset, since the two cannot share a runner.
+  Checks now run on every push rather than only on a tag, and the `data` job
+  deliberately installs nothing, which is what turns "runs on a bare clone"
+  from a claim into something enforced.
+- **Three ways to ask what a machine can actually say.** `speechcheck` reports
+  what the app sees, using the app's own backend and parser so it cannot drift
+  from it; `speechprobe` and `scriptcheck` ask the cruder question of whether a
+  voice reads a script at all or emits one fixed fallback per character. They
+  report and never fail a build.
+- Design notes committed rather than decided in passing: what a Linux speech
+  backend costs and which language blocks it, and — as a proposal only — a
+  multilingual GUI and user-contributed audio over Nostr.
+
 ## v0.4.0
 
 - **The transliteration is set large and plays.** Clicking it speaks the

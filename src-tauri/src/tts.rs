@@ -446,6 +446,17 @@ fn normalise_spd_language(tag: &str) -> Option<String> {
             "cmn" | "zh" | "zh-cn" => "zh_CN",
             "zh-tw" => "zh_TW",
             "yue" => "zh_HK",
+            // English. Added when English was, and missed then: `say` lists
+            // en_GB and en_US natively, so macOS never noticed, while on Linux
+            // every English voice was dropped and the language that carries
+            // all 101 recordings reported that it had no audio at all.
+            //
+            // The accent variants espeak also offers — en-029, en-GB-SCOTLAND,
+            // en-GB-X-RP, en-US-NYC — stay unmapped. Folding them onto en_GB
+            // would put several indistinguishably-named entries in the picker,
+            // and `voices.ts` lists the four locales this app accepts.
+            "en" | "en-gb" => "en_GB",
+            "en-us" => "en_US",
             "fr" | "fr-fr" => "fr_FR",
             // Belgian and Swiss French are the septante/nonante regions the
             // README lists as unimplemented. Mapped so the allowlist can
@@ -816,6 +827,21 @@ mod tests {
         assert_eq!(normalise_spd_language("fr").unwrap(), "fr_FR");
         // The septante/nonante regions map, so the allowlist can exclude them.
         assert_eq!(normalise_spd_language("fr-BE").unwrap(), "fr_BE");
+    }
+
+    #[test]
+    fn english_maps_and_its_accent_variants_do_not() {
+        // The bug this fixes: no `en` mapping meant every English voice was
+        // dropped on speech-dispatcher, so the one language with a complete
+        // set of human recordings showed "no voice is available".
+        assert_eq!(normalise_spd_language("en-gb").as_deref(), Some("en_GB"));
+        assert_eq!(normalise_spd_language("en-us").as_deref(), Some("en_US"));
+        assert_eq!(normalise_spd_language("EN-GB").as_deref(), Some("en_GB"));
+        // Accents this app does not list stay out rather than piling onto en_GB
+        // under names the picker could not tell apart.
+        for tag in ["en-029", "en-gb-scotland", "en-gb-x-rp", "en-us-nyc"] {
+            assert!(normalise_spd_language(tag).is_none(), "{tag} should not map");
+        }
     }
 
     #[test]

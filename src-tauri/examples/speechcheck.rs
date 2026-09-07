@@ -20,7 +20,8 @@ use std::time::Instant;
 use counting_lib::tts::{Backend, ClipPlayer};
 
 /// The languages the app ships, in the app's own codes.
-const LANGS: [(&str, &str); 10] = [
+const LANGS: [(&str, &str); 11] = [
+    ("en", "English"),
     ("zh", "Mandarin"),
     ("fr", "French"),
     ("it", "Italian"),
@@ -38,6 +39,7 @@ const LANGS: [(&str, &str); 10] = [
 /// report.
 fn acceptable(lang: &str) -> &'static [&'static str] {
     match lang {
+        "en" => &["en_GB", "en_US", "en_IE", "en_AU"],
         "zh" => &["zh_CN", "zh_TW"],
         "fr" => &["fr_FR", "fr_CA"],
         "de" => &["de_DE", "de_AT", "de_CH"],

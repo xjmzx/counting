@@ -122,6 +122,25 @@ typecheck projects, `cargo test`, and the ICU cross-check. Tagging `v*` runs
 The data job installs no dependencies, which is not an optimisation — it is how
 the claim that `make data` runs on a bare clone gets enforced.
 
+## Recording clips
+
+    make record L=en
+
+Enter starts, Enter stops, it plays back, Enter keeps. `r` re-records the same
+number, `s` skips it, `q` stops — anything already recorded is kept, so a
+hundred and one takes need not happen in one sitting.
+
+Each take is trimmed to the word with a 60 ms margin either side, because a
+human take has a variable run-up and dead air before the word reads as the app
+being slow. Silence and clipping are reported rather than written.
+
+macOS records through AVFoundation via `swift`, which is already required here
+by the ICU cross-check, so it adds no dependency; Linux uses `parecord` or
+`arecord`, the capture half of the package that already provides playback. The
+first run on macOS raises a microphone permission prompt against your terminal,
+and until it is granted capture yields an empty file rather than an error —
+which the tool checks for and says so.
+
 ## Verification
 
 **`make crosscheck` is the check that is not marking its own homework.** It

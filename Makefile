@@ -4,7 +4,7 @@ LIBDIR ?= $(PREFIX)/share/counting
 
 SOURCES := compose.ts types.ts golden.ts grade.ts
 
-.PHONY: help deps data crosscheck soundcheck scriptcheck speechcheck speechprobe clips typecheck version check dev web build table stats emit install install-app uninstall clean
+.PHONY: help deps data crosscheck soundcheck scriptcheck speechcheck speechprobe clips record typecheck version check dev web build table stats emit install install-app uninstall clean
 
 help:
 	@echo "Targets:"
@@ -16,6 +16,7 @@ help:
 	@echo "  make speechcheck what this machine can speak, and why  [any platform]"
 	@echo "  make speechprobe L=ja  does that voice read the script? [any platform]"
 	@echo "  make clips       render Japanese clips locally         [macOS only]"
+	@echo "  make record L=en record a language\047s clips by voice     [any platform]"
 	@echo "  make dev        run the app with hot reload"
 	@echo "  make web        frontend only in a browser, no Tauri"
 	@echo "  make build      release build of frontend + app bundle"
@@ -75,6 +76,12 @@ speechcheck:
 # committing them.
 clips:
 	bash tools/make-clips.sh ja Kyoko
+
+# Record a human saying each number. Interactive by nature: Enter starts, Enter
+# stops, Enter keeps. Resumes wherever it left off.
+record:
+	@test -n "$(L)" || { echo "usage: make record L=en" >&2; exit 2; }
+	node tools/record-clips.ts $(L)
 
 # The cross-platform half of scriptcheck. That one measures rendered files with
 # afinfo and is macOS-only; speech-dispatcher will not write audio to disk, so

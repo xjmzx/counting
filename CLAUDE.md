@@ -263,6 +263,14 @@ macOS. `release.yml` fires only on a `v*` tag and builds the `.deb` and `.dmg`.
   the next launch. Sparse coverage is permanent, not temporary: over a thousand
   recordings would be a full set, so the synthesised path never goes away and a
   missing clip must never read as a fault.
+- **The recorder is a `tools/` CLI, not a mode in the app.** That is
+  `docs/collaboration-design-2026-09-07.md`'s decision, not an accident: a
+  separate recorder is what keeps `counting` small, verifiable and offline.
+- **`tools/wav.ts` is split out so it can be tested without a microphone.** It
+  writes the files the app plays, and its failure mode is eating the first
+  phoneme — inaudible in isolation, obvious only to someone listening to all
+  101 takes in order. `make data` asserts the word survives, the margin
+  survives, silence stays silent, and a round trip is byte-identical.
 - **The clip audio is not committed, and that is a hold rather than a verdict.**
   `make clips` renders Japanese with Apple's voices, and whether that output may
   be redistributed is unanswered. `clips/README.md` states it; one line of

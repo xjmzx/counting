@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import { writeFileSync } from "node:fs";
+import { rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import type { Item, Language } from "./types.ts";
 import { zh } from "./lang/zh.ts";
 import { fr } from "./lang/fr.ts";
@@ -20,6 +21,7 @@ import {
 } from "./queue.ts";
 import { pickVoice, voicesFor, LOCALE_PREFERENCE, type Voice } from "./voices.ts";
 import { SOUND_RULES, SCRIPT_RULES, hintsFor, scriptHintsFor } from "./sounds.ts";
+import { readWav, writeWav, trim, MARGIN_MS, type Wav } from "./tools/wav.ts";
 
 const LANGS: Language[] = [zh, fr, it, pt, es, en, de, hi, ja, th, vi];
 const RANGE = Array.from({ length: 101 }, (_, i) => i);
@@ -331,6 +333,62 @@ function check(): boolean {
     const lengths = new Set(LANGS.map((l) => l.scale.length));
     if (lengths.size < 2) { console.error("  ✗ scale: every ladder is the same length"); bad++; }
     checked += LANGS.length;
+  }
+
+  // Clip trimming. This writes the files the app plays, and the way it fails
+  // is by eating the first phoneme — inaudible in a spectrogram, obvious only
+  // to someone listening to all 101 takes in order.
+  {
+    const rate = 22050;
+    const tone = (n: number, amp: number) =>
+      Int16Array.from({ length: n }, (_, i) => Math.round(Math.sin(i / 8) * amp));
+    const silence = (n: number) => new Int16Array(n);
+    const join = (...xs: Int16Array[]) => {
+      const out = new Int16Array(xs.reduce((k, x) => k + x.length, 0));
+      let o = 0;
+      for (const x of xs) { out.set(x, o); o += x.length; }
+      return out;
+    };
+    // Half a second of nothing, a fifth of a second of "speech", a second of
+    // nothing: the shape of a real take with a run-up and a pause after.
+    const lead = Math.round(rate * 0.5);
+    const word = Math.round(rate * 0.2);
+    const w: Wav = { rate, channels: 1, samples: join(silence(lead), tone(word, 12000), silence(rate)) };
+    const { trimmed, peak, after } = trim(w);
+    const margin = (MARGIN_MS / 1000) * 2;
+
+    if (Math.abs(after - (0.2 + margin)) > 0.03) {
+      console.error(`  ✗ wav: trimmed to ${after.toFixed(3)}s, expected the word plus two margins`); bad++;
+    }
+    if (trimmed.samples.length >= w.samples.length) {
+      console.error("  ✗ wav: trimming removed nothing"); bad++;
+    }
+    // The margin must survive: a word that starts on sample zero sounds clipped.
+    const head = trimmed.samples.slice(0, Math.round(rate * 0.03));
+    if (head.some((v) => Math.abs(v) > 2000)) {
+      console.error("  ✗ wav: no lead-in left; the word would start abruptly"); bad++;
+    }
+    if (Math.abs(peak - 12000 / 32768) > 0.01) {
+      console.error(`  ✗ wav: peak reported as ${peak.toFixed(3)}`); bad++;
+    }
+    // Silence must survive rather than being trimmed to nothing, so a failed
+    // take is reported as silent instead of being written as a valid clip.
+    const quiet = trim({ rate, channels: 1, samples: silence(rate) });
+    if (quiet.peak !== 0) { console.error("  ✗ wav: silence has a peak"); bad++; }
+
+    // Round-trip: what is written must read back identically.
+    const tmp = `${tmpdir()}/counting-wav-check.wav`;
+    writeWav(tmp, trimmed);
+    const back = readWav(tmp);
+    rmSync(tmp, { force: true });
+    if (!back || back.rate !== rate || back.channels !== 1) {
+      console.error("  ✗ wav: header did not survive a round trip"); bad++;
+    } else if (back.samples.length !== trimmed.samples.length) {
+      console.error(`  ✗ wav: ${trimmed.samples.length} samples in, ${back.samples.length} out`); bad++;
+    } else if (back.samples.some((v, i) => v !== trimmed.samples[i])) {
+      console.error("  ✗ wav: samples changed in a round trip"); bad++;
+    }
+    checked += 7;
   }
 
   // Voice selection. Picking a zh_HK voice for Mandarin would read every

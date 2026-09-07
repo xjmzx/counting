@@ -112,9 +112,9 @@ impl Backend {
     fn parse(self, raw: &str) -> Vec<Voice> {
         match self {
             Backend::Say => raw.lines().filter_map(parse_say_line).collect(),
-            Backend::SpeechDispatcher => drop_unusable(
+            Backend::SpeechDispatcher => resolve_japanese(
                 raw.lines().filter_map(parse_spd_line).collect(),
-                self.japanese_module().is_some(),
+                self.japanese_module().as_deref(),
             ),
         }
     }
@@ -175,7 +175,7 @@ impl Backend {
     }
 
     /// Languages this backend will not serve, with the reason in the words the
-    /// user should read. It must agree with `drop_unusable` — the panel's
+    /// user should read. It must agree with `resolve_japanese` — the panel's
     /// reason and the voice list are two statements of one fact — and a test
     /// asserts they do on whichever machine runs it.
     pub fn unsupported(self) -> Vec<Unsupported> {
@@ -331,7 +331,7 @@ fn parse_spd_line(line: &str) -> Option<Voice> {
     }
     let tag = toks[idx];
     // Unmapped tags are dropped rather than guessed at. Japanese is mapped
-    // here but may still be filtered out afterwards by `drop_unusable`: with
+    // here but the entry is replaced afterwards by `resolve_japanese`: with
     // only espeak-ng installed it has no kanji dictionary and announces the
     // character class once per character, so a ja voice would play "Chinese
     // letter" three times while the drill showed 七十三 and graded the answer.
@@ -388,23 +388,51 @@ fn module_data_is_installed(module: &str) -> bool {
         })
 }
 
-/// Remove voices for languages this backend cannot actually serve.
+/// Replace the listed Japanese voices with the one that will actually speak.
 ///
-/// Separate from `normalise_spd_language`, which is a pure mapping and has no
-/// business knowing what is installed, and pure itself so the excluded case is
-/// testable on a machine where the engine *is* present.
-fn drop_unusable(voices: Vec<Voice>, japanese_ok: bool) -> Vec<Voice> {
-    voices
-        .into_iter()
-        .filter(|v| japanese_ok || v.locale != "ja_JP")
-        .collect()
+/// `spd-say -L` enumerates the *listing* engine's voices, which is espeak-ng —
+/// so Japanese arrives as 101 entries named `Japanese`, `Japanese+Adam`,
+/// `Japanese+Alicia` and so on. Not one of them is what speaks: `speak` sends
+/// `-o <module> -l ja` and never passes a variant, so every one of those names
+/// resolves to the single open-jtalk voice. Offering them is offering a choice
+/// that does not exist, under the names of an engine that is not being used —
+/// and picking `Japanese+Alicia` gets you a male HMM voice.
+///
+/// So the espeak entries are dropped either way, and one honest entry is put
+/// back when a module can serve the language. Ubuntu packages exactly one
+/// open-jtalk voice, so one entry is not a simplification: it is the count.
+///
+/// Pure, and takes the module rather than a flag, so both branches are
+/// testable on a machine whichever way it happens to be configured.
+fn resolve_japanese(voices: Vec<Voice>, module: Option<&str>) -> Vec<Voice> {
+    let mut out: Vec<Voice> = voices.into_iter().filter(|v| v.locale != "ja_JP").collect();
+    if let Some(m) = module {
+        out.push(Voice {
+            name: japanese_voice_name(m),
+            locale: "ja_JP".to_string(),
+            // The tag, as every speech-dispatcher id is. `speak` pairs it with
+            // `-o` on the strength of the language, not of this name.
+            id: "ja".to_string(),
+        });
+    }
+    out
+}
+
+/// What to call the voice in the picker: the engine, since that is the only
+/// thing distinguishing it from the espeak entries it replaces.
+fn japanese_voice_name(module: &str) -> String {
+    if module.to_ascii_lowercase().contains("jtalk") {
+        "Open JTalk".to_string()
+    } else {
+        module.to_string()
+    }
 }
 
 /// speech-dispatcher's language tag to the app's namespace.
 ///
 /// A pure mapping, and deliberately ignorant of what is installed. Returning
 /// `None` means "this app does not use that tag"; whether a mapped language is
-/// actually offered is `drop_unusable`'s question, asked where the engine is
+/// actually offered is `resolve_japanese`'s question, asked where the engine is
 /// known. Deciding both here is what made the diagnostic contradict itself.
 fn normalise_spd_language(tag: &str) -> Option<String> {
     let t = tag.to_ascii_lowercase();
@@ -437,7 +465,7 @@ fn normalise_spd_language(tag: &str) -> Option<String> {
             "hi" | "hi-in" => "hi_IN",
             // Mapped rather than dropped. Whether Japanese is *offered* is a
             // question about the installed engine, which this function cannot
-            // see — it is decided in `Backend::parse` via `drop_unusable`.
+            // see — it is decided in `Backend::parse` via `resolve_japanese`.
             "ja" | "ja-jp" => "ja_JP",
             _ => return None,
         }
@@ -694,7 +722,7 @@ mod tests {
     #[test]
     fn japanese_is_mapped_but_gated_on_the_engine() {
         // `ja` maps like any other tag. Whether it survives is a question
-        // about the installed engine, and is answered by drop_unusable.
+        // about the installed engine, and is answered by resolve_japanese.
         assert_eq!(normalise_spd_language("ja").as_deref(), Some("ja_JP"));
         assert!(parse_spd_line("Japanese   ja   none").is_some());
 
@@ -704,15 +732,21 @@ mod tests {
         // With only espeak-ng, Japanese must not reach the picker: it has no
         // kanji dictionary and announces the character class once per
         // character. Offering it is the Cantonese trap in a new costume.
-        let without = drop_unusable(vec![ja.clone(), fr.clone()], false);
+        let without = resolve_japanese(vec![ja.clone(), fr.clone()], None);
         assert_eq!(without.len(), 1);
         assert_eq!(without[0].locale, "fr_FR");
 
-        // With open-jtalk, it must reach the picker — otherwise installing the
+        // With open-jtalk it must reach the picker — otherwise installing the
         // engine changes nothing and the offer is a claim the app cannot keep.
-        let with = drop_unusable(vec![ja, fr], true);
-        assert_eq!(with.len(), 2);
-        assert!(with.iter().any(|v| v.locale == "ja_JP"));
+        // Exactly one entry, and not the espeak name it replaces: the listed
+        // variants all resolve to the same voice, so offering them is offering
+        // a choice that does not exist.
+        let with = resolve_japanese(vec![ja, fr], Some("openjtalk"));
+        let ja_out: Vec<_> = with.iter().filter(|v| v.locale == "ja_JP").collect();
+        assert_eq!(ja_out.len(), 1, "one voice, because there is one voice");
+        assert_eq!(ja_out[0].name, "Open JTalk");
+        assert_eq!(ja_out[0].id, "ja", "speak pairs this with -o");
+        assert!(with.iter().any(|v| v.locale == "fr_FR"), "only Japanese is rewritten");
     }
 
     #[test]
@@ -742,18 +776,17 @@ mod tests {
         //
         // This asserted the old mechanism, that an excluded language was one
         // `normalise_spd_language` refused to map. Exclusion moved to
-        // `drop_unusable`, where the installed engine is known, and this test
+        // `resolve_japanese`, where the installed engine is known, and this test
         // went on asserting the mechanism instead of the property — passing
         // while the two halves disagreed, then failing once they were made to
         // agree. It now checks the property, on whichever machine runs it.
         let backend = Backend::SpeechDispatcher;
-        let japanese_ok = backend.japanese_module().is_some();
         let sample = vec![
             Voice { name: "J".into(), locale: "ja_JP".into(), id: "ja".into() },
             Voice { name: "F".into(), locale: "fr_FR".into(), id: "fr".into() },
         ];
 
-        let kept = drop_unusable(sample, japanese_ok);
+        let kept = resolve_japanese(sample, backend.japanese_module().as_deref());
         let ja_offered = kept.iter().any(|v| v.locale == "ja_JP");
         let ja_called_unsupported = backend.unsupported().iter().any(|u| u.lang == "ja");
         assert_eq!(

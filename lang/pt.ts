@@ -1,4 +1,4 @@
-import type { Atom, Item, Language } from "../types.ts";
+import type { Atom, Item, Language, ScaleWord } from "../types.ts";
 
 /**
  * Brazilian spellings lead, European ones are accepted alongside. They differ
@@ -72,5 +72,12 @@ function compose(n: number): Item {
   };
 }
 
-export const pt: Language = { code: "pt", family: "Indo-European", branch: "Romance", numerals:
+const scale: ScaleWord[] = [
+  { power: 2, form: "cem", note:
+      "cem alone, cento before a smaller number: cem, but cento e um." },
+  { power: 3, form: "mil" },
+  { power: 6, form: "milhão" },
+];
+
+export const pt: Language = { scale, code: "pt", family: "Indo-European", branch: "Romance", numerals:
   "From Latin, through each language's own sound changes.", name: "Portuguese", atoms, compose };

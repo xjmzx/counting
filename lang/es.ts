@@ -1,4 +1,4 @@
-import type { Atom, Item, Language } from "../types.ts";
+import type { Atom, Item, Language, ScaleWord } from "../types.ts";
 
 /**
  * Spanish splits its compounds in two. 16-29 fuse into a single word and the
@@ -78,5 +78,12 @@ function compose(n: number): Item {
   return { n, form: `${find(tens).form} y ${find(ones).form}`, parts: [tens, ones] };
 }
 
-export const es: Language = { code: "es", family: "Indo-European", branch: "Romance", numerals:
+const scale: ScaleWord[] = [
+  { power: 2, form: "cien", note:
+      "cien alone, ciento before a smaller number: cien, but ciento uno." },
+  { power: 3, form: "mil" },
+  { power: 6, form: "millón" },
+];
+
+export const es: Language = { scale, code: "es", family: "Indo-European", branch: "Romance", numerals:
   "From Latin, through each language's own sound changes.", name: "Spanish", atoms, compose };

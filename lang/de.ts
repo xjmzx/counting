@@ -1,4 +1,4 @@
-import type { Atom, Item, Language } from "../types.ts";
+import type { Atom, Item, Language, ScaleWord } from "../types.ts";
 
 /**
  * German needs something the other two do not: a word can take a different
@@ -82,5 +82,13 @@ function compose(n: number): Item {
   };
 }
 
-export const de: Language = { code: "de", family: "Indo-European", branch: "Germanic", numerals:
+const scale: ScaleWord[] = [
+  { power: 2, form: "hundert" },
+  { power: 3, form: "tausend", note:
+      "Written joined to what precedes it: 35,000 is fünfunddreißigtausend, one word." },
+  { power: 6, form: "Million", note:
+      "Capitalised and separate, unlike hundert and tausend." },
+];
+
+export const de: Language = { scale, code: "de", family: "Indo-European", branch: "Germanic", numerals:
   "Native Germanic, and cognate with English — drei/three, zehn/ten.", name: "German", atoms, compose };

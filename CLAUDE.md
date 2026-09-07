@@ -1,8 +1,8 @@
 # counting — notes for Claude
 
-0–100 in three languages, composed from a small table of atoms. A Tauri 2 ·
-React app over that data, with two of the four skills built (read, write) and
-two visibly unbuilt (listen, speak).
+0–100 in ten languages, composed from a small table of atoms. A Tauri 2 ·
+React app over that data, with three of the four skills built (read, write,
+listen) and speaking parked by decision.
 
 ## Not an n-suite app
 
@@ -52,13 +52,15 @@ tokens in `src/index.css`, taken from `nping`. Do not reach further.
 
 Five places, and `make data` fails until all of them are done:
 
-1. `lang/xx.ts` — atoms plus `compose(n)`, and its `family` (top-level, e.g.
+1. `lang/xx.ts` — atoms plus `compose(n)`; its `family` (top-level, e.g.
    Indo-European), `branch` (Romance, Tai…) and `numerals` (where the number
-   words came from, which is **not** always where the language came from).
+   words came from, which is **not** always where the language came from); and
+   its `scale` ladder.
 2. `golden.ts` — hand-checked forms for every irregularity.
 3. `voices.ts` — acceptable locales, best first. Never a bare prefix match.
-4. `sounds.ts` — pronunciation rules; at least 90% of the range must be
-   explained, which the check enforces.
+4. `sounds.ts` — pronunciation rules, and `SCRIPT_RULES` too if the script is
+   not Latin. At least 90% of the range must be explained by the sound rules,
+   which the check enforces.
 5. The `LANGS` arrays in `compose.ts` and `src/lib/langs.ts` — **keep each
    family contiguous**, since the picker groups by runs and `make data` fails
    on a split family — plus the locale in `tools/spell.swift` and
@@ -180,15 +182,27 @@ every other language surveyed scored 69% or more.
   *soixante-treize* correctly from the written string; IPA is only wanted for
   *showing* a learner how a word sounds. An earlier version of these notes had
   this backwards and made listening look far more expensive than it is.
-- **Scope is 0–100 and staying there.** Refining the three existing tables and
-  the two working drills beats adding skills or languages. Speaking is parked
-  by decision, not by oversight — do not propose it as a next step.
+- **The range is 0–100, and extending it is a decided direction, not a whim.**
+  See `docs/large-numbers-design-2026-09-07.md`. The aim behind the app is
+  transactional — understanding a price — which 0–100 cannot reach. The scale
+  ladders are the first step and are already in the data. Do not extend a
+  composer past 100 without reading that document: the drill unit has to stop
+  being the number and become the shape, or the queue puts ten thousand
+  entries in `localStorage`.
+- **Speaking is parked by decision, not by oversight** — do not propose it as a
+  next step.
 - **`golden.ts` marks its own homework; `make crosscheck` does not.** The
   golden file was written by whoever wrote the composer, so it proves
   consistency. ICU's spell-out is a separate implementation — run
   `make crosscheck` after any change to a language table. A difference there
   needs a human decision, not an automatic fix: both forms may be correct, in
   which case add the other to `alt` or to the crosscheck's ACCEPTED map.
+- **A `scale` rung is a power with a word of its own, not every power.**
+  Vietnamese has no rung at 10⁴ because 10,000 is *mười nghìn*, ten thousands;
+  Thai has one at every power to a million. Filling in the composed powers
+  would erase the difference the ladder exists to show. `make data` asserts the
+  ladders are not all the same length, since that is what filling them in from
+  one language would produce.
 - **`alt` is for real alternatives, not typing tolerance.** Case, hyphens,
   diacritics and invisible characters are `fold`'s job. `alt` is for words a
   speaker would call equally correct, like *einhundert* beside *hundert*.

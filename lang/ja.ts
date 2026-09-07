@@ -1,4 +1,4 @@
-import type { Atom, Item, Language } from "../types.ts";
+import type { Atom, Item, Language, ScaleWord } from "../types.ts";
 
 /**
  * Structurally this is Chinese: 二十三 is "two ten three", exceptionlessly.
@@ -99,5 +99,12 @@ function compose(n: number): Item {
   };
 }
 
-export const ja: Language = { code: "ja", family: "Japonic", branch: "Japonic", numerals:
+const scale: ScaleWord[] = [
+  { power: 2, form: "百", reading: "hyaku" },
+  { power: 3, form: "千", reading: "sen" },
+  { power: 4, form: "万", reading: "man", note:
+      "Grouped in tens of thousands, as in Chinese: 100,000 is 十万 and a million 百万." },
+];
+
+export const ja: Language = { scale, code: "ja", family: "Japonic", branch: "Japonic", numerals:
   "Sino-Japanese: ichi, ni, san are Chinese loans. The native set — hitotsu, futatsu — stops early and is not used for counting on.", name: "Japanese", atoms, compose };

@@ -1,4 +1,4 @@
-import type { Atom, Item, Language } from "../types.ts";
+import type { Atom, Item, Language, ScaleWord } from "../types.ts";
 
 /**
  * Vietnamese looks regular and is not. Three different ones-words change shape
@@ -80,5 +80,13 @@ function compose(n: number): Item {
   };
 }
 
-export const vi: Language = { code: "vi", family: "Austroasiatic", branch: "Vietic", numerals:
+const scale: ScaleWord[] = [
+  { power: 2, form: "trăm" },
+  { power: 3, form: "nghìn", note:
+      "Southern Vietnam says ngàn for the same thing. There is no word for ten thousand: 10,000 is mười nghìn, ten thousands, exactly as English does it." },
+  { power: 6, form: "triệu", note:
+      "Prices jump from nghìn straight to triệu. 21,950,000₫ is hai mươi mốt triệu chín trăm năm mươi nghìn — two chunks, not three." },
+];
+
+export const vi: Language = { scale, code: "vi", family: "Austroasiatic", branch: "Vietic", numerals:
   "Native Austroasiatic. Vietnamese has a Sino set too — nhất, nhị, tam — but does not count with it, so these are the numbers here least like Chinese.", name: "Vietnamese", atoms, compose };

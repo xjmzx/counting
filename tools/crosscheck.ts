@@ -63,6 +63,30 @@ if (settled.length) {
   console.log("Settled differences (both forms correct):");
   settled.forEach((s) => console.log(s));
 }
+// Each scale word must actually appear in ICU's spelling of its power. This
+// catches a rung invented, mis-spelled, or filed under the wrong exponent.
+{
+  const spellOne = (locale: string, n: number): string =>
+    execFileSync("swift", ["-e", `import Foundation
+let f = NumberFormatter(); f.numberStyle = .spellOut
+f.locale = Locale(identifier: "${locale}")
+print(f.string(from: NSNumber(value: ${n})) ?? "")`], { encoding: "utf8" });
+
+  let ok = 0;
+  let checked = 0;
+  const misses: string[] = [];
+  for (const [locale, lang] of Object.entries(LANGS)) {
+    for (const w of lang.scale) {
+      checked++;
+      const icu = fold(spellOne(locale, 10 ** w.power));
+      if (icu.includes(fold(w.form))) ok++;
+      else misses.push(`${lang.code} 10^${w.power} "${w.form}" not in ICU's "${icu.trim()}"`);
+    }
+  }
+  console.log(`\nScale ladder: ${ok}/${checked} rungs appear in ICU's spelling of their power`);
+  misses.forEach((m) => console.log(`  ✗ ${m}`));
+}
+
 console.log(
   "\nNote: Hindi is not independently verified here. Every other table is\n" +
     "generated from a rule written without reference to ICU, so agreement means\n" +

@@ -1,4 +1,4 @@
-import type { Atom, Item, Language } from "../types.ts";
+import type { Atom, Item, Language, ScaleWord } from "../types.ts";
 
 // Twelve atoms cover every number to a hundred. Nothing here is irregular.
 const atoms: Atom[] = [
@@ -65,5 +65,12 @@ function compose(n: number): Item {
   };
 }
 
-export const zh: Language = { code: "zh", family: "Sino-Tibetan", branch: "Sinitic", numerals:
+const scale: ScaleWord[] = [
+  { power: 2, form: "百", reading: "bǎi" },
+  { power: 3, form: "千", reading: "qiān" },
+  { power: 4, form: "万", reading: "wàn", note:
+      "The break is here, not at a thousand. 100,000 is 十万, “ten wàn”, and a million is 一百万, “a hundred wàn”." },
+];
+
+export const zh: Language = { scale, code: "zh", family: "Sino-Tibetan", branch: "Sinitic", numerals:
   "Native Sinitic — and the system Japanese, Korean and Thai all borrowed from.", name: "Mandarin Chinese", atoms, compose };

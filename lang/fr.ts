@@ -1,4 +1,4 @@
-import type { Atom, Item, Language } from "../types.ts";
+import type { Atom, Item, Language, ScaleWord } from "../types.ts";
 
 // French runs out of atoms at 16 and then improvises. Twenty-three to learn.
 const atoms: Atom[] = [
@@ -90,5 +90,13 @@ function compose(n: number): Item {
   };
 }
 
-export const fr: Language = { code: "fr", family: "Indo-European", branch: "Romance", numerals:
+const scale: ScaleWord[] = [
+  { power: 2, form: "cent", note:
+      "Takes an -s when it ends the number — deux cents — and loses it otherwise: deux cent un." },
+  { power: 3, form: "mille", note:
+      "Never takes an -s. deux mille, not *deux milles." },
+  { power: 6, form: "million" },
+];
+
+export const fr: Language = { scale, code: "fr", family: "Indo-European", branch: "Romance", numerals:
   "From Latin, through each language's own sound changes.", name: "French", atoms, compose };

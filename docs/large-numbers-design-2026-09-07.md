@@ -1,6 +1,21 @@
 # Large numbers: design notes
 
-**Status:** proposal, nothing built. Written 2026-09-07.
+**Status:** phase 1 built (the scale ladders); the rest is proposal.
+Written 2026-09-07.
+
+**Scope narrowed 2026-09-07, after discussion.** Arbitrary precision is not the
+target and never was: nobody says "four hundred seventy-three thousand eight
+hundred twenty-nine dong". What is needed is *a one-to-three digit number
+attached to a power word, repeated* — which is what a real price is:
+
+    21,950,000₫  Vietnamese  hai mươi mốt triệu · chín trăm năm mươi nghìn
+                             two chunks:  21 × 10⁶,  950 × 10³
+                 Thai        ยี่สิบเอ็ดล้าน · เก้าแสน · ห้าหมื่น
+                             three chunks: 21 × 10⁶,  9 × 10⁵,  5 × 10⁴
+
+Thai never says "nine hundred fifty thousand". It names each power separately.
+So the work is not "numbers to ten million"; it is the ladder, then 1–999, then
+chunked composition — and the ladder alone already reaches 35,000₫ and 120฿.
 
 ## Why
 
@@ -104,9 +119,17 @@ right ones.
 
 ## Suggested order
 
-1. **Powers mode only**, all ten languages. Small, and it is the part that
-   actually transfers to a market stall.
-2. **Mandarin, Japanese, Thai, Vietnamese to 999,999** — the four that matter
+1. ~~**Powers mode**, all ten languages.~~ **Done.** Each language carries a
+   `scale` ladder of the powers it names with a word of its own, shown in the
+   app as "Counting bigger — N scale words". The count differs by language and
+   that is the lesson: Thai 5, Hindi 4, everything else 3. All 33 rungs verified
+   against ICU by `make crosscheck`.
+2. **1–999 for Mandarin, Japanese, Thai, Vietnamese** — the missing piece
+   between the atoms and the ladder. A price needs the multiplier as much as
+   the power word.
+3. **Chunked composition** — N × power, repeated. This is what reaches
+   21,950,000₫, and it needs no arbitrary-precision arithmetic.
+4. ~~Mandarin, Japanese, Thai, Vietnamese to 999,999~~ — the four that matter
    for the stated aim, and the four where the grouping contrast is the lesson.
 3. **Prices mode** with curated per-currency amounts.
 4. **The rest of the languages**, French last.

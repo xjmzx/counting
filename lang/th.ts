@@ -1,4 +1,4 @@
-import type { Atom, Item, Language } from "../types.ts";
+import type { Atom, Item, Language, ScaleWord } from "../types.ts";
 
 /**
  * Thai composes cleanly except in two places, and both are worth knowing:
@@ -89,5 +89,16 @@ function compose(n: number): Item {
   return assemble(pieces, parts, n, note);
 }
 
-export const th: Language = { code: "th", family: "Kra-Dai", branch: "Tai", numerals:
+const scale: ScaleWord[] = [
+  { power: 2, form: "ร้อย", reading: "roi" },
+  { power: 3, form: "พัน", reading: "phan" },
+  { power: 4, form: "หมื่น", reading: "muen", note:
+      "Thai has its own word here, where English says “ten thousand”. 35,000 is สามหมื่นห้าพัน — three muen, five phan." },
+  { power: 5, form: "แสน", reading: "saen", note:
+      "And its own word again at a hundred thousand. Thai never says “nine hundred thousand”; it says เก้าแสน, nine saen." },
+  { power: 6, form: "ล้าน", reading: "lan", note:
+      "Five separate power words to a million — more scaffolding than any other language here." },
+];
+
+export const th: Language = { scale, code: "th", family: "Kra-Dai", branch: "Tai", numerals:
   "Borrowed from Middle Chinese, though Thai is unrelated to Chinese: สิบ sip beside Mandarin shí, เจ็ด chet beside qī.", name: "Thai", atoms, compose };

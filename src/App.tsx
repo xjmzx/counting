@@ -8,6 +8,7 @@ import { useVoices } from "./lib/useVoices";
 import { appVersion } from "./lib/tauri";
 import { Unbuilt } from "./components/Unbuilt";
 import { LanguageNote } from "./components/LanguageNote";
+import { ScaleLadder } from "./components/ScaleLadder";
 
 // Derived, not written out: these strings went stale the moment three
 // languages became six.
@@ -115,6 +116,7 @@ export default function App() {
       <main className="flex-1 px-5 py-6 flex">
         <div className="w-full max-w-2xl m-auto space-y-4">
           <LanguageNote lang={lang} />
+          <ScaleLadder lang={lang} />
           {speechUnavailable ? (
             <Unbuilt label="Listening" heading="Listening needs the app" reason={voiceError ?? ""} />
           ) : current.ready ? (

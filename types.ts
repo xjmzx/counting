@@ -25,6 +25,23 @@ export type Item = {
   alt?: string[];
 };
 
+/**
+ * A word that names a power of ten — the scaffolding a price is built on.
+ *
+ * Only the powers a language names with a *word of its own* belong here.
+ * Vietnamese has no word for ten thousand (10,000 is mười nghìn, "ten
+ * thousands"), so 10^4 is absent from its ladder; Thai names every power to a
+ * million and has five rungs where French has three. That difference is the
+ * whole lesson, and it is only visible if the composed powers are left out.
+ */
+export type ScaleWord = {
+  /** The exponent it names: 2 is a hundred, 6 a million. */
+  power: number;
+  form: string;
+  reading?: string;
+  note?: string;
+};
+
 export type Language = {
   code: string;
   name: string;
@@ -45,6 +62,12 @@ export type Language = {
    * and the app should not let its tab layout imply otherwise.
    */
   numerals: string;
+  /**
+   * The powers of ten this language names. Ascending, and only the ones with
+   * a word of their own. Groundwork for prices — see
+   * docs/large-numbers-design-2026-09-07.md.
+   */
+  scale: ScaleWord[];
   atoms: Atom[];
   compose(n: number): Item;
 };

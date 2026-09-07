@@ -1,4 +1,4 @@
-import type { Atom, Item, Language } from "../types.ts";
+import type { Atom, Item, Language, ScaleWord } from "../types.ts";
 
 /**
  * The exception, added deliberately.
@@ -143,5 +143,14 @@ function compose(n: number): Item {
   return { n, form: a.form, reading: a.reading, parts: [n], note: a.note, alt: a.alt };
 }
 
-export const hi: Language = { code: "hi", family: "Indo-European", branch: "Indo-Aryan", numerals:
+const scale: ScaleWord[] = [
+  { power: 2, form: "सौ", reading: "sau" },
+  { power: 3, form: "हज़ार", reading: "hazaar" },
+  { power: 5, form: "लाख", reading: "lakh", note:
+      "The grouping changes after a thousand: 100,000 is एक लाख, not “a hundred thousand”." },
+  { power: 7, form: "करोड़", reading: "crore", note:
+      "And again at ten million. Digits are grouped 2-2-3 to match: 21,950,000 is written 2,19,50,000." },
+];
+
+export const hi: Language = { scale, code: "hi", family: "Indo-European", branch: "Indo-Aryan", numerals:
   "From Sanskrit, but fused past recognition — तेईस no longer shows तीन or बीस.", name: "Hindi", atoms, compose };

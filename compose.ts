@@ -304,6 +304,34 @@ function check(): boolean {
     checked += ids.size + 1;
   }
 
+  // The scale ladder. Only powers with a word of their own belong on it, and
+  // that is the point: Vietnamese has no rung at 10^4 while Thai has one at
+  // every power to a million. A stray composed entry would flatten exactly the
+  // difference the ladder exists to show.
+  {
+    for (const l of LANGS) {
+      if (!l.scale?.length) { console.error(`  ✗ scale: ${l.code} has none`); bad++; continue; }
+      let prev = 0;
+      for (const w of l.scale) {
+        if (w.power <= prev) {
+          console.error(`  ✗ scale: ${l.code} powers not ascending at 10^${w.power}`); bad++;
+        }
+        prev = w.power;
+        if (!w.form.trim()) { console.error(`  ✗ scale: ${l.code} 10^${w.power} has no form`); bad++; }
+        if (w.power < 2) { console.error(`  ✗ scale: ${l.code} 10^${w.power} belongs in atoms`); bad++; }
+      }
+      // A hundred is named in every language here, so its absence is a slip.
+      if (!l.scale.some((w) => w.power === 2)) {
+        console.error(`  ✗ scale: ${l.code} has no word for a hundred`); bad++;
+      }
+    }
+    // The ladders really do differ in length; if they ever all matched, the
+    // table would have been filled in from one language rather than each.
+    const lengths = new Set(LANGS.map((l) => l.scale.length));
+    if (lengths.size < 2) { console.error("  ✗ scale: every ladder is the same length"); bad++; }
+    checked += LANGS.length;
+  }
+
   // Voice selection. Picking a zh_HK voice for Mandarin would read every
   // answer aloud in Cantonese, and nothing on screen would look wrong.
   {

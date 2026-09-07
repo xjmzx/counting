@@ -1,4 +1,4 @@
-import type { Atom, Item, Language } from "../types.ts";
+import type { Atom, Item, Language, ScaleWord } from "../types.ts";
 
 /**
  * Italian glues its compounds together with no separator at all, and the tens
@@ -76,5 +76,12 @@ function compose(n: number): Item {
   return { n, form, parts: [tens, ones], note };
 }
 
-export const it: Language = { code: "it", family: "Indo-European", branch: "Romance", numerals:
+const scale: ScaleWord[] = [
+  { power: 2, form: "cento" },
+  { power: 3, form: "mille", note:
+      "Becomes -mila in compounds: duemila, not *duemille." },
+  { power: 6, form: "milione" },
+];
+
+export const it: Language = { scale, code: "it", family: "Indo-European", branch: "Romance", numerals:
   "From Latin, through each language's own sound changes.", name: "Italian", atoms, compose };

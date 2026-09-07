@@ -8,7 +8,20 @@
  * that are actually acceptable, best first, and anything unlisted is excluded.
  */
 
-export type Voice = { name: string; locale: string };
+export type Voice = {
+  name: string;
+  locale: string;
+  /**
+   * What the backend needs back to select this voice, when that differs from
+   * the name. macOS `say` selects by name; speech-dispatcher selects by
+   * language tag, and rejects the `xx_YY` form this file is written in.
+   * Optional so the normalised case stays the simple one.
+   */
+  id?: string;
+};
+
+/** What to hand back to the backend to choose this voice. */
+export const voiceId = (v: Voice): string => v.id ?? v.name;
 
 export const LOCALE_PREFERENCE: Record<string, string[]> = {
   // Mandarin. zh_TW is Mandarin too — a different accent, and it reads

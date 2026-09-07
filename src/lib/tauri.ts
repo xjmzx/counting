@@ -24,6 +24,22 @@ export async function listVoices(): Promise<{ voices: Voice[]; error: string | n
   }
 }
 
+export type SpeechInfo = { backend: string; installHint: string };
+
+/**
+ * Which backend is running and what to tell someone with no usable voice.
+ * The sentence belongs in Rust: "System Settings → Accessibility" is nonsense
+ * on Ubuntu, where the answer is `apt install espeak-ng`.
+ */
+export async function speechInfo(): Promise<SpeechInfo | null> {
+  if (!inTauri()) return null;
+  try {
+    return await invoke<SpeechInfo>("speech_info");
+  } catch {
+    return null;
+  }
+}
+
 export async function speak(voice: string, text: string, rate?: number): Promise<string | null> {
   if (!inTauri()) return "Speech needs the app.";
   try {

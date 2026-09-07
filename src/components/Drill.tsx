@@ -3,9 +3,9 @@ import { Check, X, ArrowRight, RotateCcw, Volume2, Rabbit, Turtle } from "lucide
 import type { Item, Language } from "../../types.ts";
 import { isCorrect, parseNumeral } from "../../grade.ts";
 import { pickNext, solidCount } from "../../queue.ts";
-import { voicesFor, type Voice } from "../../voices.ts";
+import { voicesFor, voiceId, type Voice } from "../../voices.ts";
 import { hintsFor, scriptHintsFor } from "../../sounds.ts";
-import { speak, stopSpeaking } from "../lib/tauri";
+import { speak, stopSpeaking, speechInfo, type SpeechInfo } from "../lib/tauri";
 import { useProgress } from "../lib/useProgress";
 import { cn } from "../lib/cn";
 import { Breakdown } from "./Breakdown";
@@ -44,7 +44,9 @@ export function Drill({
   const item = lang.compose(n);
   const langVoices = useMemo(() => voicesFor(lang.code, voices), [lang.code, voices]);
 
-  const [voiceName, setVoiceName] = useState<string>(() => {
+  // The backend's id is stored, not the display name — on speech-dispatcher
+  // they differ, and the id is what `speak` needs back.
+  const [voice, setVoice] = useState<string>(() => {
     try {
       return localStorage.getItem(`counting.voice.${lang.code}`) ?? "";
     } catch {
@@ -52,29 +54,34 @@ export function Drill({
     }
   });
 
+  const [speech, setSpeech] = useState<SpeechInfo | null>(null);
+  useEffect(() => {
+    void speechInfo().then(setSpeech);
+  }, []);
+
   // Voices arrive asynchronously, and a remembered choice may no longer be
   // installed, so fall back to the best available rather than staying silent.
   useEffect(() => {
-    if (voiceName && langVoices.some((v) => v.name === voiceName)) return;
-    const fallback = langVoices[0]?.name;
-    if (fallback) setVoiceName(fallback);
-  }, [langVoices, voiceName]);
+    if (voice && langVoices.some((v) => voiceId(v) === voice)) return;
+    const fallback = langVoices[0];
+    if (fallback) setVoice(voiceId(fallback));
+  }, [langVoices, voice]);
 
   useEffect(() => {
-    if (!voiceName) return;
+    if (!voice) return;
     try {
-      localStorage.setItem(`counting.voice.${lang.code}`, voiceName);
+      localStorage.setItem(`counting.voice.${lang.code}`, voice);
     } catch {
       // Not remembering the voice is survivable.
     }
-  }, [lang.code, voiceName]);
+  }, [lang.code, voice]);
 
   const say = useCallback(
     (rate: number) => {
-      if (!voiceName) return;
-      void speak(voiceName, item.form, rate).then(setSpeechError);
+      if (!voice) return;
+      void speak(voice, item.form, rate).then(setSpeechError);
     },
-    [voiceName, item.form],
+    [voice, item.form],
   );
 
   // Only the listening drill speaks unprompted — there the audio *is* the
@@ -115,6 +122,7 @@ export function Drill({
   };
 
   const noVoice = skill === "listen" && langVoices.length === 0;
+  const voiceLabel = langVoices.find((v) => voiceId(v) === voice)?.name ?? voice;
   const hints = verdict ? hintsFor(lang.code, verdict.item.form) : [];
   const scriptHints = verdict ? scriptHintsFor(lang.code, verdict.item.form) : [];
 
@@ -173,8 +181,8 @@ export function Drill({
 
         {noVoice && (
           <p className="text-sm text-warn/90 leading-relaxed max-w-prose">
-            No {lang.name} voice is installed. Add one in System Settings →
-            Accessibility → Spoken Content → System Voice → Manage Voices.
+            No {lang.name} voice is available.{" "}
+            {speech?.installHint ?? "No speech backend was found."}
           </p>
         )}
         {speechError && !noVoice && (
@@ -228,12 +236,12 @@ export function Drill({
           <label className="flex items-center gap-2 text-xs text-muted">
             Voice
             <select
-              value={voiceName}
-              onChange={(e) => setVoiceName(e.target.value)}
+              value={voice}
+              onChange={(e) => setVoice(e.target.value)}
               className="bg-surface text-fg rounded px-2 py-1 outline-none max-w-[16rem]"
             >
               {langVoices.map((v) => (
-                <option key={v.name} value={v.name}>
+                <option key={voiceId(v)} value={voiceId(v)}>
                   {v.name} · {v.locale}
                 </option>
               ))}
@@ -279,7 +287,7 @@ export function Drill({
                 the sound — so there is nothing to enlarge, but the audio is
                 just as useful. They get the controls without the big line
                 rather than having the word repeated back at them. */}
-            {(verdict.item.reading || voiceName) && (
+            {(verdict.item.reading || voice) && (
               <div className="flex items-baseline gap-3 flex-wrap">
                 {verdict.item.reading ? (
                   <button
@@ -287,18 +295,16 @@ export function Drill({
                       say(RATE_NORMAL);
                       inputRef.current?.focus();
                     }}
-                    disabled={!voiceName}
-                    title={
-                      voiceName ? `Hear it — ${voiceName}` : "No voice installed for this language"
-                    }
+                    disabled={!voice}
+                    title={voice ? `Hear it — ${voiceLabel}` : "No voice available for this language"}
                     className={cn(
                       "flex items-baseline gap-2 text-3xl sm:text-4xl font-medium tracking-wide",
                       "text-digital break-words text-left transition-opacity",
-                      voiceName ? "hover:opacity-80" : "opacity-60 cursor-default",
+                      voice ? "hover:opacity-80" : "opacity-60 cursor-default",
                     )}
                   >
                     {verdict.item.reading}
-                    {voiceName && <Volume2 size={20} className="shrink-0 opacity-50" />}
+                    {voice && <Volume2 size={20} className="shrink-0 opacity-50" />}
                   </button>
                 ) : (
                   <button
@@ -306,7 +312,7 @@ export function Drill({
                       say(RATE_NORMAL);
                       inputRef.current?.focus();
                     }}
-                    title={`Hear it — ${voiceName}`}
+                    title={`Hear it — ${voiceLabel}`}
                     className={cn(
                       "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm",
                       "text-digital bg-digital/10 hover:bg-digital/20 transition-colors",
@@ -316,7 +322,7 @@ export function Drill({
                     Hear it
                   </button>
                 )}
-                {voiceName && (
+                {voice && (
                   <button
                     onClick={() => {
                       say(RATE_SLOW);

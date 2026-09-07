@@ -221,10 +221,20 @@ macOS. `release.yml` fires only on a `v*` tag and builds the `.deb` and `.dmg`.
   Cantonese voice reading Mandarin numbers is wrong in a way nothing on screen
   shows. `voices.ts` holds an allowlist of acceptable locales per language and
   `make data` asserts it. Adding a language means adding its locales there.
-- **Speech is macOS-only and says so.** `espeak-ng` is the intended Linux
-  backend but is unimplemented on purpose — an honest error beats untested code
-  that looks like support, which is the whole lesson of the nchat audio note
-  below. **Do not wire up a Linux backend without reading
+- **Nothing in `tts.rs` is behind `#[cfg]` except which binary is spawned.**
+  Gating the Linux implementation out on macOS would mean neither a developer
+  machine nor CI's Rust job ever compiled it — which is precisely how untested
+  code that looks like support gets shipped. Parsing, locale mapping and the
+  rate conversion are ordinary functions with ordinary tests.
+- **A language is excluded from a backend by not mapping it.** That is the
+  whole capability matrix: `voicesFor()` already returns an empty list when
+  nothing acceptable is installed and the drill already explains it. Japanese
+  is absent from `normalise_spd_language` because espeak-ng has no kanji
+  dictionary and says "Chinese letter" once per character — the drill would
+  play audio, grade an answer, and look entirely correct.
+- **Locale namespaces are normalised in Rust, never in `voices.ts`.** The
+  allowlist holds one namespace. `Voice.id` carries whatever the backend needs
+  back, which on speech-dispatcher is a bare `fr` — `fr_FR` is rejected. **Do not wire up a Linux backend without reading
   `docs/linux-audio-design-2026-09-07.md`.** Nine of the ten languages are
   measured as usable; Japanese is not mispronounced but *unpronounced* —
   espeak-ng has no kanji dictionary and says "Chinese letter" once per

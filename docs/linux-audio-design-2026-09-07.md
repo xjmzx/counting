@@ -1,7 +1,20 @@
 # Linux audio: design notes
 
-**Status:** investigation only — nothing built, and speech is still macOS-only
-in the shipped code. Written 2026-09-07, on Ubuntu / X11 / WebKitGTK 2.52.6.
+**Status:** built, and **unverified on Linux**. The backend is written, its
+parsing and locale mapping are unit-tested on every platform, and macOS is
+unaffected. What has *not* happened is anyone running `spd-say` through it.
+Until that is done the honest description is "written, not working".
+
+Two things specifically need checking on a Linux box:
+
+1. **The `spd-say -L` output format.** `parse_spd_line` scans from the right
+   for a token that looks like a language tag, so it tolerates two or three
+   columns and names containing spaces — but it was written against the
+   documented shape, not against real output. `spd-say -L | head` settles it.
+2. **That `spd-say -l <tag> -r <n> -- <text>` speaks.** The argument order and
+   the `--` are from the manual.
+
+Originally: Written 2026-09-07, on Ubuntu / X11 / WebKitGTK 2.52.6.
 
 `tts.rs` parks Linux speech with an honest error and gives the reason: nothing
 here had ever been run on Linux, so an espeak-ng backend would have been
@@ -152,20 +165,27 @@ would need mapping rather than passing through.
 | Vietnamese, Mandarin | **usable** | tonal, and tones are the answer — worth a second listen before shipping |
 | Japanese | **blocked** | no kanji dictionary; needs `open-jtalk` or a kana field |
 
-## Open questions
+## Resolved in the build
 
-- **Does Japanese block the whole feature?** Nine of ten working is not the
-  same as the feature working. Shipping listen-on-Linux with Japanese quietly
-  wrong is the Cantonese trap wearing a different hat. The alternative — a
-  per-language capability matrix, where listen is offered for nine languages
-  and refuses for one — is honest but is new UI surface, and the `Unbuilt`
-  panel is currently per *skill*, not per language-and-skill.
-- **Who installs the engine?** The `.deb` cannot reasonably depend on a TTS
-  stack. Most likely the backend detects and refuses honestly when absent,
-  which is the behaviour that already exists — just with a better message
-  naming the package to install.
-- **Does `voices.ts` gain a namespace, or a second table?** The allowlist is
-  currently one flat `locale → preference` map that assumes macOS strings.
+- **Japanese does not block the feature, and needed no new UI.** The capability
+  matrix already existed as a side-effect of the voice allowlist: `voicesFor()`
+  returns an empty list when nothing acceptable is installed, and the drill
+  already renders a panel for that. So `normalise_spd_language` simply does not
+  map `ja`, and Japanese listening shows the existing no-voice panel on Linux
+  while the other nine work. Honest, per-language, no new surface.
+- **`voices.ts` did not gain a namespace.** Normalisation happens in Rust:
+  `list_voices` returns locales already in the app's `xx_YY` convention, and
+  `Voice` carries an `id` — the tag the backend needs back — alongside the name
+  shown to the user. The frontend stays backend-agnostic, which is the property
+  that made the port cheap in the first place.
+- **The install hint comes from Rust too.** "System Settings → Accessibility"
+  is nonsense on Ubuntu; the backend names its own package.
+
+## Open questions
+- **Who installs the engine?** The `.deb` still depends on nothing. The backend
+  refuses honestly when absent and now names the package: `sudo apt install
+  speech-dispatcher espeak-ng`. Whether the `.deb` should `Recommends:` them is
+  open.
 - **What does `make soundcheck` mean here?** It is macOS-only and one-way by
   design. A Linux probe would be a *second* implementation's opinion, which is
   closer to `crosscheck`'s role than to `soundcheck`'s.

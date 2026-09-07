@@ -13,6 +13,7 @@ pub fn run() {
         .manage(tts::Speaker::default())
         .invoke_handler(tauri::generate_handler![
             tts::list_voices,
+            tts::speech_info,
             tts::speak,
             tts::stop_speaking
         ])

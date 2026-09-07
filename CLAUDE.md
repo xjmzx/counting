@@ -27,6 +27,8 @@ make dev        # the app, hot reload
 make web        # frontend only in a browser
 make install    # the 'counting' CLI under ~/.local — NOT the app
 ./install.sh    # the .app into /Applications — this is the shortcut target
+
+git push --tags # a v* tag makes CI publish a .deb and a .dmg
 ```
 
 `make data` has no dependencies: Node 26 strips the types natively, so
@@ -116,6 +118,33 @@ every other language surveyed scored 69% or more.
   *app*, is macOS-only, and is what a Dock or Spotlight shortcut points at. Do
   not merge them, and do not let `make install` start producing a bundle: the
   CLI install must keep working without a Rust toolchain.
+- **The .deb and the CLI both want the name `counting`, and the CLI wins.**
+  The bundle installs the app at `/usr/bin/counting`; `make install` puts the
+  composer wrapper at `~/.local/bin/counting`, which comes first on a normal
+  PATH. Since the two installs are documented as *not* alternatives, both being
+  present is the expected state. `src-tauri/counting.desktop` exists solely to
+  make `Exec` absolute — without it the menu entry runs the CLI, and
+  `Terminal=false` means it fails silently: no window, no error. Do not drop
+  the template, and do not "simplify" `Exec` back to a bare name.
+- **That desktop template is also why there is no AppImage.** Tauri builds the
+  AppImage from the same file tree as the deb, so the one template serves both
+  — and they want opposite things. AppRun `execvp`s whatever `Exec` names, and
+  a path containing a slash skips the PATH lookup that would otherwise find the
+  AppImage's own bundled binary first, so an absolute `Exec` sends it to the
+  host's copy instead. Measured, not reasoned: the AppImage died with `Error
+  executing '/usr/bin/counting'`. Adding AppImage back means giving it a
+  desktop file of its own, not deleting the deb's.
+- **CI pins Node 24, not the suite's 20.** Every other release workflow in the
+  suite sets `node-version: "20"`, and copying one in unchanged breaks this
+  repo quietly: `node compose.ts check` needs the native type stripping of Node
+  23+, so on 20 the release's data check does not run at all. `engines` says
+  `>=23` for the same reason.
+- **The release workflow builds two platforms and the Linux job owns the
+  release.** It creates the GitHub Release and its notes; macOS only appends
+  its `.dmg`. Do not give the macOS job `generate_release_notes` — two jobs
+  writing the same release clobber each other. Windows is absent on purpose:
+  the app has never been run there, and a bundle that has never been launched
+  is the "untested code that looks like support" this repo argues against.
 - **Hint text is plain text, not markdown.** `*before*` renders with its
   asterisks visible. `make data` asserts against paired asterisks and
   backticks — but a *single leading* asterisk is the linguistic convention for

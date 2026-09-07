@@ -32,6 +32,17 @@ const ACCEPTED: Record<string, string> = {
   "zh_CN:0": "ICU gives 〇, the digit-by-digit form used in dates. 零 is the counting form.",
 };
 
+// macOS only. ICU's spell-out is reached through Foundation, and `swift` is
+// here to run that one script; there is no Linux equivalent in this repo.
+// Without the guard the refusal is a `spawnSync swift ENOENT` stack trace,
+// which reads like a broken tool rather than a target that was never meant to
+// run here. install.sh refuses the same way, for the same reason.
+if (process.platform !== "darwin") {
+  console.error("crosscheck is macOS-only: it spells every number through Foundation's ICU, via `swift`.");
+  console.error("The composed forms are checked against golden.ts by `make data`, which runs anywhere.");
+  process.exit(1);
+}
+
 const raw = execFileSync("swift", [new URL("spell.swift", import.meta.url).pathname], {
   encoding: "utf8",
 });

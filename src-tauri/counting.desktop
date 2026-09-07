@@ -1,0 +1,21 @@
+{{!--
+  Exec is absolute, not a bare `counting`. `make install` puts a CLI wrapper of
+  exactly that name in ~/.local/bin, which precedes /usr/bin on a normal PATH —
+  and this repo documents the two installs as *not* alternatives, so both being
+  present is the expected state rather than a corner case. With a bare Exec the
+  menu entry starts the composer CLI instead of the app, and Terminal=false
+  means it does so invisibly: the app simply never opens.
+
+  These are Handlebars comments on purpose — a `#` comment would render into
+  the .desktop file that ships to users.
+--}}
+[Desktop Entry]
+Categories={{categories}}
+{{#if comment}}Comment={{comment}}{{/if}}
+Exec=/usr/bin/{{exec}}{{#if exec_arg}} {{exec_arg}}{{/if}}
+Icon={{icon}}
+Name={{name}}
+Terminal=false
+Type=Application
+StartupWMClass={{exec}}
+{{#if mime_type}}MimeType={{mime_type}}{{/if}}

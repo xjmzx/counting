@@ -20,6 +20,16 @@ import { createHash } from "node:crypto";
 import { SOUND_RULES } from "../sounds.ts";
 import { pickVoice, type Voice } from "../voices.ts";
 
+// macOS only, like crosscheck: every probe is rendered by `say` and measured
+// with `afinfo`, neither of which has a counterpart here. Guarded so the
+// refusal is a sentence rather than a `spawnSync say ENOENT` stack trace —
+// an honest error, which is this repo's whole line on unimplemented platforms.
+if (process.platform !== "darwin") {
+  console.error("soundcheck is macOS-only: it renders each probe with `say` and measures it with `afinfo`.");
+  console.error("The sound rules' coverage of the range is asserted by `make data`, which runs anywhere.");
+  process.exit(1);
+}
+
 const say = (args: string[]) => execFileSync("say", args, { encoding: "buffer" });
 
 function voices(): Voice[] {

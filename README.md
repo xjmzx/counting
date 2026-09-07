@@ -15,6 +15,7 @@ make check      # data + typecheck + cargo test
 make data       # golden forms, invariants, grading — works on a bare clone
 make crosscheck # compare every form against ICU        [macOS only]
 make soundcheck # verify pronunciation rules by audio   [macOS only]
+                # both refuse with a one-line reason elsewhere
 make table      # all 303 forms, side by side
 make stats      # what each language actually costs in atoms
 make emit       # regenerate numbers.json + numbers.tsv
@@ -37,6 +38,20 @@ show. `./install.sh --skip-build` reinstalls the last build without rebuilding.
 It stays unguarded by platform — the CLI has no bundle and no `.desktop` entry,
 so one target is correct on macOS and Linux. The wrapper refuses to run on Node
 older than 23, where the types would not be stripped.
+
+**Releases are built by CI, not by hand.** Pushing a `v*` tag runs
+`.github/workflows/release.yml`, which publishes a GitHub Release carrying a
+`.deb` for Linux x86_64 and a `.dmg` for macOS arm64. The Linux job creates the
+release and owns its notes; the macOS job only appends its asset, because the
+two cannot share a runner. Both are unsigned. `./install.sh` stays the local
+path on macOS, since it also quits the running copy and relaunches.
+
+The Linux `.deb` installs the app to `/usr/bin/counting` with a `.desktop`
+entry and hicolor icons. Note that it and `make install` both claim the name
+`counting`, which is why the bundle ships its own desktop file — see
+`src-tauri/counting.desktop`. No AppImage: it is built from the same file tree
+as the `.deb` and cannot use that desktop file, so shipping one again means
+giving it a launcher of its own.
 
 Node 26 strips the types natively, so `node compose.ts` runs the TypeScript
 directly with no build step and no dependencies. The two devDependencies exist

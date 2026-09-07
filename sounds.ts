@@ -539,6 +539,38 @@ export const SCRIPT_RULES: Record<string, SoundRule[]> = {
     },
   ],
 
+  vi: [
+    {
+      id: "vi-two-mark-systems",
+      // Every Vietnamese vowel that carries a breve, circumflex or horn —
+      // generated from the alphabet rather than typed, so none is missed.
+      test: /[ăằắẵẳặâầấẫẩậêềếễểệôồốỗổộơờớỡởợưừứữửự]/,
+      hint: "Two independent layers of mark, and only one is tone. ă â ê ô ơ ư are separate letters — the breve, circumflex and horn belong to the letter, not to the word. mười is ư and ơ with horns, carrying a grave tone on top: two marks doing two different jobs.",
+    },
+    {
+      id: "vi-tone-mark",
+      test: /[àáãảạằắẵẳặầấẫẩậèéẽẻẹềếễểệìíĩỉịòóõỏọồốỗổộờớỡởợùúũủụừứữửựỳýỹỷỵ]/,
+      hint: "The tone mark sits above or below the vowel: grave, acute, tilde, hook and dot are the five written tones, and an unmarked vowel is the sixth. một and mốt differ by nothing else.",
+    },
+    {
+      id: "vi-digraph",
+      // Word-initial, not string-initial: "một trăm" has its digraph on the
+      // second word, and anchoring to ^ missed every compound.
+      test: /(^|\s)(ch|tr|kh|ng|nh|ph|th|gi)/,
+      hint: "ch, tr, kh and ng are single sounds, not two. chín begins with one consonant, and không begins with the sound English only ever puts at the end of a word.",
+    },
+    {
+      id: "vi-final-unreleased",
+      test: /(ng|nh|ch|[mnptc])(\s|$)/,
+      hint: "A final consonant is closed but not released — một ends with the tongue in place for a t that never quite arrives, and năm ends with the lips simply shut.",
+    },
+    {
+      id: "vi-phonemic",
+      test: /./,
+      hint: "The spelling is close to one-letter-one-sound, so unlike French or English there are no silent letters to discount. What slows reading is the marks, not the letters.",
+    },
+  ],
+
   hi: [
     {
       id: "hi-inherent-vowel",

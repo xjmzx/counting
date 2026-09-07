@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- **Vietnamese script hints.** The one that matters: Vietnamese carries two
+  independent layers of mark and only one is tone. ă â ê ô ơ ư are separate
+  letters — the breve, circumflex and horn belong to the letter — and the tone
+  mark sits on top of that, so mười is two horned vowels carrying a grave. The
+  character classes are generated from the alphabet rather than typed out.
+  Also: word-initial digraphs, unreleased finals, and that the spelling is
+  close to one-letter-one-sound so nothing is silent.
+
 - **Script hints**, in their own “How it's written” panel shown above the
   pronunciation one — decoding the writing system comes before pronouncing
   what you decoded. Thai gets five: เ and แ are written to the left of their

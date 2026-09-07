@@ -56,8 +56,13 @@ export default function App() {
         />
       </div>
 
-      <main className="flex-1 px-5 py-6">
-        <div className="max-w-2xl mx-auto">
+      {/* m-auto, not items-center. With room to spare the card sits centred; when
+          the card is taller than the window the auto margins collapse to zero
+          and the page grows, so it scrolls instead of clipping the top off.
+          `items-center` would clip. The root is min-h-full rather than h-full,
+          so it is the document that scrolls here, not this element. */}
+      <main className="flex-1 px-5 py-6 flex">
+        <div className="w-full max-w-2xl m-auto">
           {current.ready ? (
             <Drill
               key={`${lang.code}-${skill}-${max}`}

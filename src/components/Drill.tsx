@@ -97,7 +97,7 @@ export function Drill({
             autoCorrect="off"
             autoCapitalize="off"
             spellCheck={false}
-            placeholder={skill === "read" ? "0–100" : "type the word"}
+            placeholder={skill === "read" ? `0–${max}` : "type the word"}
             aria-label="Your answer"
             className={cn(
               "flex-1 min-w-0 px-4 py-3 rounded-md bg-surface text-fg placeholder:text-muted",

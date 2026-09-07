@@ -52,7 +52,9 @@ tokens in `src/index.css`, taken from `nping`. Do not reach further.
 
 Five places, and `make data` fails until all of them are done:
 
-1. `lang/xx.ts` — atoms plus `compose(n)`, and its `family`.
+1. `lang/xx.ts` — atoms plus `compose(n)`, and its `family` (top-level, e.g.
+   Indo-European), `branch` (Romance, Tai…) and `numerals` (where the number
+   words came from, which is **not** always where the language came from).
 2. `golden.ts` — hand-checked forms for every irregularity.
 3. `voices.ts` — acceptable locales, best first. Never a bare prefix match.
 4. `sounds.ts` — pronunciation rules; at least 90% of the range must be
@@ -83,6 +85,11 @@ every other language surveyed scored 69% or more.
 - **Bump with `make version V=x.y.z`, never by hand.** Five files carry the
   version and the chip reads the bundle's, so a partial bump shows a number
   that disagrees with what is installed.
+- **Group by the top-level family, and say the rest in words.** Thai is
+  Kra-Dai but counts with Chinese loans; Vietnamese is stuffed with Chinese
+  vocabulary but counts with native words. A tab layout implies a claim it
+  cannot qualify, so the grouping stays a standard classification and
+  `LanguageNote` carries the interesting part.
 - **The language picker groups into one pill per family, not one list with
   dividers.** A divider element is wrong because the list wraps: at the 420px
   minimum window each family lands on its own line and a leading divider reads

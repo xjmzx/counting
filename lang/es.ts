@@ -78,4 +78,5 @@ function compose(n: number): Item {
   return { n, form: `${find(tens).form} y ${find(ones).form}`, parts: [tens, ones] };
 }
 
-export const es: Language = { code: "es", family: "Romance", name: "Spanish", atoms, compose };
+export const es: Language = { code: "es", family: "Indo-European", branch: "Romance", numerals:
+  "From Latin, through each language's own sound changes.", name: "Spanish", atoms, compose };

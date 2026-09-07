@@ -89,4 +89,5 @@ function compose(n: number): Item {
   return assemble(pieces, parts, n, note);
 }
 
-export const th: Language = { code: "th", family: "Kra-Dai", name: "Thai", atoms, compose };
+export const th: Language = { code: "th", family: "Kra-Dai", branch: "Tai", numerals:
+  "Borrowed from Middle Chinese, though Thai is unrelated to Chinese: สิบ sip beside Mandarin shí, เจ็ด chet beside qī.", name: "Thai", atoms, compose };

@@ -99,4 +99,5 @@ function compose(n: number): Item {
   };
 }
 
-export const ja: Language = { code: "ja", family: "Japonic", name: "Japanese", atoms, compose };
+export const ja: Language = { code: "ja", family: "Japonic", branch: "Japonic", numerals:
+  "Sino-Japanese: ichi, ni, san are Chinese loans. The native set — hitotsu, futatsu — stops early and is not used for counting on.", name: "Japanese", atoms, compose };

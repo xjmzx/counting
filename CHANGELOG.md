@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- **Grouping moved to top-level families** — Sino-Tibetan, Indo-European,
+  Japonic, Kra-Dai, Austroasiatic — a standard classification rather than a
+  judgement call. Five pills instead of seven.
+- **A note above each drill** saying what kind of system you are about to meet:
+  the family, the branch, where the numerals came from, and whether the range
+  is rule or memory. Two things that were invisible until written down —
+  Thai borrowed its numbers from Middle Chinese despite being unrelated to
+  Chinese, while Vietnamese, full of Chinese vocabulary, counts with native
+  words; and nine languages build 101 numbers from 12–29 words where Hindi
+  lists all 101.
+
 - **Hindi**, added as the deliberate word-list exception. Its numbers do not
   compose — तेईस holds nothing of तीन or बीस — so it costs 101 atoms for 101
   numbers, `parts` carries one entry and the breakdown stays empty. The app

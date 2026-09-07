@@ -7,6 +7,7 @@ import { Drill, type DrillSkill } from "./components/Drill";
 import { useVoices } from "./lib/useVoices";
 import { appVersion } from "./lib/tauri";
 import { Unbuilt } from "./components/Unbuilt";
+import { LanguageNote } from "./components/LanguageNote";
 
 // Derived, not written out: these strings went stale the moment three
 // languages became six.
@@ -111,7 +112,8 @@ export default function App() {
           `items-center` would clip. The root is min-h-full rather than h-full,
           so it is the document that scrolls here, not this element. */}
       <main className="flex-1 px-5 py-6 flex">
-        <div className="w-full max-w-2xl m-auto">
+        <div className="w-full max-w-2xl m-auto space-y-4">
+          <LanguageNote lang={lang} />
           {speechUnavailable ? (
             <Unbuilt label="Listening" heading="Listening needs the app" reason={voiceError ?? ""} />
           ) : current.ready ? (

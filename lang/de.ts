@@ -82,4 +82,5 @@ function compose(n: number): Item {
   };
 }
 
-export const de: Language = { code: "de", family: "Germanic", name: "German", atoms, compose };
+export const de: Language = { code: "de", family: "Indo-European", branch: "Germanic", numerals:
+  "Native Germanic, and cognate with English — drei/three, zehn/ten.", name: "German", atoms, compose };

@@ -143,4 +143,5 @@ function compose(n: number): Item {
   return { n, form: a.form, reading: a.reading, parts: [n], note: a.note, alt: a.alt };
 }
 
-export const hi: Language = { code: "hi", family: "Indo-Aryan", name: "Hindi", atoms, compose };
+export const hi: Language = { code: "hi", family: "Indo-European", branch: "Indo-Aryan", numerals:
+  "From Sanskrit, but fused past recognition — तेईस no longer shows तीन or बीस.", name: "Hindi", atoms, compose };

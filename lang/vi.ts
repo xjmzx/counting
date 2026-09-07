@@ -80,4 +80,5 @@ function compose(n: number): Item {
   };
 }
 
-export const vi: Language = { code: "vi", family: "Austroasiatic", name: "Vietnamese", atoms, compose };
+export const vi: Language = { code: "vi", family: "Austroasiatic", branch: "Vietic", numerals:
+  "Native Austroasiatic. Vietnamese has a Sino set too — nhất, nhị, tam — but does not count with it, so these are the numbers here least like Chinese.", name: "Vietnamese", atoms, compose };

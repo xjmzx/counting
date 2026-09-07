@@ -90,4 +90,5 @@ function compose(n: number): Item {
   };
 }
 
-export const fr: Language = { code: "fr", family: "Romance", name: "French", atoms, compose };
+export const fr: Language = { code: "fr", family: "Indo-European", branch: "Romance", numerals:
+  "From Latin, through each language's own sound changes.", name: "French", atoms, compose };

@@ -29,11 +29,22 @@ export type Language = {
   code: string;
   name: string;
   /**
-   * Language family. Not decoration: the families are why these were built in
-   * batches — Romance rules and vocabulary reinforce each other, so learning
-   * or adding one makes the next cheaper. The UI groups the picker by it.
+   * Top-level family, and what the picker groups by. Deliberately the deep
+   * one — Indo-European rather than Romance — so the grouping is a standard
+   * classification rather than a judgement call.
    */
   family: string;
+  /** The branch within it: Romance, Germanic, Indo-Aryan, Sinitic, Tai… */
+  branch: string;
+  /**
+   * Where this language's *numerals* came from, which is not always where the
+   * language came from. Thai is Kra-Dai and unrelated to Chinese, yet borrowed
+   * its numbers from Middle Chinese — so สิบ sits beside Mandarin shí while
+   * Vietnamese, whose vocabulary is full of Chinese loans, counts with native
+   * words instead. Genetic descent and numeral descent are different questions
+   * and the app should not let its tab layout imply otherwise.
+   */
+  numerals: string;
   atoms: Atom[];
   compose(n: number): Item;
 };

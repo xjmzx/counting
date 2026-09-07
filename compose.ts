@@ -20,7 +20,7 @@ import {
 import { pickVoice, voicesFor, LOCALE_PREFERENCE, type Voice } from "./voices.ts";
 import { SOUND_RULES, hintsFor } from "./sounds.ts";
 
-const LANGS: Language[] = [zh, fr, it, pt, es, de, ja, th, vi, hi];
+const LANGS: Language[] = [zh, fr, it, pt, es, de, hi, ja, th, vi];
 const RANGE = Array.from({ length: 101 }, (_, i) => i);
 
 const all = (l: Language): Item[] => RANGE.map((n) => l.compose(n));
@@ -253,6 +253,8 @@ function check(): boolean {
     let prev = "";
     for (const l of LANGS) {
       if (!l.family?.trim()) { console.error(`  ✗ family: ${l.code} has none`); bad++; continue; }
+      if (!l.branch?.trim()) { console.error(`  ✗ family: ${l.code} has no branch`); bad++; }
+      if (!l.numerals?.trim()) { console.error(`  ✗ family: ${l.code} says nothing about its numerals`); bad++; }
       if (l.family !== prev) {
         if (seen.has(l.family)) {
           console.error(`  ✗ family: ${l.family} is split across the roster — group it`); bad++;
@@ -261,7 +263,21 @@ function check(): boolean {
         prev = l.family;
       }
     }
-    checked += LANGS.length;
+    // Branches must be contiguous inside a family too, or the note flips back
+    // and forth as you move along one pill.
+    const seenBranch = new Set<string>();
+    let prevBranch = "";
+    for (const l of LANGS) {
+      const key = `${l.family}/${l.branch}`;
+      if (key !== prevBranch) {
+        if (seenBranch.has(key)) {
+          console.error(`  ✗ family: branch ${key} is split across the roster`); bad++;
+        }
+        seenBranch.add(key);
+        prevBranch = key;
+      }
+    }
+    checked += LANGS.length * 2;
   }
 
   // Voice selection. Picking a zh_HK voice for Mandarin would read every

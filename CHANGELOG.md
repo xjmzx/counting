@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- **The drill queue is weighted.** Unseen numbers come first, missed ones come
+  back sooner, and getting them right walks them back down. A single slip does
+  not outrank unseen material; a second miss does. `queue.ts` is at the repo
+  root and `make data` asserts the weight ordering, that nothing is starved,
+  that nothing repeats immediately, and that the bias actually bites over
+  20,000 seeded draws.
+- **Progress persists** per language and per skill, but not per range. Current
+  streak, best streak and a settled count are shown, with a reset that scopes
+  to the current language and skill only.
+
 - **`make crosscheck`** compares every form against ICU's spell-out through
   Foundation — an independent implementation of the same three languages. All
   303 agree. French matches on all 101 forms including 71, 80, 81, 91 and 97.

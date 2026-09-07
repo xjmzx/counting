@@ -6,11 +6,16 @@ import { fr } from "./lang/fr.ts";
 import { de } from "./lang/de.ts";
 import { golden } from "./golden.ts";
 import { accepted, isCorrect, parseNumeral, fold } from "./grade.ts";
+import {
+  BASE_WEIGHT, EASE_CAP, emptyStat, pickNext, record, solidCount, weightOf,
+  type Stats,
+} from "./queue.ts";
 
 const LANGS: Language[] = [zh, fr, de];
 const RANGE = Array.from({ length: 101 }, (_, i) => i);
 
 const all = (l: Language): Item[] => RANGE.map((n) => l.compose(n));
+
 
 /** Width in terminal columns — CJK glyphs occupy two. */
 const width = (s: string) =>
@@ -124,6 +129,84 @@ function check(): boolean {
       console.error(`  ✗ ${code} ${n}: should NOT accept "${typed}"`); bad++;
     }
   }
+  // The weighted queue. A bug here is invisible: the drill still works, it
+  // just teaches badly, so none of this is checkable by looking at the UI.
+  {
+    // Seeded PRNG — deterministic, and unlike a short cycling list it actually
+    // spreads across the range, which a coverage assertion needs.
+    const mulberry32 = (seed: number) => () => {
+      seed = (seed + 0x6d2b79f5) | 0;
+      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+
+    const settled = record({}, 1, true);
+    const m1 = record({}, 2, false);
+    const m2 = record(m1, 2, false);
+    const m3 = record(m2, 2, false);
+    const order = [
+      weightOf(settled[1]), weightOf(m1[2]), weightOf(undefined), weightOf(m2[2]), weightOf(m3[2]),
+    ];
+    // settled < missed once < unseen < missed twice < missed thrice.
+    if (!order.every((w, i) => i === 0 || w > order[i - 1]!)) {
+      console.error(`  ✗ queue: weight policy out of order: ${order.join(" ")}`); bad++;
+    }
+
+    // A miss decays back to the floor as it is got right, and does not overshoot.
+    let st: Stats = record({}, 5, false);
+    for (let i = 0; i < 10; i++) st = record(st, 5, true);
+    if (st[5]!.ease !== 0) { console.error("  ✗ queue: ease never settles"); bad++; }
+    if (weightOf(st[5]) !== BASE_WEIGHT) { console.error("  ✗ queue: settled weight wrong"); bad++; }
+    if (st[5]!.wrong !== 1 || st[5]!.seen !== 11) { console.error("  ✗ queue: counters wrong"); bad++; }
+
+    // Repeated misses stop compounding.
+    st = {};
+    for (let i = 0; i < 20; i++) st = record(st, 7, false);
+    if (st[7]!.ease !== EASE_CAP) { console.error("  ✗ queue: ease not capped"); bad++; }
+
+    // Never repeats immediately, always in range, and starves nothing.
+    st = {};
+    const rnd = mulberry32(20260907);
+    const hits = new Set<number>();
+    let prev: number | null = null;
+    for (let i = 0; i < 6000; i++) {
+      const n = pickNext(100, st, prev, rnd);
+      if (n < 0 || n > 100) { console.error(`  ✗ queue: picked ${n}, out of range`); bad++; break; }
+      if (n === prev) { console.error(`  ✗ queue: repeated ${n} immediately`); bad++; break; }
+      hits.add(n);
+      st = record(st, n, true);
+      prev = n;
+    }
+    if (hits.size !== 101) {
+      console.error(`  ✗ queue: only ${hits.size}/101 numbers ever came up`); bad++;
+    }
+
+    // A single-number range has nothing else to offer, so it may repeat.
+    if (pickNext(0, {}, 0, () => 0.5) !== 0) {
+      console.error("  ✗ queue: cannot ask the only number in range"); bad++;
+    }
+
+    // The weighting has to actually bite. 13 carries weight 10 against twenty
+    // settled numbers at 1, so it should be drawn about a third of the time.
+    let biased: Stats = {};
+    for (let n = 0; n <= 20; n++) biased = record(biased, n, true);
+    for (let i = 0; i < 3; i++) biased = record(biased, 13, false);
+    const draws = 20000;
+    const fair = mulberry32(1234567);
+    let hot = 0;
+    for (let i = 0; i < draws; i++) if (pickNext(20, biased, null, fair) === 13) hot++;
+    if (hot < draws * 0.28 || hot > draws * 0.39) {
+      console.error(`  ✗ queue: missed number drawn ${hot}/${draws}, expected ~1/3`); bad++;
+    }
+
+    // Progress readout counts settled numbers only.
+    const prog: Stats = record(record({}, 1, true), 2, false);
+    if (solidCount(prog, 100) !== 1) { console.error("  ✗ queue: solidCount wrong"); bad++; }
+    if (emptyStat().seen !== 0) { console.error("  ✗ queue: emptyStat wrong"); bad++; }
+    checked += 12;
+  }
+
   if (parseNumeral("073") !== 73 || parseNumeral("101") !== null || parseNumeral("x") !== null) {
     console.error("  ✗ parseNumeral is wrong"); bad++;
   }

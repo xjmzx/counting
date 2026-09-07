@@ -129,6 +129,32 @@ The unbuilt two appear in the UI with a panel saying what is missing, rather
 than being hidden. They are part of the plan; pretending otherwise would make
 the app look finished when it is half-built.
 
+**The queue is weighted, not random.** Uniform random spends as much time on
+the numbers you know as on the one that keeps catching you out. `queue.ts`
+scores each number and picks accordingly:
+
+| | weight |
+|---|---|
+| settled | 1 |
+| missed once | 4 |
+| never seen | 6 |
+| missed twice | 7 |
+| missed three times or more | 10 |
+
+A single slip does not outrank material you have never met — covering the range
+matters more than chasing one mistake. Miss the same number twice and it jumps
+ahead of new material, which is the point at which it has stopped being a slip.
+Getting it right afterwards walks it back down, so nothing haunts the queue
+forever, and nothing ever drops to zero. `make data` asserts that ordering,
+that no number is starved, that none repeats immediately, and that a
+repeatedly-missed number really is drawn about a third of the time in a
+21-number range.
+
+Progress is kept per language **and per skill** in `localStorage`, but not per
+range: what you know about 73 is the same fact whether you met it drilling
+0–100 or 0–50. The readout shows current streak, best streak, and how many of
+the range are settled.
+
 **Grading is deliberately tolerant**, and `grade.ts` is tested by `make data`
 rather than left to the UI. Hyphens and spaces are equivalent, so the 1990
 French reform spelling `vingt-et-un` is accepted alongside `vingt et un`. `ß`

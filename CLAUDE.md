@@ -66,10 +66,19 @@ tokens in `src/index.css`, taken from `nping`. Do not reach further.
   a macOS `.app`) because they produce a bundle and a `.desktop` entry. This
   produces neither, so one target is correct on both. Do not copy the guard
   across.
-- **`grade.ts` lives at the repo root, not in `src/`.** It is pure, it has no
+- **`queue.ts` and `grade.ts` live at the repo root, not in `src/`.** It is pure, it has no
   DOM, and `compose.ts check` tests it. Moved into `src/` it would become the
   one piece of load-bearing logic with no test. Same for anything else the
-  drills need to be *right* about.
+  drills need to be *right* about. A queue bug is the worst kind: the drill
+  still works, it just teaches badly, so nothing looks wrong on screen.
+- **`useProgress` deliberately has no reload effect.** The Drill's key includes
+  language and skill, so switching either remounts and the hook initialises
+  fresh. An effect that reloaded on a prop change would race the save effect
+  and write the previous language's progress under the new key. Verified by
+  hand: switching zh → fr leaves the zh entry intact.
+- **Every `localStorage` access is wrapped.** Private windows, cleared site
+  data and storage-blocking settings all throw rather than returning null. An
+  unremembered session is still a usable one; a crashed one is not.
 - **Folding is lossy, so collisions are a real risk.** Grading strips tones and
   diacritics and folds `ß`→`ss`, hyphen→space. If two numbers ever fold onto
   one accepted string the grader silently marks a wrong answer right. `data`

@@ -22,6 +22,10 @@ const stripDiacritics = (s: string): string =>
 export function fold(s: string): string {
   return stripDiacritics(s.trim().toLowerCase())
     .replace(/ß/g, "ss")
+    // Soft hyphens and zero-width characters are invisible, so a learner who
+    // pasted a word carrying them could not see why they were marked wrong.
+    // ICU's German spell-out emits U+00AD between every element.
+    .replace(/[\u00AD\u200B-\u200D\uFEFF]/g, "")
     .replace(/[\s\-‐‑–—]+/g, " ")
     .trim();
 }
@@ -29,12 +33,15 @@ export function fold(s: string): string {
 /**
  * Every spelling accepted for one number. The written form always counts; for
  * a language whose script withholds the pronunciation, the reading counts too,
- * so Mandarin can be answered in pinyin by someone with no IME to hand.
+ * so Mandarin can be answered in pinyin by someone with no IME to hand. `alt`
+ * carries genuine alternatives — spellings a speaker would call correct, not
+ * typing tolerances, which `fold` handles.
  */
 export function accepted(lang: Language, n: number): string[] {
   const item = lang.compose(n);
   const out = [item.form];
   if (item.reading) out.push(item.reading);
+  if (item.alt) out.push(...item.alt);
   // ß folds to ss, so a German answer typed either way lands on one key.
   return [...new Set(out.map(fold))];
 }

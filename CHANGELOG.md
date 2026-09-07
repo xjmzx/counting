@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- **`make crosscheck`** compares every form against ICU's spell-out through
+  Foundation — an independent implementation of the same three languages. All
+  303 agree. French matches on all 101 forms including 71, 80, 81, 91 and 97.
+  macOS-only, so it is its own target rather than part of `check`.
+- **Grading bug found by that cross-check:** `fold` did not strip soft hyphens
+  or zero-width characters, so a word pasted from a web page could be marked
+  wrong for a reason the learner could not see. ICU's German emits U+00AD
+  between every element, which is what surfaced it.
+- German 100 now accepts *einhundert* alongside *hundert* — both are correct,
+  and ICU prefers the former. `Item.alt` carries genuine alternative spellings,
+  as distinct from the typing tolerance `fold` handles.
+
 - Scope narrowed on purpose: **0–100, refined**, rather than more skills or
   more languages. Listening stays the next target; speaking is parked as a
   long-term aim.

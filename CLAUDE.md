@@ -84,9 +84,15 @@ tokens in `src/index.css`, taken from `nping`. Do not reach further.
 - **Scope is 0–100 and staying there.** Refining the three existing tables and
   the two working drills beats adding skills or languages. Speaking is parked
   by decision, not by oversight — do not propose it as a next step.
-- **French and German are unverified by a speaker.** The golden file is
-  self-consistent, not independently correct. Mandarin has been spot-checked by
-  an intermediate speaker against the read drill; the other two have not.
+- **`golden.ts` marks its own homework; `make crosscheck` does not.** The
+  golden file was written by whoever wrote the composer, so it proves
+  consistency. ICU's spell-out is a separate implementation — run
+  `make crosscheck` after any change to a language table. A difference there
+  needs a human decision, not an automatic fix: both forms may be correct, in
+  which case add the other to `alt` or to the crosscheck's ACCEPTED map.
+- **`alt` is for real alternatives, not typing tolerance.** Case, hyphens,
+  diacritics and invisible characters are `fold`'s job. `alt` is for words a
+  speaker would call equally correct, like *einhundert* beside *hundert*.
 
 ## Not here
 

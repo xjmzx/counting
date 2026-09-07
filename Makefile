@@ -4,12 +4,13 @@ LIBDIR ?= $(PREFIX)/share/counting
 
 SOURCES := compose.ts types.ts golden.ts grade.ts
 
-.PHONY: help deps data typecheck check dev web build table stats emit install uninstall clean
+.PHONY: help deps data crosscheck typecheck check dev web build table stats emit install uninstall clean
 
 help:
 	@echo "Targets:"
 	@echo "  make data       golden forms, invariants, grading — NO install needed"
 	@echo "  make check      data + typecheck + cargo check     (needs 'make deps')"
+	@echo "  make crosscheck compare every form against ICU        [macOS only]"
 	@echo "  make dev        run the app with hot reload"
 	@echo "  make web        frontend only in a browser, no Tauri"
 	@echo "  make build      release build of frontend + app bundle"
@@ -33,6 +34,12 @@ data:
 
 typecheck:
 	npm run typecheck
+
+# Independent verification: ICU's spell-out is a separate implementation of the
+# same three languages. Kept out of 'check' because Foundation is macOS-only,
+# and because a difference here needs a human, not a red build.
+crosscheck:
+	node tools/crosscheck.ts
 
 # The suite's 'make check' shape: everything that can fail without running.
 check: data typecheck

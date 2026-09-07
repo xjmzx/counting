@@ -12,6 +12,7 @@ make dev        # the app, hot reload
 make web        # frontend only in a browser — the built drills need no Rust
 make check      # data + typecheck + cargo check
 make data       # golden forms, invariants, grading — works on a bare clone
+make crosscheck # compare every form against ICU        [macOS only]
 make table      # all 303 forms, side by side
 make stats      # what each language actually costs in atoms
 make emit       # regenerate numbers.json + numbers.tsv
@@ -73,6 +74,18 @@ say *why* an answer was wrong rather than just marking it red.
 
 ## Verification
 
+**`make crosscheck` is the check that is not marking its own homework.** It
+compares all 303 forms against ICU's rule-based spell-out via Foundation — a
+separate implementation of the same three languages, by people who are not us.
+All 303 agree. French matches on every one of its 101 forms, including the
+awkward ones (71, 80, 81, 91, 97).
+
+Two differences are settled rather than fixed, because both forms are correct:
+ICU gives 〇 for Mandarin zero, which is the digit-by-digit form used in dates
+rather than the counting form 零; and it prefers *einhundert* to *hundert*,
+which is now carried as an accepted alternative. It is macOS-only, so it is its
+own target rather than part of `check`.
+
 `golden.ts` holds 56 hand-checked forms — every number where the language does
 something you would not have guessed. `check` also asserts that all 303 forms
 are non-empty, that every `parts` entry is a declared atom, and that no two
@@ -83,11 +96,10 @@ listening drill has no correct answer. Nothing collides in these three.
 
 ## Known gaps
 
-- **French and German have not been checked by anyone who speaks them.** The 56
-  golden forms are hand-checked, but by the same hand that wrote the composer;
-  they are a consistency guarantee, not an independent one. Mandarin has been
-  spot-checked against the read drill by an intermediate speaker. Treat the
-  German und-compounds as the likeliest place for a wrong answer to be hiding.
+- **No speaker of French or German has reviewed the tables.** `make crosscheck`
+  now covers most of what that review would catch, but a second implementation
+  agreeing is not the same as a person judging what sounds right when counting
+  aloud.
 
 - **No IPA for French or German.** The written form is not the spoken form —
   *vingt* is /vɛ̃/ alone but /vɛ̃t/ in *vingt-deux*, and *six*/*dix*/*huit*

@@ -46,7 +46,10 @@ function compose(n: number): Item {
   if (n < 0 || n > 100) throw new RangeError(`de: ${n} out of range`);
 
   if (n <= 12) return { n, form: at(n), parts: [n], note: noteFor(n) };
-  if (n === 100) return { n, form: at(100), parts: [100], note: noteFor(100) };
+  // ICU's spell-out gives "einhundert" here. Both are correct; "hundert" is
+  // what you say when counting, so it leads and the other is accepted.
+  if (n === 100)
+    return { n, form: at(100), parts: [100], note: noteFor(100), alt: ["einhundert"] };
 
   // 13-19: unit stem plus zehn.
   if (n <= 19) {

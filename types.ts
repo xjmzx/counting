@@ -17,6 +17,12 @@ export type Item = {
   parts: number[];
   /** An irregularity worth showing the learner. */
   note?: string;
+  /**
+   * Other spellings a speaker would accept. Not typing tolerance — `fold`
+   * in grade.ts handles case, hyphens and diacritics — but genuinely
+   * different correct words, like German's einhundert beside hundert.
+   */
+  alt?: string[];
 };
 
 export type Language = {

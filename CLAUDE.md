@@ -88,6 +88,16 @@ tokens in `src/index.css`, taken from `nping`. Do not reach further.
 - **The unbuilt skills stay visible.** Listen and Speak render a panel saying
   what is missing. Do not hide them to make the app look finished, and do not
   wire them up with a browser API — see the audio note above.
+- **`make soundcheck` is one-way, and the code says so.** A confirmed probe is
+  real evidence; a failed one means no clean probe exists, not that the rule is
+  wrong. Never delete a rule because its probe fails, and never make soundcheck
+  fail a build.
+- **Probes are voice-dependent.** `fr-sept` confirms with Thomas and not with
+  Jacques. If a probe result changes, suspect the voice before the rule.
+- **Standard voices rank above character voices.** The bracketed macOS names
+  (`Grandma (…)`, `Rocko (…)`, `Eddy (…)`) are theatrical by design. Plain
+  alphabetical order picks `Eddy` for French, which is wrong for a
+  pronunciation drill.
 - **Never pick a voice by language prefix.** `zh_HK` is Cantonese, and a
   Cantonese voice reading Mandarin numbers is wrong in a way nothing on screen
   shows. `voices.ts` holds an allowlist of acceptable locales per language and

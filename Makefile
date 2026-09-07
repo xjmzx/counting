@@ -4,13 +4,14 @@ LIBDIR ?= $(PREFIX)/share/counting
 
 SOURCES := compose.ts types.ts golden.ts grade.ts
 
-.PHONY: help deps data crosscheck typecheck check dev web build table stats emit install install-app uninstall clean
+.PHONY: help deps data crosscheck soundcheck typecheck check dev web build table stats emit install install-app uninstall clean
 
 help:
 	@echo "Targets:"
 	@echo "  make data       golden forms, invariants, grading — NO install needed"
 	@echo "  make check      data + typecheck + cargo test      (needs 'make deps')"
 	@echo "  make crosscheck compare every form against ICU        [macOS only]"
+	@echo "  make soundcheck verify pronunciation rules by audio   [macOS only]"
 	@echo "  make dev        run the app with hot reload"
 	@echo "  make web        frontend only in a browser, no Tauri"
 	@echo "  make build      release build of frontend + app bundle"
@@ -43,6 +44,12 @@ typecheck:
 # and because a difference here needs a human, not a red build.
 crosscheck:
 	node tools/crosscheck.ts
+
+# Speaks each rule's word and its alternative spelling and compares the audio.
+# Reports rather than fails: a mismatch means no clean probe exists, not that
+# the rule is wrong. macOS-only, like crosscheck.
+soundcheck:
+	node tools/soundcheck.ts
 
 # The suite's 'make check' shape: everything that can fail without running.
 # cargo test rather than cargo check — it compiles the same and also runs the

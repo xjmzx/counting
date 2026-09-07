@@ -4,6 +4,7 @@ import type { Item, Language } from "../../types.ts";
 import { isCorrect, parseNumeral } from "../../grade.ts";
 import { pickNext, solidCount } from "../../queue.ts";
 import { voicesFor, type Voice } from "../../voices.ts";
+import { hintsFor } from "../../sounds.ts";
 import { speak, stopSpeaking } from "../lib/tauri";
 import { useProgress } from "../lib/useProgress";
 import { cn } from "../lib/cn";
@@ -266,6 +267,19 @@ export function Drill({
                 {verdict.item.note}
               </p>
             )}
+
+            {/* Why it does not sound like it looks. Shown whenever the spelling
+                is revealed, because an English reader will otherwise read it
+                with English values and learn the wrong sound. */}
+            {hintsFor(lang.code, verdict.item.form).map((h) => (
+              <p
+                key={h.id}
+                className="text-sm text-digital/90 leading-relaxed max-w-prose flex gap-2"
+              >
+                <Volume2 size={14} className="shrink-0 mt-1 opacity-70" />
+                <span>{h.hint}</span>
+              </p>
+            ))}
           </div>
         )}
       </div>

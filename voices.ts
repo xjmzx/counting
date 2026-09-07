@@ -22,14 +22,26 @@ export const LOCALE_PREFERENCE: Record<string, string[]> = {
 
 const norm = (locale: string) => locale.replace("-", "_").trim();
 
+/**
+ * macOS ships two kinds of voice per language. The standard one carries a
+ * plain name — Thomas, Anna, Tingting. The character voices are named
+ * `Eddy (French (France))`, `Grandma (German (Germany))`, `Rocko (...)` and so
+ * on: deliberately theatrical, and the wrong thing to learn pronunciation
+ * from. The bracket is the tell, and it is what distinguishes them.
+ */
+const isCharacterVoice = (name: string) => name.includes("(");
+
 /** Every acceptable voice for a language, best locale first, then by name. */
 export function voicesFor(lang: string, all: Voice[]): Voice[] {
   const prefs = LOCALE_PREFERENCE[lang] ?? [];
   return all
     .filter((v) => prefs.includes(norm(v.locale)))
     .sort((a, b) => {
-      const d = prefs.indexOf(norm(a.locale)) - prefs.indexOf(norm(b.locale));
-      return d !== 0 ? d : a.name.localeCompare(b.name);
+      const byLocale = prefs.indexOf(norm(a.locale)) - prefs.indexOf(norm(b.locale));
+      if (byLocale !== 0) return byLocale;
+      const byKind = Number(isCharacterVoice(a.name)) - Number(isCharacterVoice(b.name));
+      if (byKind !== 0) return byKind;
+      return a.name.localeCompare(b.name);
     });
 }
 

@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+- **Pronunciation hints.** Revealing the spelling without explaining it taught
+  the wrong sound: an English reader reads *vier* as "veer". Rules in
+  `sounds.ts` explain why the word does not sound like it looks, shown wherever
+  the written form is revealed.
+- **`make soundcheck`** verifies the rules that can be verified, by speaking a
+  word and an alternative spelling and comparing the audio byte for byte.
+  `vier` and `fier` render identically, so ⟨v⟩ = /f/ is demonstrable rather
+  than asserted. 12 of 13 probes confirm; the test is one-way and reports
+  rather than fails.
+- **Standard voices now outrank character voices.** `Grandma (French (France))`
+  and `Rocko` are theatrical by design; plain alphabetical order was making
+  `Eddy` the French default. Standard voices — Jacques, Anna, Tingting — sort
+  first now.
+
 - **The listening drill works.** A system voice speaks the composed form; a
   normal and a slow replay are offered. Speech runs in Rust
   (`src-tauri/src/tts.rs`), not the webview.

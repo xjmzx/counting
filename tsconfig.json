@@ -20,5 +20,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true
   },
-  "include": ["src", "lang", "types.ts", "grade.ts", "queue.ts", "voices.ts"]
+  "include": ["src", "lang", "types.ts", "grade.ts", "queue.ts", "voices.ts", "sounds.ts"]
 }

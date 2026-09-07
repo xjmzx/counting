@@ -11,6 +11,7 @@ import {
   type Stats,
 } from "./queue.ts";
 import { pickVoice, voicesFor, LOCALE_PREFERENCE, type Voice } from "./voices.ts";
+import { SOUND_RULES, hintsFor } from "./sounds.ts";
 
 const LANGS: Language[] = [zh, fr, de];
 const RANGE = Array.from({ length: 101 }, (_, i) => i);
@@ -229,6 +230,20 @@ function check(): boolean {
     if (pickVoice("fr", sample)?.name !== "Thomas") {
       console.error("  ✗ voices: fr should prefer fr_FR over fr_CA"); bad++;
     }
+    // The character voices are theatrical by design — the wrong thing to
+    // learn pronunciation from, and they sort first alphabetically.
+    const withCharacters: Voice[] = [
+      { name: "Eddy (French (France))", locale: "fr_FR" },
+      { name: "Grandma (French (France))", locale: "fr_FR" },
+      { name: "Jacques", locale: "fr_FR" },
+      { name: "Thomas", locale: "fr_FR" },
+    ];
+    if (pickVoice("fr", withCharacters)?.name !== "Jacques") {
+      console.error("  ✗ voices: a character voice outranked a standard one"); bad++;
+    }
+    if (voicesFor("fr", withCharacters).at(-1)?.name !== "Grandma (French (France))") {
+      console.error("  ✗ voices: character voices should sort last"); bad++;
+    }
     if (pickVoice("de", sample)?.name !== "Anna") {
       console.error("  ✗ voices: de should pick de_DE"); bad++;
     }
@@ -248,7 +263,44 @@ function check(): boolean {
         console.error(`  ✗ voices: no locale preference for ${l.code}`); bad++;
       }
     }
-    checked += 8;
+    checked += 10;
+  }
+
+  // Pronunciation hints. A rule that matches nothing is dead weight; a
+  // language with poor coverage is the gap worth knowing about.
+  {
+    const ids = new Set<string>();
+    for (const [code, rules] of Object.entries(SOUND_RULES)) {
+      const lang = LANGS.find((l) => l.code === code);
+      if (!lang) { console.error(`  ✗ sounds: rules for unknown language ${code}`); bad++; continue; }
+      for (const r of rules) {
+        if (ids.has(r.id)) { console.error(`  ✗ sounds: duplicate rule id ${r.id}`); bad++; }
+        ids.add(r.id);
+        if (!RANGE.some((n) => r.test.test(lang.compose(n).form))) {
+          console.error(`  ✗ sounds: rule ${r.id} matches no number in 0-100`); bad++;
+        }
+        if (r.evidence && r.evidence[0] === r.evidence[1]) {
+          console.error(`  ✗ sounds: rule ${r.id} probes a word against itself`); bad++;
+        }
+        if (!r.hint.trim()) { console.error(`  ✗ sounds: rule ${r.id} has no hint`); bad++; }
+      }
+      // Every language the app ships must have some coverage, or the drill
+      // reveals a spelling with nothing to stop it being misread.
+      const covered = RANGE.filter((n) => hintsFor(code, lang.compose(n).form).length > 0).length;
+      if (covered < RANGE.length / 2) {
+        console.error(`  ✗ sounds: ${code} explains only ${covered}/101 numbers`); bad++;
+      }
+    }
+    for (const l of LANGS) {
+      if (!SOUND_RULES[l.code]?.length) {
+        console.error(`  ✗ sounds: no rules for ${l.code}`); bad++;
+      }
+    }
+    // The limit has to hold, or a compound number buries the drill in prose.
+    if (hintsFor("de", "vierundzwanzig", 2).length > 2) {
+      console.error("  ✗ sounds: hint limit not applied"); bad++;
+    }
+    checked += ids.size + LANGS.length;
   }
 
   if (parseNumeral("073") !== 73 || parseNumeral("101") !== null || parseNumeral("x") !== null) {

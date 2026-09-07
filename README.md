@@ -13,6 +13,7 @@ make web        # frontend only in a browser — the built drills need no Rust
 make check      # data + typecheck + cargo test
 make data       # golden forms, invariants, grading — works on a bare clone
 make crosscheck # compare every form against ICU        [macOS only]
+make soundcheck # verify pronunciation rules by audio   [macOS only]
 make table      # all 303 forms, side by side
 make stats      # what each language actually costs in atoms
 make emit       # regenerate numbers.json + numbers.tsv
@@ -103,6 +104,9 @@ listening drill has no correct answer. Nothing collides in these three.
 
 ## Known gaps
 
+- **The Mandarin hints carry no audio evidence.** The probe compares two
+  spellings in one script, and these are facts about pinyin, which the voice is
+  not reading. They rest on description alone.
 - **Speech is macOS-only.** `say` is wired up; `espeak-ng` is the intended
   backend elsewhere but is deliberately unimplemented rather than guessed at —
   nothing here has been run on Linux, and this repo's own notes are about
@@ -148,12 +152,33 @@ in Rust (`src-tauri/src/tts.rs`), not the webview, for the reason `SUITE.md`
 records against `nchat`. There is a normal and a slow replay, because a
 compound like *vierundsiebzig* goes past quickly.
 
+**Every revealed spelling comes with a pronunciation hint**, because an
+English reader will otherwise read *vier* with English values and learn the
+wrong sound. German ⟨v⟩ is /f/, ⟨z⟩ is /ts/, ⟨ei⟩ is "eye" and ⟨ie⟩ is "ee";
+French *vingt* is "van" and the ⟨x⟩ in *soixante* is /s/. Almost every German
+number in the range hits at least one of these — 81 of 101 contain a ⟨z⟩ alone.
+
+**`make soundcheck` proves the rules that can be proved.** Each rule may carry
+an alternative spelling that should sound identical; the tool speaks both and
+compares the audio byte for byte. `vier` and `fier` produce the same file, so
+⟨v⟩ = /f/ is a fact about the engine's phonemes, not an opinion. 12 of 13
+probes confirm. **The test is one-way**: a mismatch proves nothing, since the
+alternative spelling may simply be invalid orthography — German ⟨z⟩ *is* /ts/,
+so "zieben" reads as "tsieben" and the probe fails while the rule stays true.
+Rules without a probe are not weaker claims, just ones with no clean test.
+
 **Picking the voice is not "any voice whose locale starts with the language
 code".** macOS ships `Sinji zh_HK`, which is **Cantonese** — it will read 七十三
 aloud in a language this app does not teach, and nothing on screen would look
 wrong. So `voices.ts` names the acceptable locales per language, best first,
 and excludes everything else. `make data` asserts a Cantonese voice can never
 be offered for Mandarin.
+
+It also ranks **standard voices above character voices**. macOS ships
+`Grandma (French (France))`, `Rocko`, `Eddy` and friends alongside `Jacques`
+and `Thomas`; the bracketed names are deliberately theatrical and the wrong
+thing to learn pronunciation from. They sort last, and alphabetical order alone
+would have made `Eddy` the default.
 
 **The queue is weighted, not random.** Uniform random spends as much time on
 the numbers you know as on the one that keeps catching you out. `queue.ts`

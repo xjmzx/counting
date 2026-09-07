@@ -5,6 +5,7 @@ import { zh } from "./lang/zh.ts";
 import { fr } from "./lang/fr.ts";
 import { de } from "./lang/de.ts";
 import { golden } from "./golden.ts";
+import { accepted, isCorrect, parseNumeral, fold } from "./grade.ts";
 
 const LANGS: Language[] = [zh, fr, de];
 const RANGE = Array.from({ length: 101 }, (_, i) => i);
@@ -62,8 +63,75 @@ function check(): boolean {
       seen.set(f, n);
     }
   }
+  // Grading. Every number must accept its own form, and the tolerances we
+  // advertise must actually hold.
+  for (const l of LANGS) {
+    for (const n of RANGE) {
+      if (!isCorrect(l, n, l.compose(n).form)) {
+        console.error(`  ✗ ${l.code} ${n}: does not accept its own written form`); bad++;
+      }
+      const r = l.compose(n).reading;
+      if (r && !isCorrect(l, n, r)) {
+        console.error(`  ✗ ${l.code} ${n}: does not accept its own reading`); bad++;
+      }
+    }
+  }
+  // Folding is lossy — tones and diacritics go. If two numbers ever fold onto
+  // one accepted string, the grader marks a wrong answer correct and a
+  // listening drill has two right answers.
+  for (const l of LANGS) {
+    const owner = new Map<string, number>();
+    for (const n of RANGE) {
+      for (const a of accepted(l, n)) {
+        const prev = owner.get(a);
+        if (prev !== undefined) {
+          console.error(`  ✗ ${l.code}: ${prev} and ${n} both accept "${a}"`); bad++;
+        }
+        owner.set(a, n);
+      }
+    }
+  }
+
+  const tolerances: [string, number, string][] = [
+    ["fr", 21, "vingt-et-un"],        // 1990 reform hyphenation
+    ["fr", 21, "VINGT ET UN"],        // case and separator
+    ["fr", 97, "quatre vingt dix sept"],
+    ["fr", 0, "zero"],                // missing diacritic
+    ["de", 30, "dreissig"],           // no ß on a UK keyboard
+    ["de", 36, "sechsunddreissig"],
+    ["de", 5, "funf"],
+    ["zh", 73, "qi shi san"],         // pinyin without tone marks
+    ["zh", 73, "七十三"],
+  ];
+  for (const [code, n, typed] of tolerances) {
+    const l = LANGS.find((x) => x.code === code)!;
+    if (!isCorrect(l, n, typed)) {
+      console.error(`  ✗ ${code} ${n}: should accept "${typed}"`); bad++;
+    }
+  }
+  // And it must still reject. A grader that accepts everything passes the above.
+  const rejects: [string, number, string][] = [
+    ["fr", 21, "vingt deux"],
+    ["fr", 80, "quatre-vingt"],       // 80 alone takes the plural -s
+    ["de", 36, "sechunddreissig"],    // the stem trap
+    ["de", 16, "sechszehn"],
+    ["zh", 73, "qi shi si"],
+    ["fr", 21, ""],
+  ];
+  for (const [code, n, typed] of rejects) {
+    const l = LANGS.find((x) => x.code === code)!;
+    if (isCorrect(l, n, typed)) {
+      console.error(`  ✗ ${code} ${n}: should NOT accept "${typed}"`); bad++;
+    }
+  }
+  if (parseNumeral("073") !== 73 || parseNumeral("101") !== null || parseNumeral("x") !== null) {
+    console.error("  ✗ parseNumeral is wrong"); bad++;
+  }
+  if (fold(" Quatre-Vingts ") !== "quatre vingts") { console.error("  ✗ fold is wrong"); bad++; }
+  checked += 303 * 2 + tolerances.length + rejects.length;
+
   console.log(bad === 0
-    ? `✓ ${checked} golden forms match; 303 forms unique, non-empty, atom-closed`
+    ? `✓ ${checked} assertions pass — golden forms, invariants, and grading tolerances`
     : `✗ ${bad} problem(s)`);
   return bad === 0;
 }

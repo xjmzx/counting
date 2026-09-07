@@ -4,14 +4,17 @@
 atoms plus one rule set per language. Groundwork for a Tauri app that drills
 the four skills — reading, writing, listening, speaking — over that range.
 
-Right now it is the composer and its tests. There is no UI yet.
+A Tauri 2 · React app with two of the four skills working, and the other two
+present but honestly marked unbuilt.
 
 ```bash
-make check      # golden forms + invariants — works on a bare clone
+make dev        # the app, hot reload
+make web        # frontend only in a browser — the built drills need no Rust
+make check      # data + typecheck + cargo check
+make data       # golden forms, invariants, grading — works on a bare clone
 make table      # all 303 forms, side by side
 make stats      # what each language actually costs in atoms
 make emit       # regenerate numbers.json + numbers.tsv
-make typecheck  # tsc --noEmit (run 'make deps' first)
 
 make install    # put a 'counting' command on PATH under ~/.local
 make uninstall  # remove it
@@ -95,23 +98,36 @@ listening drill has no correct answer. Nothing collides in these three.
   40–90 are derived rather than declared. Those forms are covered by golden
   values instead.
 
-## Where this is going
-
-A Tauri 2 · React app in the shape of the neighbouring repos, with four drills
-over the same data:
+## The app
 
 | Skill | Mechanic | State |
 |---|---|---|
-| Reading | numeral → word | composer is enough |
-| Writing | numeral → type the word | composer is enough |
-| Listening | hear it → type the numeral | needs TTS in Rust, and IPA |
-| Speaking | see it → say it → checked | needs ASR; self-assessment first |
+| **Read** | see the word → type the number | **working** |
+| **Write** | see the number → type the word | **working** |
+| Listening | hear it → type the number | unbuilt — needs TTS in Rust, and IPA |
+| Speaking | see it → say it → checked | unbuilt — needs the same, plus recognition |
 
-Two things are settled by the neighbours rather than by this repo. Audio must
-live in Rust, not the webview — `ndisc/SUITE.md` records `nchat` shipping Web
-Audio that was silent on Linux, and WebKit2GTK cannot play media from app URL
-schemes. And speaking is not general recognition: it is a check against one of
-101 known strings, which is a much smaller problem than it first looks.
+The unbuilt two appear in the UI with a panel saying what is missing, rather
+than being hidden. They are part of the plan; pretending otherwise would make
+the app look finished when it is half-built.
 
-This is **not** an `n`-suite app. It lives beside them but shares no Nostr
-layer, no keys and no shared suite directory. See `CLAUDE.md`.
+**Grading is deliberately tolerant**, and `grade.ts` is tested by `make data`
+rather than left to the UI. Hyphens and spaces are equivalent, so the 1990
+French reform spelling `vingt-et-un` is accepted alongside `vingt et un`. `ß`
+folds to `ss`, because nobody on a UK keyboard can type `dreißig`. Diacritics
+are optional, which also lets Mandarin be answered in toneless pinyin by
+someone with no IME to hand — the written characters are accepted too.
+
+It still refuses what it should: `sechunddreissig` (the German stem trap),
+`quatre-vingt` for 80 (the plural `-s` is not optional there), and `vingt deux`
+for 21. `make data` asserts both directions, and separately asserts that no two
+numbers fold onto the same accepted string — otherwise the grader would mark a
+wrong answer right.
+
+**Only the palette is borrowed from the n-suite.** `tailwind.config.ts` and the
+theme tokens in `src/index.css` come from `nping`, which took them from
+`ndisc`; the title toggles between the fizx and upleb schemes. The top-bar
+three-zone grammar is **not** used — `SUITE.md` scopes it to
+`ndisc`/`nplay`/`ntree`/`nsmpl`, and this app has no transport, no Nostr
+identity and nothing to catalogue. The `n`-wordmark convention is not used
+either, because there is no `n`. See `CLAUDE.md`.

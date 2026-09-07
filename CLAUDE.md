@@ -1,8 +1,8 @@
 # counting — notes for Claude
 
-0–100 in three languages, composed from a small table of atoms. Currently a
-composer and a test suite; no UI. Intended to become a Tauri 2 · React app
-teaching the four skills over that range.
+0–100 in three languages, composed from a small table of atoms. A Tauri 2 ·
+React app over that data, with two of the four skills built (read, write) and
+two visibly unbuilt (listen, speak).
 
 ## Not an n-suite app
 
@@ -21,14 +21,31 @@ so it belongs in Rust, not the webview.
 ## Build and verify
 
 ```
-make check      # golden forms + invariants — works on a bare clone, no install
-make typecheck  # tsc --noEmit — needs 'make deps' first
-make install    # 'counting' command under ~/.local — runs 'check' first
+make data       # golden forms, invariants, grading — bare clone, no install
+make check      # data + typecheck + cargo check — the suite's 'check' shape
+make dev        # the app, hot reload
+make web        # frontend only in a browser
+make install    # the 'counting' CLI under ~/.local — NOT the app bundle
 ```
 
-`make check` is the one that matters and has no dependencies: Node 26 strips
-the types natively, so `node compose.ts` runs the TypeScript as-is. The two
-devDependencies exist only for `typecheck`.
+`make data` has no dependencies: Node 26 strips the types natively, so
+`node compose.ts` runs the TypeScript as-is. Keep it that way — it is what
+makes the data layer checkable without a toolchain, and `make install` depends
+on it rather than on `check` for the same reason.
+
+## What is borrowed, and what is not
+
+Only the **palette** comes from the suite: `tailwind.config.ts` and the theme
+tokens in `src/index.css`, taken from `nping`. Do not reach further.
+
+- **The top-bar three-zone grammar does not apply.** SUITE.md scopes it to
+  `ndisc`/`nplay`/`ntree`/`nsmpl`. This app has no transport for the centre
+  zone, no Nostr identity, and no view-switch. `nchat` and `nping` already sit
+  outside that list while using the palette, so this is the existing pattern.
+- **There is no `n` wordmark.** The identity convention is `n` in `--c-accent`
+  plus the app suffix in `--c-mauve`; using it would assert suite membership
+  this app does not have. The title still toggles the theme, which is the part
+  worth keeping.
 
 ## Traps specific to this repo
 
@@ -49,6 +66,17 @@ devDependencies exist only for `typecheck`.
   a macOS `.app`) because they produce a bundle and a `.desktop` entry. This
   produces neither, so one target is correct on both. Do not copy the guard
   across.
+- **`grade.ts` lives at the repo root, not in `src/`.** It is pure, it has no
+  DOM, and `compose.ts check` tests it. Moved into `src/` it would become the
+  one piece of load-bearing logic with no test. Same for anything else the
+  drills need to be *right* about.
+- **Folding is lossy, so collisions are a real risk.** Grading strips tones and
+  diacritics and folds `ß`→`ss`, hyphen→space. If two numbers ever fold onto
+  one accepted string the grader silently marks a wrong answer right. `data`
+  asserts no collisions; do not widen `fold()` without re-running it.
+- **The unbuilt skills stay visible.** Listen and Speak render a panel saying
+  what is missing. Do not hide them to make the app look finished, and do not
+  wire them up with a browser API — see the audio note above.
 - **The written form is not the spoken form** for French or German. Anything
   that claims to teach listening or speaking needs a pronunciation layer first
   — see the gaps section of the README.

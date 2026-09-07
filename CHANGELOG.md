@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.1.0 — the app
+
+- A Tauri 2 · React window over the composed data, scaffolded from `nping`.
+- **Read** and **Write** drills work: prompt, tolerant grading, score and
+  streak, and — after a wrong answer — the correct form, its reading, the
+  atoms it is built from in spoken order, and any note attached to it.
+- **Listen** and **Speak** are present but unbuilt, each rendering what is
+  missing. Both need a pronunciation layer; listening additionally needs
+  speech synthesis in Rust, for the reason recorded in `CLAUDE.md`.
+- `grade.ts` folds hyphens/spaces, `ß`→`ss` and diacritics, so `vingt-et-un`,
+  `dreissig` and toneless pinyin are all accepted. It is tested by `make data`,
+  which also asserts that no two numbers fold onto one accepted string.
+- Only the palette is taken from the suite; the top-bar grammar and the `n`
+  wordmark deliberately are not.
+- `make check` now means data + typecheck + `cargo check`, matching the
+  neighbouring repos. `make data` keeps the zero-dependency guarantee.
+
 ## v0.1.0
 
 First cut: the composer only. No app yet.

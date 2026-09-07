@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": ["ES2022"],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -9,10 +9,7 @@
     "isolatedModules": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "jsx": "react-jsx",
-
-    // No node types here on purpose — src must not reach for node globals.
-    "types": [],
+    "types": ["node"],
 
     "strict": true,
     "noUnusedLocals": true,
@@ -20,5 +17,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true
   },
-  "include": ["src", "lang", "types.ts", "grade.ts"]
+  "include": ["compose.ts", "golden.ts", "grade.ts", "types.ts", "lang", "vite.config.ts"]
 }

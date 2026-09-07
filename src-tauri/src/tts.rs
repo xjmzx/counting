@@ -244,15 +244,25 @@ impl ClipPlayer {
 /// recordings, so the fallback path is permanent, not temporary.
 pub fn clip_path(app: &tauri::AppHandle, lang: &str, n: u32) -> Option<PathBuf> {
     use tauri::Manager;
-    // A language code from the frontend must never escape the clips directory.
-    if !lang.chars().all(|c| c.is_ascii_lowercase()) || lang.is_empty() || n > 100 {
-        return None;
-    }
+    let rel = clip_relative_path(lang, n)?;
     let p = app
         .path()
-        .resolve(format!("clips/{lang}/{n}.wav"), tauri::path::BaseDirectory::Resource)
+        .resolve(rel, tauri::path::BaseDirectory::Resource)
         .ok()?;
     p.is_file().then_some(p)
+}
+
+/// Where a clip sits inside the resource directory, or `None` if the request
+/// is not one this app makes.
+///
+/// Split out so it can be tested without an app handle: a language code
+/// arrives from the frontend and must never escape the clips directory, and
+/// "it looked fine" is not a check.
+fn clip_relative_path(lang: &str, n: u32) -> Option<String> {
+    if lang.is_empty() || n > 100 || !lang.chars().all(|c| c.is_ascii_lowercase()) {
+        return None;
+    }
+    Some(format!("clips/{lang}/{n}.wav"))
 }
 
 /// Parse one line of `say -v '?'`.
@@ -663,6 +673,23 @@ mod tests {
         assert!(spd_rate(250) > 0, "faster is positive");
         assert_eq!(spd_rate(10_000), 100, "clamped");
         assert_eq!(spd_rate(0), -100, "clamped");
+    }
+
+    #[test]
+    fn clip_paths_are_built_only_for_requests_this_app_makes() {
+        assert_eq!(clip_relative_path("ja", 73).unwrap(), "clips/ja/73.wav");
+        assert_eq!(clip_relative_path("ja", 0).unwrap(), "clips/ja/0.wav");
+        assert_eq!(clip_relative_path("ja", 100).unwrap(), "clips/ja/100.wav");
+    }
+
+    #[test]
+    fn a_language_code_cannot_escape_the_clips_directory() {
+        // The code comes from the frontend; nothing downstream re-checks it.
+        assert!(clip_relative_path("../../etc", 1).is_none());
+        assert!(clip_relative_path("ja/..", 1).is_none());
+        assert!(clip_relative_path("JA", 1).is_none(), "uppercase is not a code here");
+        assert!(clip_relative_path("", 1).is_none());
+        assert!(clip_relative_path("ja", 101).is_none(), "outside the range");
     }
 
     #[test]

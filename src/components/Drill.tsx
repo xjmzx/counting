@@ -13,6 +13,32 @@ import { HintDisclosure } from "./HintDisclosure";
 
 type Verdict = { ok: boolean; item: Item; given: string };
 
+/**
+ * Whether that was a recording or the synthesiser.
+ *
+ * Shown wherever audio plays. A synthesised reading must not pass for a
+ * recorded one, and a missing clip must read as ordinary — sparse coverage is
+ * the permanent normal case, not a fault.
+ */
+function SourceTag({ spoken }: { spoken: Spoken }) {
+  const clip = spoken.source === "clip";
+  return (
+    <span
+      title={
+        clip
+          ? `A recording, played with ${spoken.detail}`
+          : `Synthesised by ${spoken.detail} — no recording exists for this number yet`
+      }
+      className={cn(
+        "text-xs px-1.5 py-0.5 rounded self-center whitespace-nowrap",
+        clip ? "text-ok bg-ok/10" : "text-muted bg-fg/5",
+      )}
+    >
+      {clip ? "recording" : "synthesised"}
+    </span>
+  );
+}
+
 export type DrillSkill = "read" | "write" | "listen";
 
 const RATE_NORMAL = 175;
@@ -178,6 +204,10 @@ export function Drill({
                 <Volume2 size={20} />
                 <Turtle size={16} className="opacity-70" />
               </button>
+              {/* Here too, not only under the answer: in this drill the audio
+                  plays before anything is revealed, so a marker that only
+                  appears afterwards cannot say what you just heard. */}
+              {spoken && <SourceTag spoken={spoken} />}
             </div>
           ) : (
             <p
@@ -356,23 +386,7 @@ export function Drill({
                     <Turtle size={18} />
                   </button>
                 )}
-                {spoken && (
-                  <span
-                    title={
-                      spoken.source === "clip"
-                        ? `A recording, played with ${spoken.detail}`
-                        : `Synthesised by ${spoken.detail} — no recording exists for this number yet`
-                    }
-                    className={cn(
-                      "text-xs px-1.5 py-0.5 rounded self-center",
-                      spoken.source === "clip"
-                        ? "text-ok bg-ok/10"
-                        : "text-muted bg-fg/5",
-                    )}
-                  >
-                    {spoken.source === "clip" ? "recording" : "synthesised"}
-                  </span>
-                )}
+                {spoken && <SourceTag spoken={spoken} />}
               </div>
             )}
 

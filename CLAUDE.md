@@ -215,6 +215,23 @@ macOS. `release.yml` fires only on a `v*` tag and builds the `.deb` and `.dmg`.
   so a flat duration spread across distinct atoms is proof it is not reading
   them. That is how espeak-ng's missing kanji dictionary was caught. It is
   one-way in the same way soundcheck is, and it never fails a build.
+  `speechcheck`/`speechprobe` is its cross-platform half, timing the utterance
+  because speech-dispatcher will not write audio to disk. Two instruments, one
+  question — keep their verdicts agreeing.
+- **Measure the audio, not the file.** A rendered file carries whatever silence
+  the engine pads with, and padding is a constant added to every word, so it
+  compresses the spread between words. open-jtalk's padding squeezed a genuine
+  0.10s spread into 0.055s — under the 0.06s threshold this once used, which
+  would have convicted a working engine of being a fallback. `scriptcheck`
+  trims to the audible span for exactly this reason. The same caution applies
+  to `speechprobe` from the other direction: wall-clock timing adds process
+  startup, and noise *widens* a spread, so it errs toward clearing a fallback,
+  which is the more dangerous mistake of the two.
+- **A fallback's spread is zero, not merely small.** It is the same utterance
+  every time — "Chinese letter" for every kanji alike — so the threshold sits
+  just above nothing (0.03s) rather than halfway to the first real reading.
+  Measured, trimmed: fallback 0.00s, open-jtalk reading kanji 0.10s, the nine
+  other languages 0.15–0.50s.
 - **`make soundcheck` is one-way, and the code says so.** A confirmed probe is
   real evidence; a failed one means no clean probe exists, not that the rule is
   wrong. Never delete a rule because its probe fails, and never make soundcheck

@@ -24,7 +24,7 @@
  * is happening. It reports; it never fails a build.
  */
 import { execFileSync } from "node:child_process";
-import { rmSync } from "node:fs";
+import { readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { Language } from "../types.ts";
@@ -82,24 +82,73 @@ function voices(): Voice[] {
     .filter((v): v is Voice => v !== null);
 }
 
-/** Rendered length in seconds. Same method soundcheck uses. */
+/**
+ * Length of the *speech* in seconds, with leading and trailing silence removed.
+ *
+ * Not the file's duration, which is what an earlier version of this used and
+ * got wrong. Engines pad their output by different amounts, and the padding is
+ * a constant added to every word — so it compresses the spread between words
+ * and can drag a reading engine down under the threshold. open-jtalk padded a
+ * genuine 0.10s spread into 0.055s, which the old 0.06s cut-off would have
+ * convicted as a fallback. Measuring only the audible part removes the
+ * engine's padding from the comparison entirely.
+ *
+ * Rendered as WAV rather than AIFF so the samples can be read here without a
+ * parser: 16-bit little-endian PCM after the `data` chunk.
+ */
 function duration(voice: string, text: string): number {
-  const f = join(tmpdir(), `counting-script-${process.pid}.aiff`);
+  const f = join(tmpdir(), `counting-script-${process.pid}.wav`);
   try {
-    execFileSync("say", ["-v", voice, "-o", f, text]);
-    const info = execFileSync("afinfo", [f], { encoding: "utf8" });
-    return Number(/estimated duration:\s*([\d.]+)/.exec(info)?.[1] ?? NaN);
+    execFileSync("say", [
+      "-v", voice,
+      "-o", f,
+      "--file-format=WAVE",
+      "--data-format=LEI16@22050",
+      text,
+    ]);
+    return speechSeconds(readFileSync(f), 22050);
   } finally {
     rmSync(f, { force: true });
   }
 }
 
 /**
- * A spread this tight across distinct words means the voice is not reading
- * them. espeak-ng's kanji fallback measured 0.00 — every character identical
- * to the centisecond. Anything genuinely read varies by far more than this.
+ * Seconds between the first and last audible sample.
+ *
+ * The threshold is deliberately low: it is rejecting digital silence and
+ * dither, not quiet speech, and clipping a genuine soft onset would shorten a
+ * word rather than flatten a spread — the harmless direction here, since every
+ * word is measured the same way.
  */
-const FLAT = 0.06;
+function speechSeconds(buf: Buffer, rate: number, floor = 400): number {
+  const start = buf.indexOf("data", 12, "ascii");
+  if (start < 0) return NaN;
+  const pcm = start + 8;
+  let first = -1;
+  let last = -1;
+  for (let i = pcm; i + 1 < buf.length; i += 2) {
+    if (Math.abs(buf.readInt16LE(i)) > floor) {
+      if (first < 0) first = i;
+      last = i;
+    }
+  }
+  return first < 0 ? 0 : (last - first) / 2 / rate;
+}
+
+/**
+ * A spread this tight across distinct words means the voice is not reading
+ * them.
+ *
+ * The number is small on purpose. A fallback is not merely *similar* across
+ * characters, it is the **same utterance** — espeak-ng says "Chinese letter"
+ * for every kanji alike — so its measured spread is essentially zero rather
+ * than merely low. Measured on silence-trimmed audio: espeak-ng's kanji
+ * fallback 0.00s, open-jtalk genuinely reading the same kanji 0.10s, and the
+ * nine other languages 0.15–0.50s. Sitting just above nothing rather than
+ * halfway to the first real reading is what keeps a slow engine from being
+ * convicted of a fault it does not have.
+ */
+const FLAT = 0.03;
 
 const all = voices();
 let fallbacks = 0;

@@ -1,10 +1,18 @@
 PREFIX ?= $(HOME)/.local
 BINDIR ?= $(PREFIX)/bin
 LIBDIR ?= $(PREFIX)/share/counting
+# The app's own paths, mirroring the .deb's layout one level down. Tauri
+# resolves BaseDirectory::Resource as <exe dir>/../lib/<crate name>, so the
+# binary must sit in a bin/ whose sibling lib/counting holds the clips —
+# which is exactly what ~/.local gives for free.
+APPBIN  ?= $(BINDIR)/counting-app
+RESDIR  ?= $(PREFIX)/lib/counting
+DESKDIR ?= $(PREFIX)/share/applications
+ICONDIR ?= $(PREFIX)/share/icons/hicolor
 
 SOURCES := compose.ts types.ts golden.ts grade.ts
 
-.PHONY: help deps data crosscheck soundcheck scriptcheck speechcheck speechprobe clips clipcheck cliptrim clipclean record typecheck version check dev web build table stats emit install install-app uninstall clean
+.PHONY: help deps data install-app-linux uninstall-app crosscheck soundcheck scriptcheck speechcheck speechprobe clips clipcheck cliptrim clipclean record typecheck version check dev web build table stats emit install install-app uninstall clean
 
 help:
 	@echo "Targets:"
@@ -29,8 +37,10 @@ help:
 	@echo "  make emit       regenerate numbers.json and numbers.tsv"
 	@echo ""
 	@echo "  Two different installs. They are not alternatives:"
-	@echo "  make install-app  the .app -> /Applications, for a Dock or"
-	@echo "                    Spotlight shortcut                     [macOS only]"
+	@echo "  make install-app  the app itself. macOS: .app -> /Applications, for"
+	@echo "                    a Dock or Spotlight shortcut. Linux: PREFIX with a"
+	@echo "                    .desktop entry, for the dash and the taskbar"
+	@echo "  make uninstall-app  remove the Linux app install (not the CLI)"
 	@echo "  make install      the 'counting' CLI -> PREFIX/bin, terminal only"
 	@echo "  make uninstall    remove the CLI (not the .app)"
 	@echo "  make deps       npm install + cargo fetch"
@@ -168,10 +178,72 @@ install: data
 	@echo "  this is the CLI only — for the app, run 'make install-app'"
 	@command -v counting >/dev/null 2>&1 || echo "  note: $(BINDIR) is not on your PATH"
 
-# The .app, not the CLI. Needs a full `tauri build` — `make build` alone
-# produces a bundle but does not place it, quit the old copy, or relaunch.
+# The app, not the CLI, on whichever platform this is. macOS needs a real .app
+# — see install.sh — while Linux only needs the binary, its resources and a
+# .desktop entry, and wants them under PREFIX rather than in /usr, so that
+# installing the app never needs root.
 install-app:
-	bash ./install.sh
+	@case "$$(uname)" in \
+	  Darwin) bash ./install.sh ;; \
+	  Linux)  $(MAKE) --no-print-directory install-app-linux ;; \
+	  *) echo "make install-app: no app install for $$(uname)." >&2; exit 1 ;; \
+	esac
+
+# Installed as `counting-app`, deliberately not as `counting`: that name is the
+# CLI's, and the two installs are documented as *not* alternatives, so they
+# would otherwise fight over one path in PREFIX/bin. The .desktop entry names
+# the binary absolutely, so which one PATH prefers never arises.
+#
+# StartupWMClass must then follow the *file name* too, and say `counting-app`.
+# It has to match the window's real WM_CLASS, and that is taken from the
+# executable's name — not, as is easy to assume, from the bundle identifier.
+# Measured with xwininfo after renaming: the window reports `counting-app`. Get
+# this wrong and the window floats free of its launcher, showing a blank icon
+# beside the real one in the dash rather than joining the entry it came from.
+# The .deb keeps `counting` for the same reason: there the binary is `counting`.
+install-app-linux: data
+	npm run tauri build -- --no-bundle
+	install -d $(dir $(APPBIN)) $(RESDIR) $(DESKDIR)
+	install -m 0755 src-tauri/target/release/counting $(APPBIN)
+	rm -rf $(RESDIR)/clips
+	cp -R clips $(RESDIR)/clips
+	install -d $(ICONDIR)/scalable/apps
+	install -m 0644 icon.svg $(ICONDIR)/scalable/apps/counting.svg
+	@for s in 32 128; do \
+	  install -d $(ICONDIR)/$${s}x$${s}/apps; \
+	  install -m 0644 src-tauri/icons/$${s}x$${s}.png \
+	    $(ICONDIR)/$${s}x$${s}/apps/counting.png; \
+	done
+	@printf '%s\n' \
+	  '[Desktop Entry]' \
+	  'Type=Application' \
+	  'Name=counting' \
+	  'Comment=0-100 in eleven languages' \
+	  'Exec=$(APPBIN)' \
+	  'Icon=counting' \
+	  'Terminal=false' \
+	  'Categories=Education;Languages;' \
+	  'StartupWMClass=counting-app' \
+	  > $(DESKDIR)/counting.desktop
+	@command -v update-desktop-database >/dev/null 2>&1 && \
+	  update-desktop-database $(DESKDIR) 2>/dev/null || true
+	@command -v gtk-update-icon-cache >/dev/null 2>&1 && \
+	  gtk-update-icon-cache -qtf $(ICONDIR) 2>/dev/null || true
+	@echo "installed the app to $(PREFIX)"
+	@echo "  binary    -> $(APPBIN)"
+	@echo "  clips     -> $(RESDIR)/clips"
+	@echo "  launcher  -> $(DESKDIR)/counting.desktop"
+	@echo "  this is the app only — 'make install' is the CLI, and is separate"
+
+uninstall-app:
+	rm -f $(APPBIN) $(DESKDIR)/counting.desktop
+	rm -rf $(RESDIR)
+	rm -f $(ICONDIR)/scalable/apps/counting.svg \
+	      $(ICONDIR)/32x32/apps/counting.png \
+	      $(ICONDIR)/128x128/apps/counting.png
+	@command -v update-desktop-database >/dev/null 2>&1 && \
+	  update-desktop-database $(DESKDIR) 2>/dev/null || true
+	@echo "removed the app from $(PREFIX) (the CLI, if installed, is untouched)"
 
 uninstall:
 	rm -f $(BINDIR)/counting

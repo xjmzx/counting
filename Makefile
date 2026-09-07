@@ -4,7 +4,7 @@ LIBDIR ?= $(PREFIX)/share/counting
 
 SOURCES := compose.ts types.ts golden.ts grade.ts
 
-.PHONY: help deps data crosscheck soundcheck scriptcheck speechcheck speechprobe clips clipclean record typecheck version check dev web build table stats emit install install-app uninstall clean
+.PHONY: help deps data crosscheck soundcheck scriptcheck speechcheck speechprobe clips clipcheck cliptrim clipclean record typecheck version check dev web build table stats emit install install-app uninstall clean
 
 help:
 	@echo "Targets:"
@@ -17,6 +17,9 @@ help:
 	@echo "  make speechprobe L=ja  does that voice read the script? [any platform]"
 	@echo "  make clips       render Japanese clips locally         [macOS only]"
 	@echo "  make record L=en record a language\047s clips by voice     [any platform]"
+	@echo "  make record L=en N=39,40  record just those, over what is kept"
+	@echo "  make clipcheck L=en  level and length of every clip, outliers named"
+	@echo "  make cliptrim L=en   re-trim saved clips (APPLY=1 to write)"
 	@echo "  make clipclean L=en  re-encode clips, dropping any metadata"
 	@echo "  make dev        run the app with hot reload"
 	@echo "  make web        frontend only in a browser, no Tauri"
@@ -82,13 +85,21 @@ clips:
 # stops, Enter keeps. Resumes wherever it left off.
 # Rebuilds each clip from its samples, so LIST/INFO metadata — an artist, a
 # date, the software that made it — has nowhere to survive. Idempotent.
+clipcheck:
+	@test -n "$(L)" || { echo "usage: make clipcheck L=en" >&2; exit 2; }
+	node tools/check-clips.ts $(L)
+
+cliptrim:
+	@test -n "$(L)" || { echo "usage: make cliptrim L=en [APPLY=1]" >&2; exit 2; }
+	node tools/trim-clips.ts $(L) $(if $(APPLY),apply,)
+
 clipclean:
 	@test -n "$(L)" || { echo "usage: make clipclean L=en" >&2; exit 2; }
 	node tools/clean-clips.ts $(L)
 
 record:
-	@test -n "$(L)" || { echo "usage: make record L=en" >&2; exit 2; }
-	node tools/record-clips.ts $(L)
+	@test -n "$(L)" || { echo "usage: make record L=en [N=39,40]" >&2; exit 2; }
+	node tools/record-clips.ts $(L) $(N)
 
 # The cross-platform half of scriptcheck. That one measures rendered files with
 # afinfo and is macOS-only; speech-dispatcher will not write audio to disk, so

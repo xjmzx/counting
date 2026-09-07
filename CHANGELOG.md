@@ -1,6 +1,42 @@
 # Changelog
 
-## Unreleased
+## v0.6.0 — English recorded
+
+- **A human voice for English, all 101 numbers.** Recorded rather than
+  synthesised, and preferred over synthesis wherever a clip exists. English is
+  not one of the languages the app teaches — it is the language it is written
+  in — so this is the reference layer a contributor's own recording can be
+  judged against, and the first evidence that the clip mechanism carries a real
+  speaker rather than a TTS voice in a different coat.
+- **A recorder that can be lived with.** `make record L=en` prompts with the
+  form the drill will show, and `N=39,40` or `N=41-100` redoes named numbers
+  over what is kept. `p` plays a take back as often as you like before you
+  decide: one listen is rarely enough, and re-recording to hear it again loses
+  the take being judged. Only Enter keeps — anything unrecognised asks again,
+  because keeping overwrites, and `q` once fell through to the keep branch and
+  wrote a take that was being rejected.
+- **`make clipcheck L=en`** reports every clip's level and length against the
+  speaker's own median, and prints the `make record` line that redoes whatever
+  stands out. Length is judged per syllable: against a median drawn from a
+  hundred mostly-compound numbers, every round ten reads as clipped, and six
+  false alarms buried the one clip that really was short.
+- **`make cliptrim L=en`** re-trims saved clips, reporting by default and
+  keeping originals when it writes. A human take is not reproducible.
+- **Trimming rebuilt, four times, each time by something heard.** It gated on
+  single samples, so the click of the Enter that starts a take anchored the
+  word and every bit of dead air behind it was kept — thirty of the first
+  forty-one takes. It measured level in amplitude alone, so a word-final /s/
+  under 6% of its vowel lost all 150 ms of itself: six, dix, sechs, seis, sei
+  — the number six ends in a fricative across most of the languages here. It
+  cut trailing clicks, which took the release burst off the /d/ of "hundred",
+  a rule that could never have reached the keypress it was written for. And it
+  required frames to be strictly consecutive, so a fading /n/ ended the word at
+  its first dip. What is left works on 10 ms frames, watches sibilance beside
+  amplitude, bridges brief dips, cuts on frame boundaries so the operation
+  settles, and discards a run only when it is both far from the word and too
+  brief to be a syllable.
+- Every committed clip is checked for embedded metadata, format, silence and
+  length. A WAV can carry the artist, the date and the software that made it.
 
 - The `.deb` now recommends `speech-dispatcher`, `espeak-ng` and the three
   open-jtalk packages. Recommends rather than depends, because reading and

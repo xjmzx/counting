@@ -30,3 +30,6 @@ src-tauri/gen/
 # the detail. clips/ja is that case today.
 clips/*/*.wav
 !clips/en/*.wav
+
+# Originals kept by `make cliptrim` before it rewrites a clip.
+clips/*/.original/

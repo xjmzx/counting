@@ -126,13 +126,51 @@ the claim that `make data` runs on a bare clone gets enforced.
 
     make record L=en
 
-Enter starts, Enter stops, it plays back, Enter keeps. `r` re-records the same
-number, `s` skips it, `q` stops — anything already recorded is kept, so a
+Enter starts, Enter stops, it plays back, Enter keeps. `p` plays it again — as
+often as you like, since one listen is rarely enough to judge a take and
+re-recording to hear it again loses the one being judged. `r` re-records the
+same number, `s` skips it, `q` stops. Anything already recorded is kept, so a
 hundred and one takes need not happen in one sitting.
+
+Only Enter keeps. Anything the tool does not recognise asks again rather than
+falling through to a default, because keeping overwrites what was there: `q`
+once landed on the keep branch and wrote a take that was being rejected.
 
 Each take is trimmed to the word with a 60 ms margin either side, because a
 human take has a variable run-up and dead air before the word reads as the app
 being slow. Silence and clipping are reported rather than written.
+
+Trimming works on 10 ms frames and requires 50 ms of sustained energy before it
+calls something the start of the word. That is not fussiness: pressing Enter to
+start a take puts a click at the head of the file, routinely louder than the
+voice, and a gate on single samples anchors to the click and keeps everything
+between it and the word. Thirty of the first forty-one English takes came out
+that way, one with three quarters of a second of silence in front. The level a
+clip is judged by is measured on what survives the trim, so a discarded click
+cannot make a quiet take look well recorded. Cuts land on frame boundaries,
+which is what makes trimming idempotent — and that is what makes it safe to run
+over a file twice:
+
+    make cliptrim L=en           what it would change
+    make cliptrim L=en APPLY=1   change it, keeping originals in .original/
+
+Clips recorded before that fix are recoverable rather than lost, since the click
+and the gap are still in the file.
+
+    make clipcheck L=en
+
+prints the length and level of every clip beside its neighbours. A take
+recorded off-axis is a perfectly valid WAV — it is only quiet next to the rest,
+which the ear misses under headphones. Thresholds are relative to that
+speaker's own median, since mic and gain differ per contributor while "one clip
+in a hundred should not stand out" does not. It ends by printing the line that
+redoes whatever it flagged:
+
+    make record L=en N=39-40
+
+Naming numbers records exactly those, over what is already kept; the old file
+is only replaced once a take is accepted, so quitting part way leaves it alone.
+`N=` takes `39`, `39,40`, `38-45` or any mix.
 
 macOS records through AVFoundation via `swift`, which is already required here
 by the ICU cross-check, so it adds no dependency; Linux uses `parecord` or

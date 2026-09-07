@@ -22,6 +22,9 @@ import {
 import { pickVoice, voicesFor, LOCALE_PREFERENCE, type Voice } from "./voices.ts";
 import { SOUND_RULES, SCRIPT_RULES, hintsFor, scriptHintsFor } from "./sounds.ts";
 import { readWav, writeWav, trim, inspectWav, ALLOWED_CHUNKS, MARGIN_MS, type Wav } from "./tools/wav.ts";
+import { parseNumbers, describeNumbers } from "./tools/numspec.ts";
+import { keyOf } from "./tools/keys.ts";
+import { syllables } from "./tools/syllables.ts";
 
 const LANGS: Language[] = [zh, fr, it, pt, es, en, de, hi, ja, th, vi];
 const RANGE = Array.from({ length: 101 }, (_, i) => i);
@@ -371,6 +374,192 @@ function check(): boolean {
     if (Math.abs(peak - 12000 / 32768) > 0.01) {
       console.error(`  ✗ wav: peak reported as ${peak.toFixed(3)}`); bad++;
     }
+    // The take as it actually arrives: Enter is pressed, the click lands at the
+    // head of the file, and the word follows after a beat. The click is made
+    // louder than the voice on purpose — that is the real case, and it is what
+    // defeated the previous single-sample gate, which anchored to the click and
+    // kept the gap behind it. Thirty of the first forty-one English takes came
+    // out of the recorder that way.
+    {
+      const click = Int16Array.from({ length: Math.round(rate * 0.004) }, (_, i) =>
+        Math.round(Math.sin(i / 2) * 20000 * (1 - i / Math.round(rate * 0.004))));
+      const gap = Math.round(rate * 0.7);
+      const real: Wav = { rate, channels: 1, samples: join(click, silence(gap), tone(word, 9000), silence(Math.round(rate * 0.4))) };
+      const t = trim(real);
+      if (Math.abs(t.after - (0.2 + margin)) > 0.04) {
+        console.error(`  ✗ wav: a take with a keypress trimmed to ${t.after.toFixed(3)}s, expected the word plus two margins`); bad++;
+      }
+      // The click must be gone, not merely off the front — if any of it were
+      // kept the clip would open on a snap.
+      if (t.trimmed.samples.some((v) => Math.abs(v) > 15000)) {
+        console.error("  ✗ wav: the keypress survived into the clip"); bad++;
+      }
+      // And the level reported must be the voice, not the click, or a quiet
+      // take with a heavy keypress reads as well recorded.
+      if (Math.abs(t.peak - 9000 / 32768) > 0.01) {
+        console.error(`  ✗ wav: peak reported as ${t.peak.toFixed(3)}, which is the keypress, not the word`); bad++;
+      }
+      checked += 3;
+
+      // A word ending in a fricative. This is the case that amplitude alone
+      // cannot see: /s/ carries a fraction of the energy of the vowel before
+      // it, and in "six" the /k/ is a silent closure, so the /s/ also sits
+      // behind a gap and looks exactly like a stray click. Under a broadband
+      // gate a final /s/ below 6% of the vowel lost all 150 ms of itself —
+      // measured, not supposed — and the speaker hears it as their own
+      // mispronunciation rather than as the tool eating the word.
+      //
+      // six, dix, sechs, seis, sei: this is most of the languages here.
+      {
+        // Deterministic noise, so a failure is reproducible.
+        let seed = 12345;
+        const noise = (ms: number, amp: number) =>
+          Int16Array.from({ length: Math.round(rate * ms / 1000) }, () => {
+            seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+            return Math.round((seed / 0x3fffffff - 1) * amp);
+          });
+        const vowel = 12000;
+        for (const pct of [5, 8, 20]) {
+          const six: Wav = { rate, channels: 1, samples: join(
+            silence(Math.round(rate * 0.3)),
+            tone(Math.round(rate * 0.2), vowel),
+            silence(Math.round(rate * 0.06)),     // the /k/ closure
+            noise(150, Math.round(vowel * pct / 100)),
+            silence(Math.round(rate * 0.4))) };
+          const t = trim(six);
+          // The fricative ends 0.71s in. Everything up to there must be kept.
+          const kept = t.head + t.after;
+          if (kept < 0.71) {
+            console.error(`  ✗ wav: a final fricative at ${pct}% of the vowel was cut — kept to ${kept.toFixed(2)}s of 0.71s`); bad++;
+          }
+          checked++;
+        }
+        // A word ending in a stop: "hundred". The /d/ is a closure — silence —
+        // followed by a release burst about 10 ms long and a tenth the level
+        // of the vowel. That is a gap followed by a transient, which is the
+        // exact shape of a keypress, and a rule that cut trailing clicks
+        // removed it. The rule is gone: measured on real takes, the keypress
+        // that stops a recording lands 230 ms after the last syllable and is
+        // already outside the margin, while everything a tail rule could
+        // actually reach belongs to the word.
+        {
+          const hundred: Wav = { rate, channels: 1, samples: join(
+            silence(Math.round(rate * 0.3)),
+            tone(Math.round(rate * 0.25), vowel),
+            silence(Math.round(rate * 0.05)),      // the closure
+            noise(12, Math.round(vowel * 0.08)),   // the release
+            silence(Math.round(rate * 0.4))) };
+          const t = trim(hundred);
+          // The release ends at 0.612s; losing it entirely ends the clip near
+          // 0.42s, so a frame of slack here still separates the two outcomes.
+          if (t.head + t.after < 0.61) {
+            console.error(`  ✗ wav: a final stop release was cut — kept to ${(t.head + t.after).toFixed(3)}s of 0.612s`); bad++;
+          }
+          checked++;
+        }
+
+        // A syllable that fades in steps rather than smoothly — a nasal on its
+        // way out dips below the gate and returns. Requiring frames to be
+        // strictly consecutive ends the word at the first dip.
+        {
+          const fading: Wav = { rate, channels: 1, samples: join(
+            silence(Math.round(rate * 0.3)),
+            tone(Math.round(rate * 0.2), vowel),
+            ...[0.5, 0.28, 0.16, 0.09].flatMap((f) => [
+              tone(Math.round(rate * 0.03), Math.round(vowel * f)),
+              silence(Math.round(rate * 0.02)),
+            ]),
+            silence(Math.round(rate * 0.4))) };
+          const t = trim(fading);
+          if (t.head + t.after < 0.69) {
+            console.error(`  ✗ wav: a fading syllable was cut at its first dip — kept to ${(t.head + t.after).toFixed(3)}s of 0.70s`); bad++;
+          }
+          checked++;
+        }
+
+        // The Enter that stops a take, landing well after the last syllable.
+        // It sustains long enough to count as sound, so unless it is discarded
+        // it becomes the end of the word and everything between is kept — nine
+        // of the finished English clips ran on for up to a further second.
+        {
+          const withStray: Wav = { rate, channels: 1, samples: join(
+            silence(Math.round(rate * 0.3)),
+            tone(Math.round(rate * 0.35), vowel),
+            silence(Math.round(rate * 0.55)),
+            noise(70, Math.round(vowel * 0.2)),
+            silence(Math.round(rate * 0.3))) };
+          const t = trim(withStray);
+          if (t.after > 0.35 + 2 * MARGIN_MS / 1000 + 0.02) {
+            console.error(`  ✗ wav: a stray after the word was kept — ${t.after.toFixed(2)}s for a 0.35s word`); bad++;
+          }
+          checked++;
+        }
+
+        // But a real syllable after a real pause is not a stray, however long
+        // the pause. Only brevity separates the two, which is why both
+        // conditions are required: losing speech here cannot be undone.
+        {
+          const slow: Wav = { rate, channels: 1, samples: join(
+            silence(Math.round(rate * 0.3)),
+            tone(Math.round(rate * 0.35), vowel),
+            silence(Math.round(rate * 0.55)),
+            tone(Math.round(rate * 0.3), Math.round(vowel * 0.5)),
+            silence(Math.round(rate * 0.3))) };
+          const t = trim(slow);
+          if (t.after < 1.2) {
+            console.error(`  ✗ wav: a drawn-out second syllable was discarded — kept ${t.after.toFixed(2)}s of 1.2s`); bad++;
+          }
+          checked++;
+        }
+
+        // And the opposite error: room hiss must not read as a word.
+        const hissOnly: Wav = { rate, channels: 1, samples: join(
+          noise(300, 300), tone(Math.round(rate * 0.2), vowel), noise(400, 300)) };
+        const h = trim(hissOnly);
+        if (h.after > 0.45) {
+          console.error(`  ✗ wav: hiss counted as speech — kept ${h.after.toFixed(2)}s of a 0.2s word`); bad++;
+        }
+        checked++;
+      }
+
+      // Everything the trim removes has to be accounted for at one end or the
+      // other. This is what the recorder now prints, and the reason it prints
+      // it: "1.80s → 0.80s" on its own reads as though a second of the word
+      // had gone missing, and someone holding a microphone will re-record four
+      // times over that. head + word + tail = what was captured, exactly.
+      for (const [what, t] of [["a clean take", trim(w)], ["a take with a keypress", trim(real)]] as const) {
+        if (Math.abs(t.head + t.after + t.tail - t.before) > 1e-6) {
+          console.error(`  ✗ wav: ${what} — ${t.head.toFixed(3)} + ${t.after.toFixed(3)} + ${t.tail.toFixed(3)} is not ${t.before.toFixed(3)}`); bad++;
+        }
+        if (t.head < 0 || t.tail < 0) {
+          console.error(`  ✗ wav: ${what} reports negative silence`); bad++;
+        }
+        checked += 2;
+      }
+
+      // Trimming has to settle. It is applied to a fresh take by the recorder
+      // and again by `make cliptrim` to files the old one produced, so "trim
+      // of a trimmed clip is that clip" is what makes the second safe to run
+      // at all. It did not hold at first: the margin was a whole number of
+      // milliseconds but not of frames, so every pass moved the word three
+      // samples off the grid and took three more — inaudible, and unbounded.
+      const once = trim(real);
+      const twice = trim(once.trimmed);
+      const thrice = trim(twice.trimmed);
+      // A pass may legitimately follow the first, since discarding a click
+      // louder than the voice changes what counts as loud. By the third there
+      // is nothing left to learn and it must stand still.
+      if (thrice.trimmed.samples.length !== twice.trimmed.samples.length) {
+        console.error(`  ✗ wav: trimming does not settle — ${twice.trimmed.samples.length} then ${thrice.trimmed.samples.length} samples`); bad++;
+      }
+      // Clean input, no click: settled from the very first pass.
+      const plain = trim(w);
+      if (trim(plain.trimmed).trimmed.samples.length !== plain.trimmed.samples.length) {
+        console.error("  ✗ wav: trimming a clean take twice is not the same as once"); bad++;
+      }
+      checked += 2;
+    }
+
     // Silence must survive rather than being trimmed to nothing, so a failed
     // take is reported as silent instead of being written as a valid clip.
     const quiet = trim({ rate, channels: 1, samples: silence(rate) });
@@ -431,6 +620,116 @@ function check(): boolean {
       }
     }
     checked += 1 + scanned;
+  }
+
+  // Counting syllables, which is the denominator `make clipcheck` divides a
+  // clip's length by. It only has to be proportional — but it has to be
+  // proportional in every language here, and it was not: `y` was treated as a
+  // vowel throughout, so the romaji "juyon" ran into a single vowel group and
+  // every Japanese reading with a y in it read as half its true length. The
+  // clips were then judged twice as slow as they are.
+  {
+    const same = (form: string, reading: string | undefined, want: number) => {
+      const got = syllables(form, reading);
+      if (got !== want) { console.error(`  ✗ syllables: ${reading ?? form} counted ${got}, want ${want}`); bad++; }
+      checked++;
+    };
+    same("ten", undefined, 1);
+    same("twenty", undefined, 2);          // y is a vowel here
+    same("forty-eight", undefined, 3);
+    same("seventy-eight", undefined, 4);
+    same("十四", "jūyon", 2);               // and a consonant here
+    same("十七", "jūnana", 3);
+    same("九", "kyū", 1);                   // ky- is one onset, not two beats
+    // Every language must give every number a count of at least one, or a
+    // clip's length is divided by zero and the report says nothing at all.
+    for (const l of LANGS) {
+      for (let n = 0; n <= 100; n++) {
+        const it = l.compose(n);
+        const c = syllables(it.form, it.reading);
+        if (!Number.isFinite(c) || c < 1) {
+          console.error(`  ✗ syllables: ${l.code} ${n} (${it.form}) counted ${c}`); bad++;
+        }
+      }
+      checked++;
+    }
+  }
+
+  // What a key means at a recorder prompt. The recorder cannot be tested by
+  // pressing keys at it, but this can, and it is where the damage happens:
+  // keeping a take overwrites whatever was there and moves on. `q` once fell
+  // through to that branch and wrote a take that was being rejected.
+  {
+    const same = (input: string, want: string) => {
+      const got = keyOf(input);
+      if (got !== want) { console.error(`  ✗ keys: "${input}" read as ${got}, want ${want}`); bad++; }
+      checked++;
+    };
+    same("", "go");
+    same("   ", "go");
+    same("q", "quit");
+    same(" Q ", "quit");
+    same("quit", "quit");
+    same("p", "play");
+    same("r", "redo");
+    same("s", "skip");
+    // The property that matters: only Enter means keep. Anything the tool does
+    // not understand must say so rather than defaulting to the destructive
+    // branch — a typo, a stray character, a key meant for something else.
+    for (const stray of ["x", "y", "n", "1", "k", "keep", "rr", "sq", "\u001b[A", "?", "pp"]) {
+      if (keyOf(stray) !== "unknown") {
+        console.error(`  ✗ keys: "${stray}" was understood as ${keyOf(stray)} — only Enter may mean keep`); bad++;
+      }
+      checked++;
+    }
+  }
+
+  // The number spec, which is a handshake between two tools: `make clipcheck`
+  // names the takes worth doing again and prints a `make record N=` line, and
+  // the recorder has to read back exactly the set that was meant. A drift
+  // between them would not error — it would quietly re-record the wrong words
+  // over good ones. So the round trip is asserted rather than assumed.
+  {
+    const sets = [[39], [39, 40], [0], [100], [38, 39, 40, 55], [1, 3, 5, 7],
+                  Array.from({ length: 60 }, (_, i) => i + 41),
+                  Array.from({ length: 101 }, (_, i) => i)];
+    for (const set of sets) {
+      const printed = describeNumbers(set);
+      // A drift can make the printed line unreadable rather than merely wrong,
+      // so the throw is caught here and reported like any other failure.
+      let back: number[] | null = null;
+      let why = "";
+      try { back = parseNumbers(printed); } catch (e) { why = ` (${(e as Error).message})`; }
+      if (back?.join(",") !== set.join(",")) {
+        console.error(`  ✗ numspec: "${printed}" read back as ${back?.join(",")}${why}`); bad++;
+      }
+      checked++;
+    }
+    // Shorthand a person types by hand, rather than one we printed.
+    const same = (spec: string, want: number[]) => {
+      const got = parseNumbers(spec);
+      if (got?.join(",") !== want.join(",")) {
+        console.error(`  ✗ numspec: "${spec}" gave ${got?.join(",")}, want ${want.join(",")}`); bad++;
+      }
+      checked++;
+    };
+    same("39", [39]);
+    same(" 40 , 39 ", [39, 40]);   // unordered and spaced
+    same("39,39,39", [39]);        // repeated
+    same("38-40,39", [38, 39, 40]); // overlapping
+    same("0-2", [0, 1, 2]);
+    if (parseNumbers(undefined) !== null || parseNumbers("") !== null || parseNumbers("  ") !== null) {
+      console.error("  ✗ numspec: an absent spec must mean \"whatever is missing\", not an empty set"); bad++;
+    }
+    checked++;
+    // And what must be refused, because each of these would otherwise record
+    // over something: a typo, a number off the end, a backwards range.
+    for (const spec of ["4x", "39,4x", "101", "0-101", "40-39", "-1", "39-"]) {
+      let threw = false;
+      try { parseNumbers(spec); } catch { threw = true; }
+      if (!threw) { console.error(`  ✗ numspec: "${spec}" was accepted`); bad++; }
+      checked++;
+    }
   }
 
   // Voice selection. Picking a zh_HK voice for Mandarin would read every

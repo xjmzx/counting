@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { existsSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import type { Item, Language } from "./types.ts";
 import { zh } from "./lang/zh.ts";
@@ -653,6 +653,46 @@ function check(): boolean {
       }
       checked++;
     }
+  }
+
+  // One version, in five files. `make version V=x.y.z` sets all of them, and
+  // the reason to check is that hand-editing looks like it works: four of the
+  // five are obvious, and `package-lock.json` carries it twice — its own and
+  // the root entry under "packages" — so a bump that skips it leaves npm's two
+  // copies disagreeing with everything else. That is what shipped at v0.6.0.
+  // Nothing was red, and the tool that does it properly was in the Makefile.
+  {
+    const json = (path: string): Record<string, unknown> =>
+      JSON.parse(readFileSync(path, "utf8")) as Record<string, unknown>;
+    const found: Array<[string, unknown]> = [];
+
+    // Parsed rather than matched. Every dependency in the lockfile has a
+    // "version" at the same indentation as the one that matters, so a regex
+    // here reads two hundred numbers and cannot say which two it wanted.
+    const pkg = json("package.json");
+    found.push(["package.json", pkg["version"]]);
+    const lock = json("package-lock.json");
+    found.push(["package-lock.json", lock["version"]]);
+    const root = (lock["packages"] as Record<string, { version?: string }> | undefined)?.[""];
+    found.push(['package-lock.json packages[""]', root?.version]);
+    found.push(["src-tauri/tauri.conf.json", json("src-tauri/tauri.conf.json")["version"]]);
+
+    for (const [path, re] of [
+      ["src-tauri/Cargo.toml", /^version = "([^"]+)"/m],
+      ["src-tauri/Cargo.lock", /\[\[package\]\]\nname = "counting"\nversion = "([^"]+)"/],
+    ] as const) {
+      found.push([path, re.exec(readFileSync(path, "utf8"))?.[1]]);
+    }
+
+    const missing = found.filter(([, v]) => typeof v !== "string" || v === "");
+    for (const [path] of missing) { console.error(`  ✗ version: none found in ${path}`); bad++; }
+    const distinct = [...new Set(found.map(([, v]) => v).filter((v) => typeof v === "string"))];
+    if (distinct.length > 1) {
+      console.error(`  ✗ version: ${distinct.join(" and ")} — run \`make version V=<the right one>\``);
+      for (const [path, v] of found) console.error(`      ${String(v).padEnd(12)} ${path}`);
+      bad++;
+    }
+    checked++;
   }
 
   // What a key means at a recorder prompt. The recorder cannot be tested by

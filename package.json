@@ -1,0 +1,21 @@
+{
+  "name": "counting",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "0-100 in Mandarin, French and German, composed from a small table of atoms",
+  "scripts": {
+    "table": "node compose.ts table",
+    "check": "node compose.ts check",
+    "stats": "node compose.ts stats",
+    "emit": "node compose.ts emit",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.1",
+    "typescript": "~6.0.2"
+  },
+  "engines": {
+    "node": ">=23"
+  }
+}

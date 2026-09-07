@@ -1,0 +1,20 @@
+# Logs
+*.log
+npm-debug.log*
+
+node_modules
+dist
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+
+# Rust / Tauri (once the app lands)
+src-tauri/target/
+src-tauri/gen/
+
+# Local
+.claude/

@@ -1,0 +1,2835 @@
+{
+  "zh": {
+    "name": "Mandarin Chinese",
+    "atoms": [
+      {
+        "n": 0,
+        "form": "零",
+        "reading": "líng"
+      },
+      {
+        "n": 1,
+        "form": "一",
+        "reading": "yī"
+      },
+      {
+        "n": 2,
+        "form": "二",
+        "reading": "èr"
+      },
+      {
+        "n": 3,
+        "form": "三",
+        "reading": "sān"
+      },
+      {
+        "n": 4,
+        "form": "四",
+        "reading": "sì"
+      },
+      {
+        "n": 5,
+        "form": "五",
+        "reading": "wǔ"
+      },
+      {
+        "n": 6,
+        "form": "六",
+        "reading": "liù"
+      },
+      {
+        "n": 7,
+        "form": "七",
+        "reading": "qī"
+      },
+      {
+        "n": 8,
+        "form": "八",
+        "reading": "bā"
+      },
+      {
+        "n": 9,
+        "form": "九",
+        "reading": "jiǔ"
+      },
+      {
+        "n": 10,
+        "form": "十",
+        "reading": "shí"
+      },
+      {
+        "n": 100,
+        "form": "百",
+        "reading": "bǎi"
+      }
+    ],
+    "items": [
+      {
+        "n": 0,
+        "form": "零",
+        "reading": "líng",
+        "parts": [
+          0
+        ]
+      },
+      {
+        "n": 1,
+        "form": "一",
+        "reading": "yī",
+        "parts": [
+          1
+        ]
+      },
+      {
+        "n": 2,
+        "form": "二",
+        "reading": "èr",
+        "parts": [
+          2
+        ]
+      },
+      {
+        "n": 3,
+        "form": "三",
+        "reading": "sān",
+        "parts": [
+          3
+        ]
+      },
+      {
+        "n": 4,
+        "form": "四",
+        "reading": "sì",
+        "parts": [
+          4
+        ]
+      },
+      {
+        "n": 5,
+        "form": "五",
+        "reading": "wǔ",
+        "parts": [
+          5
+        ]
+      },
+      {
+        "n": 6,
+        "form": "六",
+        "reading": "liù",
+        "parts": [
+          6
+        ]
+      },
+      {
+        "n": 7,
+        "form": "七",
+        "reading": "qī",
+        "parts": [
+          7
+        ]
+      },
+      {
+        "n": 8,
+        "form": "八",
+        "reading": "bā",
+        "parts": [
+          8
+        ]
+      },
+      {
+        "n": 9,
+        "form": "九",
+        "reading": "jiǔ",
+        "parts": [
+          9
+        ]
+      },
+      {
+        "n": 10,
+        "form": "十",
+        "reading": "shí",
+        "parts": [
+          10
+        ]
+      },
+      {
+        "n": 11,
+        "form": "十一",
+        "reading": "shí yī",
+        "parts": [
+          10,
+          1
+        ]
+      },
+      {
+        "n": 12,
+        "form": "十二",
+        "reading": "shí èr",
+        "parts": [
+          10,
+          2
+        ]
+      },
+      {
+        "n": 13,
+        "form": "十三",
+        "reading": "shí sān",
+        "parts": [
+          10,
+          3
+        ]
+      },
+      {
+        "n": 14,
+        "form": "十四",
+        "reading": "shí sì",
+        "parts": [
+          10,
+          4
+        ]
+      },
+      {
+        "n": 15,
+        "form": "十五",
+        "reading": "shí wǔ",
+        "parts": [
+          10,
+          5
+        ]
+      },
+      {
+        "n": 16,
+        "form": "十六",
+        "reading": "shí liù",
+        "parts": [
+          10,
+          6
+        ]
+      },
+      {
+        "n": 17,
+        "form": "十七",
+        "reading": "shí qī",
+        "parts": [
+          10,
+          7
+        ]
+      },
+      {
+        "n": 18,
+        "form": "十八",
+        "reading": "shí bā",
+        "parts": [
+          10,
+          8
+        ]
+      },
+      {
+        "n": 19,
+        "form": "十九",
+        "reading": "shí jiǔ",
+        "parts": [
+          10,
+          9
+        ]
+      },
+      {
+        "n": 20,
+        "form": "二十",
+        "reading": "èr shí",
+        "parts": [
+          2,
+          10
+        ]
+      },
+      {
+        "n": 21,
+        "form": "二十一",
+        "reading": "èr shí yī",
+        "parts": [
+          2,
+          10,
+          1
+        ]
+      },
+      {
+        "n": 22,
+        "form": "二十二",
+        "reading": "èr shí èr",
+        "parts": [
+          2,
+          10,
+          2
+        ]
+      },
+      {
+        "n": 23,
+        "form": "二十三",
+        "reading": "èr shí sān",
+        "parts": [
+          2,
+          10,
+          3
+        ]
+      },
+      {
+        "n": 24,
+        "form": "二十四",
+        "reading": "èr shí sì",
+        "parts": [
+          2,
+          10,
+          4
+        ]
+      },
+      {
+        "n": 25,
+        "form": "二十五",
+        "reading": "èr shí wǔ",
+        "parts": [
+          2,
+          10,
+          5
+        ]
+      },
+      {
+        "n": 26,
+        "form": "二十六",
+        "reading": "èr shí liù",
+        "parts": [
+          2,
+          10,
+          6
+        ]
+      },
+      {
+        "n": 27,
+        "form": "二十七",
+        "reading": "èr shí qī",
+        "parts": [
+          2,
+          10,
+          7
+        ]
+      },
+      {
+        "n": 28,
+        "form": "二十八",
+        "reading": "èr shí bā",
+        "parts": [
+          2,
+          10,
+          8
+        ]
+      },
+      {
+        "n": 29,
+        "form": "二十九",
+        "reading": "èr shí jiǔ",
+        "parts": [
+          2,
+          10,
+          9
+        ]
+      },
+      {
+        "n": 30,
+        "form": "三十",
+        "reading": "sān shí",
+        "parts": [
+          3,
+          10
+        ]
+      },
+      {
+        "n": 31,
+        "form": "三十一",
+        "reading": "sān shí yī",
+        "parts": [
+          3,
+          10,
+          1
+        ]
+      },
+      {
+        "n": 32,
+        "form": "三十二",
+        "reading": "sān shí èr",
+        "parts": [
+          3,
+          10,
+          2
+        ]
+      },
+      {
+        "n": 33,
+        "form": "三十三",
+        "reading": "sān shí sān",
+        "parts": [
+          3,
+          10,
+          3
+        ]
+      },
+      {
+        "n": 34,
+        "form": "三十四",
+        "reading": "sān shí sì",
+        "parts": [
+          3,
+          10,
+          4
+        ]
+      },
+      {
+        "n": 35,
+        "form": "三十五",
+        "reading": "sān shí wǔ",
+        "parts": [
+          3,
+          10,
+          5
+        ]
+      },
+      {
+        "n": 36,
+        "form": "三十六",
+        "reading": "sān shí liù",
+        "parts": [
+          3,
+          10,
+          6
+        ]
+      },
+      {
+        "n": 37,
+        "form": "三十七",
+        "reading": "sān shí qī",
+        "parts": [
+          3,
+          10,
+          7
+        ]
+      },
+      {
+        "n": 38,
+        "form": "三十八",
+        "reading": "sān shí bā",
+        "parts": [
+          3,
+          10,
+          8
+        ]
+      },
+      {
+        "n": 39,
+        "form": "三十九",
+        "reading": "sān shí jiǔ",
+        "parts": [
+          3,
+          10,
+          9
+        ]
+      },
+      {
+        "n": 40,
+        "form": "四十",
+        "reading": "sì shí",
+        "parts": [
+          4,
+          10
+        ]
+      },
+      {
+        "n": 41,
+        "form": "四十一",
+        "reading": "sì shí yī",
+        "parts": [
+          4,
+          10,
+          1
+        ]
+      },
+      {
+        "n": 42,
+        "form": "四十二",
+        "reading": "sì shí èr",
+        "parts": [
+          4,
+          10,
+          2
+        ]
+      },
+      {
+        "n": 43,
+        "form": "四十三",
+        "reading": "sì shí sān",
+        "parts": [
+          4,
+          10,
+          3
+        ]
+      },
+      {
+        "n": 44,
+        "form": "四十四",
+        "reading": "sì shí sì",
+        "parts": [
+          4,
+          10,
+          4
+        ]
+      },
+      {
+        "n": 45,
+        "form": "四十五",
+        "reading": "sì shí wǔ",
+        "parts": [
+          4,
+          10,
+          5
+        ]
+      },
+      {
+        "n": 46,
+        "form": "四十六",
+        "reading": "sì shí liù",
+        "parts": [
+          4,
+          10,
+          6
+        ]
+      },
+      {
+        "n": 47,
+        "form": "四十七",
+        "reading": "sì shí qī",
+        "parts": [
+          4,
+          10,
+          7
+        ]
+      },
+      {
+        "n": 48,
+        "form": "四十八",
+        "reading": "sì shí bā",
+        "parts": [
+          4,
+          10,
+          8
+        ]
+      },
+      {
+        "n": 49,
+        "form": "四十九",
+        "reading": "sì shí jiǔ",
+        "parts": [
+          4,
+          10,
+          9
+        ]
+      },
+      {
+        "n": 50,
+        "form": "五十",
+        "reading": "wǔ shí",
+        "parts": [
+          5,
+          10
+        ]
+      },
+      {
+        "n": 51,
+        "form": "五十一",
+        "reading": "wǔ shí yī",
+        "parts": [
+          5,
+          10,
+          1
+        ]
+      },
+      {
+        "n": 52,
+        "form": "五十二",
+        "reading": "wǔ shí èr",
+        "parts": [
+          5,
+          10,
+          2
+        ]
+      },
+      {
+        "n": 53,
+        "form": "五十三",
+        "reading": "wǔ shí sān",
+        "parts": [
+          5,
+          10,
+          3
+        ]
+      },
+      {
+        "n": 54,
+        "form": "五十四",
+        "reading": "wǔ shí sì",
+        "parts": [
+          5,
+          10,
+          4
+        ]
+      },
+      {
+        "n": 55,
+        "form": "五十五",
+        "reading": "wǔ shí wǔ",
+        "parts": [
+          5,
+          10,
+          5
+        ]
+      },
+      {
+        "n": 56,
+        "form": "五十六",
+        "reading": "wǔ shí liù",
+        "parts": [
+          5,
+          10,
+          6
+        ]
+      },
+      {
+        "n": 57,
+        "form": "五十七",
+        "reading": "wǔ shí qī",
+        "parts": [
+          5,
+          10,
+          7
+        ]
+      },
+      {
+        "n": 58,
+        "form": "五十八",
+        "reading": "wǔ shí bā",
+        "parts": [
+          5,
+          10,
+          8
+        ]
+      },
+      {
+        "n": 59,
+        "form": "五十九",
+        "reading": "wǔ shí jiǔ",
+        "parts": [
+          5,
+          10,
+          9
+        ]
+      },
+      {
+        "n": 60,
+        "form": "六十",
+        "reading": "liù shí",
+        "parts": [
+          6,
+          10
+        ]
+      },
+      {
+        "n": 61,
+        "form": "六十一",
+        "reading": "liù shí yī",
+        "parts": [
+          6,
+          10,
+          1
+        ]
+      },
+      {
+        "n": 62,
+        "form": "六十二",
+        "reading": "liù shí èr",
+        "parts": [
+          6,
+          10,
+          2
+        ]
+      },
+      {
+        "n": 63,
+        "form": "六十三",
+        "reading": "liù shí sān",
+        "parts": [
+          6,
+          10,
+          3
+        ]
+      },
+      {
+        "n": 64,
+        "form": "六十四",
+        "reading": "liù shí sì",
+        "parts": [
+          6,
+          10,
+          4
+        ]
+      },
+      {
+        "n": 65,
+        "form": "六十五",
+        "reading": "liù shí wǔ",
+        "parts": [
+          6,
+          10,
+          5
+        ]
+      },
+      {
+        "n": 66,
+        "form": "六十六",
+        "reading": "liù shí liù",
+        "parts": [
+          6,
+          10,
+          6
+        ]
+      },
+      {
+        "n": 67,
+        "form": "六十七",
+        "reading": "liù shí qī",
+        "parts": [
+          6,
+          10,
+          7
+        ]
+      },
+      {
+        "n": 68,
+        "form": "六十八",
+        "reading": "liù shí bā",
+        "parts": [
+          6,
+          10,
+          8
+        ]
+      },
+      {
+        "n": 69,
+        "form": "六十九",
+        "reading": "liù shí jiǔ",
+        "parts": [
+          6,
+          10,
+          9
+        ]
+      },
+      {
+        "n": 70,
+        "form": "七十",
+        "reading": "qī shí",
+        "parts": [
+          7,
+          10
+        ]
+      },
+      {
+        "n": 71,
+        "form": "七十一",
+        "reading": "qī shí yī",
+        "parts": [
+          7,
+          10,
+          1
+        ]
+      },
+      {
+        "n": 72,
+        "form": "七十二",
+        "reading": "qī shí èr",
+        "parts": [
+          7,
+          10,
+          2
+        ]
+      },
+      {
+        "n": 73,
+        "form": "七十三",
+        "reading": "qī shí sān",
+        "parts": [
+          7,
+          10,
+          3
+        ]
+      },
+      {
+        "n": 74,
+        "form": "七十四",
+        "reading": "qī shí sì",
+        "parts": [
+          7,
+          10,
+          4
+        ]
+      },
+      {
+        "n": 75,
+        "form": "七十五",
+        "reading": "qī shí wǔ",
+        "parts": [
+          7,
+          10,
+          5
+        ]
+      },
+      {
+        "n": 76,
+        "form": "七十六",
+        "reading": "qī shí liù",
+        "parts": [
+          7,
+          10,
+          6
+        ]
+      },
+      {
+        "n": 77,
+        "form": "七十七",
+        "reading": "qī shí qī",
+        "parts": [
+          7,
+          10,
+          7
+        ]
+      },
+      {
+        "n": 78,
+        "form": "七十八",
+        "reading": "qī shí bā",
+        "parts": [
+          7,
+          10,
+          8
+        ]
+      },
+      {
+        "n": 79,
+        "form": "七十九",
+        "reading": "qī shí jiǔ",
+        "parts": [
+          7,
+          10,
+          9
+        ]
+      },
+      {
+        "n": 80,
+        "form": "八十",
+        "reading": "bā shí",
+        "parts": [
+          8,
+          10
+        ]
+      },
+      {
+        "n": 81,
+        "form": "八十一",
+        "reading": "bā shí yī",
+        "parts": [
+          8,
+          10,
+          1
+        ]
+      },
+      {
+        "n": 82,
+        "form": "八十二",
+        "reading": "bā shí èr",
+        "parts": [
+          8,
+          10,
+          2
+        ]
+      },
+      {
+        "n": 83,
+        "form": "八十三",
+        "reading": "bā shí sān",
+        "parts": [
+          8,
+          10,
+          3
+        ]
+      },
+      {
+        "n": 84,
+        "form": "八十四",
+        "reading": "bā shí sì",
+        "parts": [
+          8,
+          10,
+          4
+        ]
+      },
+      {
+        "n": 85,
+        "form": "八十五",
+        "reading": "bā shí wǔ",
+        "parts": [
+          8,
+          10,
+          5
+        ]
+      },
+      {
+        "n": 86,
+        "form": "八十六",
+        "reading": "bā shí liù",
+        "parts": [
+          8,
+          10,
+          6
+        ]
+      },
+      {
+        "n": 87,
+        "form": "八十七",
+        "reading": "bā shí qī",
+        "parts": [
+          8,
+          10,
+          7
+        ]
+      },
+      {
+        "n": 88,
+        "form": "八十八",
+        "reading": "bā shí bā",
+        "parts": [
+          8,
+          10,
+          8
+        ]
+      },
+      {
+        "n": 89,
+        "form": "八十九",
+        "reading": "bā shí jiǔ",
+        "parts": [
+          8,
+          10,
+          9
+        ]
+      },
+      {
+        "n": 90,
+        "form": "九十",
+        "reading": "jiǔ shí",
+        "parts": [
+          9,
+          10
+        ]
+      },
+      {
+        "n": 91,
+        "form": "九十一",
+        "reading": "jiǔ shí yī",
+        "parts": [
+          9,
+          10,
+          1
+        ]
+      },
+      {
+        "n": 92,
+        "form": "九十二",
+        "reading": "jiǔ shí èr",
+        "parts": [
+          9,
+          10,
+          2
+        ]
+      },
+      {
+        "n": 93,
+        "form": "九十三",
+        "reading": "jiǔ shí sān",
+        "parts": [
+          9,
+          10,
+          3
+        ]
+      },
+      {
+        "n": 94,
+        "form": "九十四",
+        "reading": "jiǔ shí sì",
+        "parts": [
+          9,
+          10,
+          4
+        ]
+      },
+      {
+        "n": 95,
+        "form": "九十五",
+        "reading": "jiǔ shí wǔ",
+        "parts": [
+          9,
+          10,
+          5
+        ]
+      },
+      {
+        "n": 96,
+        "form": "九十六",
+        "reading": "jiǔ shí liù",
+        "parts": [
+          9,
+          10,
+          6
+        ]
+      },
+      {
+        "n": 97,
+        "form": "九十七",
+        "reading": "jiǔ shí qī",
+        "parts": [
+          9,
+          10,
+          7
+        ]
+      },
+      {
+        "n": 98,
+        "form": "九十八",
+        "reading": "jiǔ shí bā",
+        "parts": [
+          9,
+          10,
+          8
+        ]
+      },
+      {
+        "n": 99,
+        "form": "九十九",
+        "reading": "jiǔ shí jiǔ",
+        "parts": [
+          9,
+          10,
+          9
+        ]
+      },
+      {
+        "n": 100,
+        "form": "一百",
+        "reading": "yì bǎi",
+        "parts": [
+          1,
+          100
+        ],
+        "note": "Tone sandhi: 一 is yì here, not yī, because 百 carries a third tone."
+      }
+    ]
+  },
+  "fr": {
+    "name": "French",
+    "atoms": [
+      {
+        "n": 0,
+        "form": "zéro"
+      },
+      {
+        "n": 1,
+        "form": "un"
+      },
+      {
+        "n": 2,
+        "form": "deux"
+      },
+      {
+        "n": 3,
+        "form": "trois"
+      },
+      {
+        "n": 4,
+        "form": "quatre"
+      },
+      {
+        "n": 5,
+        "form": "cinq"
+      },
+      {
+        "n": 6,
+        "form": "six"
+      },
+      {
+        "n": 7,
+        "form": "sept"
+      },
+      {
+        "n": 8,
+        "form": "huit"
+      },
+      {
+        "n": 9,
+        "form": "neuf"
+      },
+      {
+        "n": 10,
+        "form": "dix"
+      },
+      {
+        "n": 11,
+        "form": "onze"
+      },
+      {
+        "n": 12,
+        "form": "douze"
+      },
+      {
+        "n": 13,
+        "form": "treize"
+      },
+      {
+        "n": 14,
+        "form": "quatorze"
+      },
+      {
+        "n": 15,
+        "form": "quinze"
+      },
+      {
+        "n": 16,
+        "form": "seize",
+        "note": "The last of the simple teens; 17 starts compounding."
+      },
+      {
+        "n": 20,
+        "form": "vingt"
+      },
+      {
+        "n": 30,
+        "form": "trente"
+      },
+      {
+        "n": 40,
+        "form": "quarante"
+      },
+      {
+        "n": 50,
+        "form": "cinquante"
+      },
+      {
+        "n": 60,
+        "form": "soixante",
+        "note": "The last tens word. 70-99 are built from 60 and 4x20."
+      },
+      {
+        "n": 100,
+        "form": "cent"
+      }
+    ],
+    "items": [
+      {
+        "n": 0,
+        "form": "zéro",
+        "parts": [
+          0
+        ]
+      },
+      {
+        "n": 1,
+        "form": "un",
+        "parts": [
+          1
+        ]
+      },
+      {
+        "n": 2,
+        "form": "deux",
+        "parts": [
+          2
+        ]
+      },
+      {
+        "n": 3,
+        "form": "trois",
+        "parts": [
+          3
+        ]
+      },
+      {
+        "n": 4,
+        "form": "quatre",
+        "parts": [
+          4
+        ]
+      },
+      {
+        "n": 5,
+        "form": "cinq",
+        "parts": [
+          5
+        ]
+      },
+      {
+        "n": 6,
+        "form": "six",
+        "parts": [
+          6
+        ]
+      },
+      {
+        "n": 7,
+        "form": "sept",
+        "parts": [
+          7
+        ]
+      },
+      {
+        "n": 8,
+        "form": "huit",
+        "parts": [
+          8
+        ]
+      },
+      {
+        "n": 9,
+        "form": "neuf",
+        "parts": [
+          9
+        ]
+      },
+      {
+        "n": 10,
+        "form": "dix",
+        "parts": [
+          10
+        ]
+      },
+      {
+        "n": 11,
+        "form": "onze",
+        "parts": [
+          11
+        ]
+      },
+      {
+        "n": 12,
+        "form": "douze",
+        "parts": [
+          12
+        ]
+      },
+      {
+        "n": 13,
+        "form": "treize",
+        "parts": [
+          13
+        ]
+      },
+      {
+        "n": 14,
+        "form": "quatorze",
+        "parts": [
+          14
+        ]
+      },
+      {
+        "n": 15,
+        "form": "quinze",
+        "parts": [
+          15
+        ]
+      },
+      {
+        "n": 16,
+        "form": "seize",
+        "parts": [
+          16
+        ]
+      },
+      {
+        "n": 17,
+        "form": "dix-sept",
+        "parts": [
+          10,
+          7
+        ]
+      },
+      {
+        "n": 18,
+        "form": "dix-huit",
+        "parts": [
+          10,
+          8
+        ]
+      },
+      {
+        "n": 19,
+        "form": "dix-neuf",
+        "parts": [
+          10,
+          9
+        ]
+      },
+      {
+        "n": 20,
+        "form": "vingt",
+        "parts": [
+          20
+        ]
+      },
+      {
+        "n": 21,
+        "form": "vingt et un",
+        "parts": [
+          20,
+          1
+        ],
+        "note": "The \"et\" appears only at x1, and takes no hyphens."
+      },
+      {
+        "n": 22,
+        "form": "vingt-deux",
+        "parts": [
+          20,
+          2
+        ]
+      },
+      {
+        "n": 23,
+        "form": "vingt-trois",
+        "parts": [
+          20,
+          3
+        ]
+      },
+      {
+        "n": 24,
+        "form": "vingt-quatre",
+        "parts": [
+          20,
+          4
+        ]
+      },
+      {
+        "n": 25,
+        "form": "vingt-cinq",
+        "parts": [
+          20,
+          5
+        ]
+      },
+      {
+        "n": 26,
+        "form": "vingt-six",
+        "parts": [
+          20,
+          6
+        ]
+      },
+      {
+        "n": 27,
+        "form": "vingt-sept",
+        "parts": [
+          20,
+          7
+        ]
+      },
+      {
+        "n": 28,
+        "form": "vingt-huit",
+        "parts": [
+          20,
+          8
+        ]
+      },
+      {
+        "n": 29,
+        "form": "vingt-neuf",
+        "parts": [
+          20,
+          9
+        ]
+      },
+      {
+        "n": 30,
+        "form": "trente",
+        "parts": [
+          30
+        ]
+      },
+      {
+        "n": 31,
+        "form": "trente et un",
+        "parts": [
+          30,
+          1
+        ],
+        "note": "The \"et\" appears only at x1, and takes no hyphens."
+      },
+      {
+        "n": 32,
+        "form": "trente-deux",
+        "parts": [
+          30,
+          2
+        ]
+      },
+      {
+        "n": 33,
+        "form": "trente-trois",
+        "parts": [
+          30,
+          3
+        ]
+      },
+      {
+        "n": 34,
+        "form": "trente-quatre",
+        "parts": [
+          30,
+          4
+        ]
+      },
+      {
+        "n": 35,
+        "form": "trente-cinq",
+        "parts": [
+          30,
+          5
+        ]
+      },
+      {
+        "n": 36,
+        "form": "trente-six",
+        "parts": [
+          30,
+          6
+        ]
+      },
+      {
+        "n": 37,
+        "form": "trente-sept",
+        "parts": [
+          30,
+          7
+        ]
+      },
+      {
+        "n": 38,
+        "form": "trente-huit",
+        "parts": [
+          30,
+          8
+        ]
+      },
+      {
+        "n": 39,
+        "form": "trente-neuf",
+        "parts": [
+          30,
+          9
+        ]
+      },
+      {
+        "n": 40,
+        "form": "quarante",
+        "parts": [
+          40
+        ]
+      },
+      {
+        "n": 41,
+        "form": "quarante et un",
+        "parts": [
+          40,
+          1
+        ],
+        "note": "The \"et\" appears only at x1, and takes no hyphens."
+      },
+      {
+        "n": 42,
+        "form": "quarante-deux",
+        "parts": [
+          40,
+          2
+        ]
+      },
+      {
+        "n": 43,
+        "form": "quarante-trois",
+        "parts": [
+          40,
+          3
+        ]
+      },
+      {
+        "n": 44,
+        "form": "quarante-quatre",
+        "parts": [
+          40,
+          4
+        ]
+      },
+      {
+        "n": 45,
+        "form": "quarante-cinq",
+        "parts": [
+          40,
+          5
+        ]
+      },
+      {
+        "n": 46,
+        "form": "quarante-six",
+        "parts": [
+          40,
+          6
+        ]
+      },
+      {
+        "n": 47,
+        "form": "quarante-sept",
+        "parts": [
+          40,
+          7
+        ]
+      },
+      {
+        "n": 48,
+        "form": "quarante-huit",
+        "parts": [
+          40,
+          8
+        ]
+      },
+      {
+        "n": 49,
+        "form": "quarante-neuf",
+        "parts": [
+          40,
+          9
+        ]
+      },
+      {
+        "n": 50,
+        "form": "cinquante",
+        "parts": [
+          50
+        ]
+      },
+      {
+        "n": 51,
+        "form": "cinquante et un",
+        "parts": [
+          50,
+          1
+        ],
+        "note": "The \"et\" appears only at x1, and takes no hyphens."
+      },
+      {
+        "n": 52,
+        "form": "cinquante-deux",
+        "parts": [
+          50,
+          2
+        ]
+      },
+      {
+        "n": 53,
+        "form": "cinquante-trois",
+        "parts": [
+          50,
+          3
+        ]
+      },
+      {
+        "n": 54,
+        "form": "cinquante-quatre",
+        "parts": [
+          50,
+          4
+        ]
+      },
+      {
+        "n": 55,
+        "form": "cinquante-cinq",
+        "parts": [
+          50,
+          5
+        ]
+      },
+      {
+        "n": 56,
+        "form": "cinquante-six",
+        "parts": [
+          50,
+          6
+        ]
+      },
+      {
+        "n": 57,
+        "form": "cinquante-sept",
+        "parts": [
+          50,
+          7
+        ]
+      },
+      {
+        "n": 58,
+        "form": "cinquante-huit",
+        "parts": [
+          50,
+          8
+        ]
+      },
+      {
+        "n": 59,
+        "form": "cinquante-neuf",
+        "parts": [
+          50,
+          9
+        ]
+      },
+      {
+        "n": 60,
+        "form": "soixante",
+        "parts": [
+          60
+        ]
+      },
+      {
+        "n": 61,
+        "form": "soixante et un",
+        "parts": [
+          60,
+          1
+        ],
+        "note": "The \"et\" appears only at x1, and takes no hyphens."
+      },
+      {
+        "n": 62,
+        "form": "soixante-deux",
+        "parts": [
+          60,
+          2
+        ]
+      },
+      {
+        "n": 63,
+        "form": "soixante-trois",
+        "parts": [
+          60,
+          3
+        ]
+      },
+      {
+        "n": 64,
+        "form": "soixante-quatre",
+        "parts": [
+          60,
+          4
+        ]
+      },
+      {
+        "n": 65,
+        "form": "soixante-cinq",
+        "parts": [
+          60,
+          5
+        ]
+      },
+      {
+        "n": 66,
+        "form": "soixante-six",
+        "parts": [
+          60,
+          6
+        ]
+      },
+      {
+        "n": 67,
+        "form": "soixante-sept",
+        "parts": [
+          60,
+          7
+        ]
+      },
+      {
+        "n": 68,
+        "form": "soixante-huit",
+        "parts": [
+          60,
+          8
+        ]
+      },
+      {
+        "n": 69,
+        "form": "soixante-neuf",
+        "parts": [
+          60,
+          9
+        ]
+      },
+      {
+        "n": 70,
+        "form": "soixante-dix",
+        "parts": [
+          60,
+          10
+        ]
+      },
+      {
+        "n": 71,
+        "form": "soixante et onze",
+        "parts": [
+          60,
+          11
+        ],
+        "note": "The last \"et\" in the language. 81 and 91 do not take one."
+      },
+      {
+        "n": 72,
+        "form": "soixante-douze",
+        "parts": [
+          60,
+          12
+        ]
+      },
+      {
+        "n": 73,
+        "form": "soixante-treize",
+        "parts": [
+          60,
+          13
+        ]
+      },
+      {
+        "n": 74,
+        "form": "soixante-quatorze",
+        "parts": [
+          60,
+          14
+        ]
+      },
+      {
+        "n": 75,
+        "form": "soixante-quinze",
+        "parts": [
+          60,
+          15
+        ]
+      },
+      {
+        "n": 76,
+        "form": "soixante-seize",
+        "parts": [
+          60,
+          16
+        ]
+      },
+      {
+        "n": 77,
+        "form": "soixante-dix-sept",
+        "parts": [
+          60,
+          10,
+          7
+        ]
+      },
+      {
+        "n": 78,
+        "form": "soixante-dix-huit",
+        "parts": [
+          60,
+          10,
+          8
+        ]
+      },
+      {
+        "n": 79,
+        "form": "soixante-dix-neuf",
+        "parts": [
+          60,
+          10,
+          9
+        ]
+      },
+      {
+        "n": 80,
+        "form": "quatre-vingts",
+        "parts": [
+          4,
+          20
+        ],
+        "note": "Takes a plural -s only when it ends the number. 81-99 drop it."
+      },
+      {
+        "n": 81,
+        "form": "quatre-vingt-un",
+        "parts": [
+          4,
+          20,
+          1
+        ],
+        "note": "No \"et\" here, unlike 21-71."
+      },
+      {
+        "n": 82,
+        "form": "quatre-vingt-deux",
+        "parts": [
+          4,
+          20,
+          2
+        ]
+      },
+      {
+        "n": 83,
+        "form": "quatre-vingt-trois",
+        "parts": [
+          4,
+          20,
+          3
+        ]
+      },
+      {
+        "n": 84,
+        "form": "quatre-vingt-quatre",
+        "parts": [
+          4,
+          20,
+          4
+        ]
+      },
+      {
+        "n": 85,
+        "form": "quatre-vingt-cinq",
+        "parts": [
+          4,
+          20,
+          5
+        ]
+      },
+      {
+        "n": 86,
+        "form": "quatre-vingt-six",
+        "parts": [
+          4,
+          20,
+          6
+        ]
+      },
+      {
+        "n": 87,
+        "form": "quatre-vingt-sept",
+        "parts": [
+          4,
+          20,
+          7
+        ]
+      },
+      {
+        "n": 88,
+        "form": "quatre-vingt-huit",
+        "parts": [
+          4,
+          20,
+          8
+        ]
+      },
+      {
+        "n": 89,
+        "form": "quatre-vingt-neuf",
+        "parts": [
+          4,
+          20,
+          9
+        ]
+      },
+      {
+        "n": 90,
+        "form": "quatre-vingt-dix",
+        "parts": [
+          4,
+          20,
+          10
+        ]
+      },
+      {
+        "n": 91,
+        "form": "quatre-vingt-onze",
+        "parts": [
+          4,
+          20,
+          11
+        ],
+        "note": "No \"et\" here, unlike 21-71."
+      },
+      {
+        "n": 92,
+        "form": "quatre-vingt-douze",
+        "parts": [
+          4,
+          20,
+          12
+        ]
+      },
+      {
+        "n": 93,
+        "form": "quatre-vingt-treize",
+        "parts": [
+          4,
+          20,
+          13
+        ]
+      },
+      {
+        "n": 94,
+        "form": "quatre-vingt-quatorze",
+        "parts": [
+          4,
+          20,
+          14
+        ]
+      },
+      {
+        "n": 95,
+        "form": "quatre-vingt-quinze",
+        "parts": [
+          4,
+          20,
+          15
+        ]
+      },
+      {
+        "n": 96,
+        "form": "quatre-vingt-seize",
+        "parts": [
+          4,
+          20,
+          16
+        ]
+      },
+      {
+        "n": 97,
+        "form": "quatre-vingt-dix-sept",
+        "parts": [
+          4,
+          20,
+          10,
+          7
+        ]
+      },
+      {
+        "n": 98,
+        "form": "quatre-vingt-dix-huit",
+        "parts": [
+          4,
+          20,
+          10,
+          8
+        ]
+      },
+      {
+        "n": 99,
+        "form": "quatre-vingt-dix-neuf",
+        "parts": [
+          4,
+          20,
+          10,
+          9
+        ]
+      },
+      {
+        "n": 100,
+        "form": "cent",
+        "parts": [
+          100
+        ]
+      }
+    ]
+  },
+  "de": {
+    "name": "German",
+    "atoms": [
+      {
+        "n": 0,
+        "form": "null"
+      },
+      {
+        "n": 1,
+        "form": "eins",
+        "inCompound": "ein",
+        "note": "Loses its -s inside a compound: einundzwanzig."
+      },
+      {
+        "n": 2,
+        "form": "zwei"
+      },
+      {
+        "n": 3,
+        "form": "drei"
+      },
+      {
+        "n": 4,
+        "form": "vier"
+      },
+      {
+        "n": 5,
+        "form": "fünf"
+      },
+      {
+        "n": 6,
+        "form": "sechs",
+        "beforeSuffix": "sech",
+        "note": "Drops the -s before -zehn and -zig only."
+      },
+      {
+        "n": 7,
+        "form": "sieben",
+        "beforeSuffix": "sieb",
+        "note": "Drops the -en before -zehn and -zig only."
+      },
+      {
+        "n": 8,
+        "form": "acht"
+      },
+      {
+        "n": 9,
+        "form": "neun"
+      },
+      {
+        "n": 10,
+        "form": "zehn"
+      },
+      {
+        "n": 11,
+        "form": "elf"
+      },
+      {
+        "n": 12,
+        "form": "zwölf"
+      },
+      {
+        "n": 20,
+        "form": "zwanzig",
+        "note": "Irregular: zwei would predict *zweizig."
+      },
+      {
+        "n": 30,
+        "form": "dreißig",
+        "note": "Irregular: spelled -ßig, not -zig."
+      },
+      {
+        "n": 100,
+        "form": "hundert",
+        "note": "\"einhundert\" is also correct, but unusual when counting."
+      }
+    ],
+    "items": [
+      {
+        "n": 0,
+        "form": "null",
+        "parts": [
+          0
+        ]
+      },
+      {
+        "n": 1,
+        "form": "eins",
+        "parts": [
+          1
+        ],
+        "note": "Loses its -s inside a compound: einundzwanzig."
+      },
+      {
+        "n": 2,
+        "form": "zwei",
+        "parts": [
+          2
+        ]
+      },
+      {
+        "n": 3,
+        "form": "drei",
+        "parts": [
+          3
+        ]
+      },
+      {
+        "n": 4,
+        "form": "vier",
+        "parts": [
+          4
+        ]
+      },
+      {
+        "n": 5,
+        "form": "fünf",
+        "parts": [
+          5
+        ]
+      },
+      {
+        "n": 6,
+        "form": "sechs",
+        "parts": [
+          6
+        ],
+        "note": "Drops the -s before -zehn and -zig only."
+      },
+      {
+        "n": 7,
+        "form": "sieben",
+        "parts": [
+          7
+        ],
+        "note": "Drops the -en before -zehn and -zig only."
+      },
+      {
+        "n": 8,
+        "form": "acht",
+        "parts": [
+          8
+        ]
+      },
+      {
+        "n": 9,
+        "form": "neun",
+        "parts": [
+          9
+        ]
+      },
+      {
+        "n": 10,
+        "form": "zehn",
+        "parts": [
+          10
+        ]
+      },
+      {
+        "n": 11,
+        "form": "elf",
+        "parts": [
+          11
+        ]
+      },
+      {
+        "n": 12,
+        "form": "zwölf",
+        "parts": [
+          12
+        ]
+      },
+      {
+        "n": 13,
+        "form": "dreizehn",
+        "parts": [
+          3,
+          10
+        ]
+      },
+      {
+        "n": 14,
+        "form": "vierzehn",
+        "parts": [
+          4,
+          10
+        ]
+      },
+      {
+        "n": 15,
+        "form": "fünfzehn",
+        "parts": [
+          5,
+          10
+        ]
+      },
+      {
+        "n": 16,
+        "form": "sechzehn",
+        "parts": [
+          6,
+          10
+        ],
+        "note": "Drops the -s before -zehn and -zig only."
+      },
+      {
+        "n": 17,
+        "form": "siebzehn",
+        "parts": [
+          7,
+          10
+        ],
+        "note": "Drops the -en before -zehn and -zig only."
+      },
+      {
+        "n": 18,
+        "form": "achtzehn",
+        "parts": [
+          8,
+          10
+        ]
+      },
+      {
+        "n": 19,
+        "form": "neunzehn",
+        "parts": [
+          9,
+          10
+        ]
+      },
+      {
+        "n": 20,
+        "form": "zwanzig",
+        "parts": [
+          20
+        ],
+        "note": "Irregular: zwei would predict *zweizig."
+      },
+      {
+        "n": 21,
+        "form": "einundzwanzig",
+        "parts": [
+          1,
+          20
+        ],
+        "note": "Spoken back to front — one-and-twenty — and written as one word. This holds for every number from 21 to 99."
+      },
+      {
+        "n": 22,
+        "form": "zweiundzwanzig",
+        "parts": [
+          2,
+          20
+        ]
+      },
+      {
+        "n": 23,
+        "form": "dreiundzwanzig",
+        "parts": [
+          3,
+          20
+        ]
+      },
+      {
+        "n": 24,
+        "form": "vierundzwanzig",
+        "parts": [
+          4,
+          20
+        ]
+      },
+      {
+        "n": 25,
+        "form": "fünfundzwanzig",
+        "parts": [
+          5,
+          20
+        ]
+      },
+      {
+        "n": 26,
+        "form": "sechsundzwanzig",
+        "parts": [
+          6,
+          20
+        ]
+      },
+      {
+        "n": 27,
+        "form": "siebenundzwanzig",
+        "parts": [
+          7,
+          20
+        ]
+      },
+      {
+        "n": 28,
+        "form": "achtundzwanzig",
+        "parts": [
+          8,
+          20
+        ]
+      },
+      {
+        "n": 29,
+        "form": "neunundzwanzig",
+        "parts": [
+          9,
+          20
+        ]
+      },
+      {
+        "n": 30,
+        "form": "dreißig",
+        "parts": [
+          30
+        ],
+        "note": "Irregular: spelled -ßig, not -zig."
+      },
+      {
+        "n": 31,
+        "form": "einunddreißig",
+        "parts": [
+          1,
+          30
+        ]
+      },
+      {
+        "n": 32,
+        "form": "zweiunddreißig",
+        "parts": [
+          2,
+          30
+        ]
+      },
+      {
+        "n": 33,
+        "form": "dreiunddreißig",
+        "parts": [
+          3,
+          30
+        ]
+      },
+      {
+        "n": 34,
+        "form": "vierunddreißig",
+        "parts": [
+          4,
+          30
+        ]
+      },
+      {
+        "n": 35,
+        "form": "fünfunddreißig",
+        "parts": [
+          5,
+          30
+        ]
+      },
+      {
+        "n": 36,
+        "form": "sechsunddreißig",
+        "parts": [
+          6,
+          30
+        ]
+      },
+      {
+        "n": 37,
+        "form": "siebenunddreißig",
+        "parts": [
+          7,
+          30
+        ]
+      },
+      {
+        "n": 38,
+        "form": "achtunddreißig",
+        "parts": [
+          8,
+          30
+        ]
+      },
+      {
+        "n": 39,
+        "form": "neununddreißig",
+        "parts": [
+          9,
+          30
+        ]
+      },
+      {
+        "n": 40,
+        "form": "vierzig",
+        "parts": [
+          40
+        ]
+      },
+      {
+        "n": 41,
+        "form": "einundvierzig",
+        "parts": [
+          1,
+          40
+        ]
+      },
+      {
+        "n": 42,
+        "form": "zweiundvierzig",
+        "parts": [
+          2,
+          40
+        ]
+      },
+      {
+        "n": 43,
+        "form": "dreiundvierzig",
+        "parts": [
+          3,
+          40
+        ]
+      },
+      {
+        "n": 44,
+        "form": "vierundvierzig",
+        "parts": [
+          4,
+          40
+        ]
+      },
+      {
+        "n": 45,
+        "form": "fünfundvierzig",
+        "parts": [
+          5,
+          40
+        ]
+      },
+      {
+        "n": 46,
+        "form": "sechsundvierzig",
+        "parts": [
+          6,
+          40
+        ]
+      },
+      {
+        "n": 47,
+        "form": "siebenundvierzig",
+        "parts": [
+          7,
+          40
+        ]
+      },
+      {
+        "n": 48,
+        "form": "achtundvierzig",
+        "parts": [
+          8,
+          40
+        ]
+      },
+      {
+        "n": 49,
+        "form": "neunundvierzig",
+        "parts": [
+          9,
+          40
+        ]
+      },
+      {
+        "n": 50,
+        "form": "fünfzig",
+        "parts": [
+          50
+        ]
+      },
+      {
+        "n": 51,
+        "form": "einundfünfzig",
+        "parts": [
+          1,
+          50
+        ]
+      },
+      {
+        "n": 52,
+        "form": "zweiundfünfzig",
+        "parts": [
+          2,
+          50
+        ]
+      },
+      {
+        "n": 53,
+        "form": "dreiundfünfzig",
+        "parts": [
+          3,
+          50
+        ]
+      },
+      {
+        "n": 54,
+        "form": "vierundfünfzig",
+        "parts": [
+          4,
+          50
+        ]
+      },
+      {
+        "n": 55,
+        "form": "fünfundfünfzig",
+        "parts": [
+          5,
+          50
+        ]
+      },
+      {
+        "n": 56,
+        "form": "sechsundfünfzig",
+        "parts": [
+          6,
+          50
+        ]
+      },
+      {
+        "n": 57,
+        "form": "siebenundfünfzig",
+        "parts": [
+          7,
+          50
+        ]
+      },
+      {
+        "n": 58,
+        "form": "achtundfünfzig",
+        "parts": [
+          8,
+          50
+        ]
+      },
+      {
+        "n": 59,
+        "form": "neunundfünfzig",
+        "parts": [
+          9,
+          50
+        ]
+      },
+      {
+        "n": 60,
+        "form": "sechzig",
+        "parts": [
+          60
+        ]
+      },
+      {
+        "n": 61,
+        "form": "einundsechzig",
+        "parts": [
+          1,
+          60
+        ]
+      },
+      {
+        "n": 62,
+        "form": "zweiundsechzig",
+        "parts": [
+          2,
+          60
+        ]
+      },
+      {
+        "n": 63,
+        "form": "dreiundsechzig",
+        "parts": [
+          3,
+          60
+        ]
+      },
+      {
+        "n": 64,
+        "form": "vierundsechzig",
+        "parts": [
+          4,
+          60
+        ]
+      },
+      {
+        "n": 65,
+        "form": "fünfundsechzig",
+        "parts": [
+          5,
+          60
+        ]
+      },
+      {
+        "n": 66,
+        "form": "sechsundsechzig",
+        "parts": [
+          6,
+          60
+        ]
+      },
+      {
+        "n": 67,
+        "form": "siebenundsechzig",
+        "parts": [
+          7,
+          60
+        ]
+      },
+      {
+        "n": 68,
+        "form": "achtundsechzig",
+        "parts": [
+          8,
+          60
+        ]
+      },
+      {
+        "n": 69,
+        "form": "neunundsechzig",
+        "parts": [
+          9,
+          60
+        ]
+      },
+      {
+        "n": 70,
+        "form": "siebzig",
+        "parts": [
+          70
+        ]
+      },
+      {
+        "n": 71,
+        "form": "einundsiebzig",
+        "parts": [
+          1,
+          70
+        ]
+      },
+      {
+        "n": 72,
+        "form": "zweiundsiebzig",
+        "parts": [
+          2,
+          70
+        ]
+      },
+      {
+        "n": 73,
+        "form": "dreiundsiebzig",
+        "parts": [
+          3,
+          70
+        ]
+      },
+      {
+        "n": 74,
+        "form": "vierundsiebzig",
+        "parts": [
+          4,
+          70
+        ]
+      },
+      {
+        "n": 75,
+        "form": "fünfundsiebzig",
+        "parts": [
+          5,
+          70
+        ]
+      },
+      {
+        "n": 76,
+        "form": "sechsundsiebzig",
+        "parts": [
+          6,
+          70
+        ]
+      },
+      {
+        "n": 77,
+        "form": "siebenundsiebzig",
+        "parts": [
+          7,
+          70
+        ]
+      },
+      {
+        "n": 78,
+        "form": "achtundsiebzig",
+        "parts": [
+          8,
+          70
+        ]
+      },
+      {
+        "n": 79,
+        "form": "neunundsiebzig",
+        "parts": [
+          9,
+          70
+        ]
+      },
+      {
+        "n": 80,
+        "form": "achtzig",
+        "parts": [
+          80
+        ]
+      },
+      {
+        "n": 81,
+        "form": "einundachtzig",
+        "parts": [
+          1,
+          80
+        ]
+      },
+      {
+        "n": 82,
+        "form": "zweiundachtzig",
+        "parts": [
+          2,
+          80
+        ]
+      },
+      {
+        "n": 83,
+        "form": "dreiundachtzig",
+        "parts": [
+          3,
+          80
+        ]
+      },
+      {
+        "n": 84,
+        "form": "vierundachtzig",
+        "parts": [
+          4,
+          80
+        ]
+      },
+      {
+        "n": 85,
+        "form": "fünfundachtzig",
+        "parts": [
+          5,
+          80
+        ]
+      },
+      {
+        "n": 86,
+        "form": "sechsundachtzig",
+        "parts": [
+          6,
+          80
+        ]
+      },
+      {
+        "n": 87,
+        "form": "siebenundachtzig",
+        "parts": [
+          7,
+          80
+        ]
+      },
+      {
+        "n": 88,
+        "form": "achtundachtzig",
+        "parts": [
+          8,
+          80
+        ]
+      },
+      {
+        "n": 89,
+        "form": "neunundachtzig",
+        "parts": [
+          9,
+          80
+        ]
+      },
+      {
+        "n": 90,
+        "form": "neunzig",
+        "parts": [
+          90
+        ]
+      },
+      {
+        "n": 91,
+        "form": "einundneunzig",
+        "parts": [
+          1,
+          90
+        ]
+      },
+      {
+        "n": 92,
+        "form": "zweiundneunzig",
+        "parts": [
+          2,
+          90
+        ]
+      },
+      {
+        "n": 93,
+        "form": "dreiundneunzig",
+        "parts": [
+          3,
+          90
+        ]
+      },
+      {
+        "n": 94,
+        "form": "vierundneunzig",
+        "parts": [
+          4,
+          90
+        ]
+      },
+      {
+        "n": 95,
+        "form": "fünfundneunzig",
+        "parts": [
+          5,
+          90
+        ]
+      },
+      {
+        "n": 96,
+        "form": "sechsundneunzig",
+        "parts": [
+          6,
+          90
+        ]
+      },
+      {
+        "n": 97,
+        "form": "siebenundneunzig",
+        "parts": [
+          7,
+          90
+        ]
+      },
+      {
+        "n": 98,
+        "form": "achtundneunzig",
+        "parts": [
+          8,
+          90
+        ]
+      },
+      {
+        "n": 99,
+        "form": "neunundneunzig",
+        "parts": [
+          9,
+          90
+        ]
+      },
+      {
+        "n": 100,
+        "form": "hundert",
+        "parts": [
+          100
+        ],
+        "note": "\"einhundert\" is also correct, but unusual when counting."
+      }
+    ]
+  }
+}

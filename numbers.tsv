@@ -1,0 +1,304 @@
+lang	n	headword	reading	parts	note
+zh	0	零	líng	0	
+zh	1	一	yī	1	
+zh	2	二	èr	2	
+zh	3	三	sān	3	
+zh	4	四	sì	4	
+zh	5	五	wǔ	5	
+zh	6	六	liù	6	
+zh	7	七	qī	7	
+zh	8	八	bā	8	
+zh	9	九	jiǔ	9	
+zh	10	十	shí	10	
+zh	11	十一	shí yī	10+1	
+zh	12	十二	shí èr	10+2	
+zh	13	十三	shí sān	10+3	
+zh	14	十四	shí sì	10+4	
+zh	15	十五	shí wǔ	10+5	
+zh	16	十六	shí liù	10+6	
+zh	17	十七	shí qī	10+7	
+zh	18	十八	shí bā	10+8	
+zh	19	十九	shí jiǔ	10+9	
+zh	20	二十	èr shí	2+10	
+zh	21	二十一	èr shí yī	2+10+1	
+zh	22	二十二	èr shí èr	2+10+2	
+zh	23	二十三	èr shí sān	2+10+3	
+zh	24	二十四	èr shí sì	2+10+4	
+zh	25	二十五	èr shí wǔ	2+10+5	
+zh	26	二十六	èr shí liù	2+10+6	
+zh	27	二十七	èr shí qī	2+10+7	
+zh	28	二十八	èr shí bā	2+10+8	
+zh	29	二十九	èr shí jiǔ	2+10+9	
+zh	30	三十	sān shí	3+10	
+zh	31	三十一	sān shí yī	3+10+1	
+zh	32	三十二	sān shí èr	3+10+2	
+zh	33	三十三	sān shí sān	3+10+3	
+zh	34	三十四	sān shí sì	3+10+4	
+zh	35	三十五	sān shí wǔ	3+10+5	
+zh	36	三十六	sān shí liù	3+10+6	
+zh	37	三十七	sān shí qī	3+10+7	
+zh	38	三十八	sān shí bā	3+10+8	
+zh	39	三十九	sān shí jiǔ	3+10+9	
+zh	40	四十	sì shí	4+10	
+zh	41	四十一	sì shí yī	4+10+1	
+zh	42	四十二	sì shí èr	4+10+2	
+zh	43	四十三	sì shí sān	4+10+3	
+zh	44	四十四	sì shí sì	4+10+4	
+zh	45	四十五	sì shí wǔ	4+10+5	
+zh	46	四十六	sì shí liù	4+10+6	
+zh	47	四十七	sì shí qī	4+10+7	
+zh	48	四十八	sì shí bā	4+10+8	
+zh	49	四十九	sì shí jiǔ	4+10+9	
+zh	50	五十	wǔ shí	5+10	
+zh	51	五十一	wǔ shí yī	5+10+1	
+zh	52	五十二	wǔ shí èr	5+10+2	
+zh	53	五十三	wǔ shí sān	5+10+3	
+zh	54	五十四	wǔ shí sì	5+10+4	
+zh	55	五十五	wǔ shí wǔ	5+10+5	
+zh	56	五十六	wǔ shí liù	5+10+6	
+zh	57	五十七	wǔ shí qī	5+10+7	
+zh	58	五十八	wǔ shí bā	5+10+8	
+zh	59	五十九	wǔ shí jiǔ	5+10+9	
+zh	60	六十	liù shí	6+10	
+zh	61	六十一	liù shí yī	6+10+1	
+zh	62	六十二	liù shí èr	6+10+2	
+zh	63	六十三	liù shí sān	6+10+3	
+zh	64	六十四	liù shí sì	6+10+4	
+zh	65	六十五	liù shí wǔ	6+10+5	
+zh	66	六十六	liù shí liù	6+10+6	
+zh	67	六十七	liù shí qī	6+10+7	
+zh	68	六十八	liù shí bā	6+10+8	
+zh	69	六十九	liù shí jiǔ	6+10+9	
+zh	70	七十	qī shí	7+10	
+zh	71	七十一	qī shí yī	7+10+1	
+zh	72	七十二	qī shí èr	7+10+2	
+zh	73	七十三	qī shí sān	7+10+3	
+zh	74	七十四	qī shí sì	7+10+4	
+zh	75	七十五	qī shí wǔ	7+10+5	
+zh	76	七十六	qī shí liù	7+10+6	
+zh	77	七十七	qī shí qī	7+10+7	
+zh	78	七十八	qī shí bā	7+10+8	
+zh	79	七十九	qī shí jiǔ	7+10+9	
+zh	80	八十	bā shí	8+10	
+zh	81	八十一	bā shí yī	8+10+1	
+zh	82	八十二	bā shí èr	8+10+2	
+zh	83	八十三	bā shí sān	8+10+3	
+zh	84	八十四	bā shí sì	8+10+4	
+zh	85	八十五	bā shí wǔ	8+10+5	
+zh	86	八十六	bā shí liù	8+10+6	
+zh	87	八十七	bā shí qī	8+10+7	
+zh	88	八十八	bā shí bā	8+10+8	
+zh	89	八十九	bā shí jiǔ	8+10+9	
+zh	90	九十	jiǔ shí	9+10	
+zh	91	九十一	jiǔ shí yī	9+10+1	
+zh	92	九十二	jiǔ shí èr	9+10+2	
+zh	93	九十三	jiǔ shí sān	9+10+3	
+zh	94	九十四	jiǔ shí sì	9+10+4	
+zh	95	九十五	jiǔ shí wǔ	9+10+5	
+zh	96	九十六	jiǔ shí liù	9+10+6	
+zh	97	九十七	jiǔ shí qī	9+10+7	
+zh	98	九十八	jiǔ shí bā	9+10+8	
+zh	99	九十九	jiǔ shí jiǔ	9+10+9	
+zh	100	一百	yì bǎi	1+100	Tone sandhi: 一 is yì here, not yī, because 百 carries a third tone.
+fr	0	zéro		0	
+fr	1	un		1	
+fr	2	deux		2	
+fr	3	trois		3	
+fr	4	quatre		4	
+fr	5	cinq		5	
+fr	6	six		6	
+fr	7	sept		7	
+fr	8	huit		8	
+fr	9	neuf		9	
+fr	10	dix		10	
+fr	11	onze		11	
+fr	12	douze		12	
+fr	13	treize		13	
+fr	14	quatorze		14	
+fr	15	quinze		15	
+fr	16	seize		16	
+fr	17	dix-sept		10+7	
+fr	18	dix-huit		10+8	
+fr	19	dix-neuf		10+9	
+fr	20	vingt		20	
+fr	21	vingt et un		20+1	The "et" appears only at x1, and takes no hyphens.
+fr	22	vingt-deux		20+2	
+fr	23	vingt-trois		20+3	
+fr	24	vingt-quatre		20+4	
+fr	25	vingt-cinq		20+5	
+fr	26	vingt-six		20+6	
+fr	27	vingt-sept		20+7	
+fr	28	vingt-huit		20+8	
+fr	29	vingt-neuf		20+9	
+fr	30	trente		30	
+fr	31	trente et un		30+1	The "et" appears only at x1, and takes no hyphens.
+fr	32	trente-deux		30+2	
+fr	33	trente-trois		30+3	
+fr	34	trente-quatre		30+4	
+fr	35	trente-cinq		30+5	
+fr	36	trente-six		30+6	
+fr	37	trente-sept		30+7	
+fr	38	trente-huit		30+8	
+fr	39	trente-neuf		30+9	
+fr	40	quarante		40	
+fr	41	quarante et un		40+1	The "et" appears only at x1, and takes no hyphens.
+fr	42	quarante-deux		40+2	
+fr	43	quarante-trois		40+3	
+fr	44	quarante-quatre		40+4	
+fr	45	quarante-cinq		40+5	
+fr	46	quarante-six		40+6	
+fr	47	quarante-sept		40+7	
+fr	48	quarante-huit		40+8	
+fr	49	quarante-neuf		40+9	
+fr	50	cinquante		50	
+fr	51	cinquante et un		50+1	The "et" appears only at x1, and takes no hyphens.
+fr	52	cinquante-deux		50+2	
+fr	53	cinquante-trois		50+3	
+fr	54	cinquante-quatre		50+4	
+fr	55	cinquante-cinq		50+5	
+fr	56	cinquante-six		50+6	
+fr	57	cinquante-sept		50+7	
+fr	58	cinquante-huit		50+8	
+fr	59	cinquante-neuf		50+9	
+fr	60	soixante		60	
+fr	61	soixante et un		60+1	The "et" appears only at x1, and takes no hyphens.
+fr	62	soixante-deux		60+2	
+fr	63	soixante-trois		60+3	
+fr	64	soixante-quatre		60+4	
+fr	65	soixante-cinq		60+5	
+fr	66	soixante-six		60+6	
+fr	67	soixante-sept		60+7	
+fr	68	soixante-huit		60+8	
+fr	69	soixante-neuf		60+9	
+fr	70	soixante-dix		60+10	
+fr	71	soixante et onze		60+11	The last "et" in the language. 81 and 91 do not take one.
+fr	72	soixante-douze		60+12	
+fr	73	soixante-treize		60+13	
+fr	74	soixante-quatorze		60+14	
+fr	75	soixante-quinze		60+15	
+fr	76	soixante-seize		60+16	
+fr	77	soixante-dix-sept		60+10+7	
+fr	78	soixante-dix-huit		60+10+8	
+fr	79	soixante-dix-neuf		60+10+9	
+fr	80	quatre-vingts		4+20	Takes a plural -s only when it ends the number. 81-99 drop it.
+fr	81	quatre-vingt-un		4+20+1	No "et" here, unlike 21-71.
+fr	82	quatre-vingt-deux		4+20+2	
+fr	83	quatre-vingt-trois		4+20+3	
+fr	84	quatre-vingt-quatre		4+20+4	
+fr	85	quatre-vingt-cinq		4+20+5	
+fr	86	quatre-vingt-six		4+20+6	
+fr	87	quatre-vingt-sept		4+20+7	
+fr	88	quatre-vingt-huit		4+20+8	
+fr	89	quatre-vingt-neuf		4+20+9	
+fr	90	quatre-vingt-dix		4+20+10	
+fr	91	quatre-vingt-onze		4+20+11	No "et" here, unlike 21-71.
+fr	92	quatre-vingt-douze		4+20+12	
+fr	93	quatre-vingt-treize		4+20+13	
+fr	94	quatre-vingt-quatorze		4+20+14	
+fr	95	quatre-vingt-quinze		4+20+15	
+fr	96	quatre-vingt-seize		4+20+16	
+fr	97	quatre-vingt-dix-sept		4+20+10+7	
+fr	98	quatre-vingt-dix-huit		4+20+10+8	
+fr	99	quatre-vingt-dix-neuf		4+20+10+9	
+fr	100	cent		100	
+de	0	null		0	
+de	1	eins		1	Loses its -s inside a compound: einundzwanzig.
+de	2	zwei		2	
+de	3	drei		3	
+de	4	vier		4	
+de	5	fünf		5	
+de	6	sechs		6	Drops the -s before -zehn and -zig only.
+de	7	sieben		7	Drops the -en before -zehn and -zig only.
+de	8	acht		8	
+de	9	neun		9	
+de	10	zehn		10	
+de	11	elf		11	
+de	12	zwölf		12	
+de	13	dreizehn		3+10	
+de	14	vierzehn		4+10	
+de	15	fünfzehn		5+10	
+de	16	sechzehn		6+10	Drops the -s before -zehn and -zig only.
+de	17	siebzehn		7+10	Drops the -en before -zehn and -zig only.
+de	18	achtzehn		8+10	
+de	19	neunzehn		9+10	
+de	20	zwanzig		20	Irregular: zwei would predict *zweizig.
+de	21	einundzwanzig		1+20	Spoken back to front — one-and-twenty — and written as one word. This holds for every number from 21 to 99.
+de	22	zweiundzwanzig		2+20	
+de	23	dreiundzwanzig		3+20	
+de	24	vierundzwanzig		4+20	
+de	25	fünfundzwanzig		5+20	
+de	26	sechsundzwanzig		6+20	
+de	27	siebenundzwanzig		7+20	
+de	28	achtundzwanzig		8+20	
+de	29	neunundzwanzig		9+20	
+de	30	dreißig		30	Irregular: spelled -ßig, not -zig.
+de	31	einunddreißig		1+30	
+de	32	zweiunddreißig		2+30	
+de	33	dreiunddreißig		3+30	
+de	34	vierunddreißig		4+30	
+de	35	fünfunddreißig		5+30	
+de	36	sechsunddreißig		6+30	
+de	37	siebenunddreißig		7+30	
+de	38	achtunddreißig		8+30	
+de	39	neununddreißig		9+30	
+de	40	vierzig		40	
+de	41	einundvierzig		1+40	
+de	42	zweiundvierzig		2+40	
+de	43	dreiundvierzig		3+40	
+de	44	vierundvierzig		4+40	
+de	45	fünfundvierzig		5+40	
+de	46	sechsundvierzig		6+40	
+de	47	siebenundvierzig		7+40	
+de	48	achtundvierzig		8+40	
+de	49	neunundvierzig		9+40	
+de	50	fünfzig		50	
+de	51	einundfünfzig		1+50	
+de	52	zweiundfünfzig		2+50	
+de	53	dreiundfünfzig		3+50	
+de	54	vierundfünfzig		4+50	
+de	55	fünfundfünfzig		5+50	
+de	56	sechsundfünfzig		6+50	
+de	57	siebenundfünfzig		7+50	
+de	58	achtundfünfzig		8+50	
+de	59	neunundfünfzig		9+50	
+de	60	sechzig		60	
+de	61	einundsechzig		1+60	
+de	62	zweiundsechzig		2+60	
+de	63	dreiundsechzig		3+60	
+de	64	vierundsechzig		4+60	
+de	65	fünfundsechzig		5+60	
+de	66	sechsundsechzig		6+60	
+de	67	siebenundsechzig		7+60	
+de	68	achtundsechzig		8+60	
+de	69	neunundsechzig		9+60	
+de	70	siebzig		70	
+de	71	einundsiebzig		1+70	
+de	72	zweiundsiebzig		2+70	
+de	73	dreiundsiebzig		3+70	
+de	74	vierundsiebzig		4+70	
+de	75	fünfundsiebzig		5+70	
+de	76	sechsundsiebzig		6+70	
+de	77	siebenundsiebzig		7+70	
+de	78	achtundsiebzig		8+70	
+de	79	neunundsiebzig		9+70	
+de	80	achtzig		80	
+de	81	einundachtzig		1+80	
+de	82	zweiundachtzig		2+80	
+de	83	dreiundachtzig		3+80	
+de	84	vierundachtzig		4+80	
+de	85	fünfundachtzig		5+80	
+de	86	sechsundachtzig		6+80	
+de	87	siebenundachtzig		7+80	
+de	88	achtundachtzig		8+80	
+de	89	neunundachtzig		9+80	
+de	90	neunzig		90	
+de	91	einundneunzig		1+90	
+de	92	zweiundneunzig		2+90	
+de	93	dreiundneunzig		3+90	
+de	94	vierundneunzig		4+90	
+de	95	fünfundneunzig		5+90	
+de	96	sechsundneunzig		6+90	
+de	97	siebenundneunzig		7+90	
+de	98	achtundneunzig		8+90	
+de	99	neunundneunzig		9+90	
+de	100	hundert		100	"einhundert" is also correct, but unusual when counting.

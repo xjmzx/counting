@@ -68,6 +68,14 @@
   held to them; an answer with none is still compared leniently, so no keyboard
   is a disadvantage.
 
+## Unreleased
+
+- **The transliteration is set large**, in the colour the sound hints use.
+  Only the non-Latin languages carry one — the Latin-script tables have no
+  reading field — so this lands exactly where the sound is invisible in the
+  spelling, and it is the line most worth seeing. Tone marks are legible at
+  that size, which was the point.
+
 ## v0.3.0
 
 - **A version chip in the header**, in the suite's format: `major.minor.patch`

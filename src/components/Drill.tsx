@@ -261,7 +261,17 @@ export function Drill({
               </p>
             )}
 
-            {verdict.item.reading && <p className="text-sm text-muted">{verdict.item.reading}</p>}
+            {/* The transliteration, set large on purpose. Only the non-Latin
+                languages carry one — the Latin-script tables have no reading
+                field — so this is exactly where the sound is not visible in
+                the spelling, and it is the line a learner most needs to see.
+                Coloured as the sound hints are, so "this is how it sounds"
+                reads consistently across the panel. */}
+            {verdict.item.reading && (
+              <p className="text-3xl sm:text-4xl font-medium tracking-wide text-digital break-words">
+                {verdict.item.reading}
+              </p>
+            )}
 
             <Breakdown lang={lang} item={verdict.item} />
 

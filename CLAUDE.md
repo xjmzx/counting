@@ -203,6 +203,10 @@ every other language surveyed scored 69% or more.
   would erase the difference the ladder exists to show. `make data` asserts the
   ladders are not all the same length, since that is what filling them in from
   one language would produce.
+- **The transliteration is deliberately the largest thing after the prompt.**
+  `reading` is only set for non-Latin scripts, so making it prominent targets
+  exactly the languages where the spelling does not show the sound. Do not
+  shrink it back to a caption.
 - **`alt` is for real alternatives, not typing tolerance.** Case, hyphens,
   diacritics and invisible characters are `fold`'s job. `alt` is for words a
   speaker would call equally correct, like *einhundert* beside *hundert*.

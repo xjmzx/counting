@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- **The transliteration plays.** Clicking it speaks the number, with a slow
+  option beside it — the romanisation is an approximation and the audio is what
+  it approximates, so they belong on one line. Available in every drill, but
+  only listening still speaks unprompted, since there the audio is the question.
+  Degrades to a disabled control with an honest tooltip where no voice exists,
+  which includes `make web`.
+
 - **Vietnamese script hints.** The one that matters: Vietnamese carries two
   independent layers of mark and only one is tone. ă â ê ô ơ ư are separate
   letters — the breve, circumflex and horn belong to the letter — and the tone

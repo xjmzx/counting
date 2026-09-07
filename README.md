@@ -169,6 +169,13 @@ The unbuilt two appear in the UI with a panel saying what is missing, rather
 than being hidden. They are part of the plan; pretending otherwise would make
 the app look finished when it is half-built.
 
+**The transliteration is the play button.** A romanisation is an approximation
+of a sound; clicking it gives you the sound itself, at normal speed or slow.
+Only the non-Latin languages carry a reading, so this appears exactly where the
+spelling does not show the pronunciation. Reading and writing offer audio on
+the answer rather than playing unprompted — only the listening drill speaks
+first, because there the audio is the question.
+
 **Listening speaks the written form through a system voice.** No phonetic
 transcription is involved — a voice carries its own pronunciation model, so it
 says *soixante-treize* correctly from the string the composer produced. It runs

@@ -71,16 +71,18 @@ export function Drill({
 
   const say = useCallback(
     (rate: number) => {
-      if (skill !== "listen" || !voiceName) return;
+      if (!voiceName) return;
       void speak(voiceName, item.form, rate).then(setSpeechError);
     },
-    [skill, voiceName, item.form],
+    [voiceName, item.form],
   );
 
-  // Speak each new number once, as it comes up.
+  // Only the listening drill speaks unprompted — there the audio *is* the
+  // question. Reading and writing offer it on the answer instead, so nothing
+  // makes a noise you did not ask for.
   useEffect(() => {
-    say(RATE_NORMAL);
-  }, [say]);
+    if (skill === "listen") say(RATE_NORMAL);
+  }, [skill, say]);
 
   // Never leave a voice talking into an empty room.
   useEffect(() => () => void stopSpeaking(), []);
@@ -267,10 +269,43 @@ export function Drill({
                 the spelling, and it is the line a learner most needs to see.
                 Coloured as the sound hints are, so "this is how it sounds"
                 reads consistently across the panel. */}
+            {/* The transliteration doubles as the play control. A romanisation
+                is an approximation; the audio is the thing it approximates, so
+                the two belong on the same line rather than in different parts
+                of the panel. Focus returns to the input so Enter still moves
+                on. */}
             {verdict.item.reading && (
-              <p className="text-3xl sm:text-4xl font-medium tracking-wide text-digital break-words">
-                {verdict.item.reading}
-              </p>
+              <div className="flex items-baseline gap-3 flex-wrap">
+                <button
+                  onClick={() => {
+                    say(RATE_NORMAL);
+                    inputRef.current?.focus();
+                  }}
+                  disabled={!voiceName}
+                  title={voiceName ? `Hear it — ${voiceName}` : "No voice installed for this language"}
+                  className={cn(
+                    "flex items-baseline gap-2 text-3xl sm:text-4xl font-medium tracking-wide",
+                    "text-digital break-words text-left transition-opacity",
+                    voiceName ? "hover:opacity-80" : "opacity-60 cursor-default",
+                  )}
+                >
+                  {verdict.item.reading}
+                  {voiceName && <Volume2 size={20} className="shrink-0 opacity-50" />}
+                </button>
+                {voiceName && (
+                  <button
+                    onClick={() => {
+                      say(RATE_SLOW);
+                      inputRef.current?.focus();
+                    }}
+                    title="Hear it slowly"
+                    aria-label="Hear it slowly"
+                    className="p-1.5 rounded text-muted hover:text-fg hover:bg-fg/5 transition-colors"
+                  >
+                    <Turtle size={18} />
+                  </button>
+                )}
+              </div>
             )}
 
             <Breakdown lang={lang} item={verdict.item} />

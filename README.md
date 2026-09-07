@@ -1,7 +1,7 @@
 # counting
 
-0–100 in Mandarin, French, German, Spanish, Portuguese, Italian and Japanese,
-generated
+0–100 in nine languages — Mandarin, French, German, Spanish, Portuguese,
+Italian, Japanese, Thai and Vietnamese — generated
 from a small table of lexical atoms plus one rule set per language. Groundwork for a Tauri app that drills
 the four skills — reading, writing, listening, speaking — over that range.
 
@@ -59,6 +59,8 @@ rule changes, the diff shows exactly which of the 303 forms moved.
 | Portuguese | 29 | 6 |
 | Italian | 29 | 4 |
 | Japanese | 12 | 5 |
+| Thai | 12 | 3 |
+| Vietnamese | 12 | 5 |
 
 Portuguese is the most regular of the six after Mandarin — *tens* + *e* + *ones*
 with no exception anywhere. Spanish splits in two: 16–29 fuse into one word and
@@ -97,9 +99,9 @@ say *why* an answer was wrong rather than just marking it red.
 ## Verification
 
 **`make crosscheck` is the check that is not marking its own homework.** It
-compares all 707 forms against ICU's rule-based spell-out via Foundation — a
-separate implementation of the same seven languages, by people who are not us.
-All 707 agree; the Romance and Japanese tables matched on the first run. French matches on every one of its 101 forms, including the
+compares all 909 forms against ICU's rule-based spell-out via Foundation — a
+separate implementation of the same nine languages, by people who are not us.
+All 909 agree, and every table since the first three matched on the first run. French matches on every one of its 101 forms, including the
 awkward ones (71, 80, 81, 91, 97).
 
 Two differences are settled rather than fixed, because both forms are correct:
@@ -233,8 +235,15 @@ range: what you know about 73 is the same fact whether you met it drilling
 0–100 or 0–50. The readout shows current streak, best streak, and how many of
 the range are settled.
 
-**Grading is deliberately tolerant**, and `grade.ts` is tested by `make data`
-rather than left to the UI. Hyphens and spaces are equivalent, so the 1990
+**Grading is lenient about keyboards and strict about choices.** An answer with
+no diacritics is compared with the marks stripped from both sides — nobody is
+marked wrong for lacking a key, so `zero`, `dreissig`, `nijuusan` and
+`hai muoi tu` all pass. An answer that *carries* marks must carry the right
+ones, because in a tonal language they are the answer rather than decoration.
+Vietnamese forced that distinction: with tones folded away the grader accepted
+`mười mốt` for eleven, which is the exact substitution the language turns on.
+
+`grade.ts` is tested by `make data` rather than left to the UI. Hyphens and spaces are equivalent, so the 1990
 French reform spelling `vingt-et-un` is accepted alongside `vingt et un`. `ß`
 folds to `ss`, because nobody on a UK keyboard can type `dreißig`. Diacritics
 are optional, which also lets Mandarin be answered in toneless pinyin by

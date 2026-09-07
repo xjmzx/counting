@@ -116,6 +116,12 @@ every other language surveyed scored 69% or more.
 - **Every `localStorage` access is wrapped.** Private windows, cleared site
   data and storage-blocking settings all throw rather than returning null. An
   unremembered session is still a usable one; a crashed one is not.
+- **Grading is lenient about keyboards and strict about choices.** An answer
+  with no diacritics is compared with the marks stripped from both sides —
+  nobody is marked wrong for lacking a key. An answer that *carries* marks must
+  carry the right ones, because in a tonal language they are the answer. This
+  was found in Vietnamese: folding tones away made the grader accept
+  `mười mốt` for 11, which is the very substitution the language turns on.
 - **Folding is lossy, so collisions are a real risk.** Grading strips tones and
   diacritics and folds `ß`→`ss`, hyphen→space. If two numbers ever fold onto
   one accepted string the grader silently marks a wrong answer right. `data`

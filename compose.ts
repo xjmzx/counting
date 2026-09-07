@@ -8,6 +8,8 @@ import { pt } from "./lang/pt.ts";
 import { es } from "./lang/es.ts";
 import { it } from "./lang/it.ts";
 import { ja } from "./lang/ja.ts";
+import { th } from "./lang/th.ts";
+import { vi } from "./lang/vi.ts";
 import { golden } from "./golden.ts";
 import { accepted, isCorrect, parseNumeral, fold } from "./grade.ts";
 import {
@@ -17,7 +19,7 @@ import {
 import { pickVoice, voicesFor, LOCALE_PREFERENCE, type Voice } from "./voices.ts";
 import { SOUND_RULES, hintsFor } from "./sounds.ts";
 
-const LANGS: Language[] = [zh, fr, it, pt, es, de, ja];
+const LANGS: Language[] = [zh, fr, it, pt, es, de, ja, th, vi];
 const RANGE = Array.from({ length: 101 }, (_, i) => i);
 
 const all = (l: Language): Item[] => RANGE.map((n) => l.compose(n));
@@ -120,6 +122,17 @@ function check(): boolean {
     ["ja", 4, "shi"],              // the other reading, standing alone, is real
     ["ja", 0, "ゼロ"],
     ["ja", 0, "〇"],
+    ["th", 11, "สิบเอ็ด"],
+    ["th", 11, "sip et"],       // romanised, spaced
+    ["th", 11, "sipet"],        // or not
+    ["vi", 24, "hai mươi tư"],
+    ["vi", 24, "hai mươi bốn"], // bốn is still said alongside tư
+    ["vi", 24, "hai muoi tu"],  // no Vietnamese keyboard to hand
+    ["vi", 11, "mười một"],
+    ["vi", 11, "muoi mot"],
+    ["de", 5, "fünf"],          // marks typed correctly still pass
+    ["es", 22, "veintidós"],
+    ["zh", 73, "qī shí sān"],
   ];
   for (const [code, n, typed] of tolerances) {
     const l = LANGS.find((x) => x.code === code)!;
@@ -139,6 +152,13 @@ function check(): boolean {
     // not yonjūshichi. Accepting them would defeat the point of the drill.
     ["ja", 23, "nijuushi"],
     ["ja", 47, "yonjuushichi"],
+    ["th", 20, "สองสิบ"],        // twenty is ยี่สิบ, never สองสิบ
+    // An answer carrying tone marks is held to them. Folding the tones away
+    // let mười mốt pass for 11 — the exact substitution Vietnamese turns on.
+    ["vi", 11, "mười mốt"],
+    ["vi", 21, "hai mươi một"],
+    ["vi", 15, "mười năm"],
+    ["es", 22, "veintidús"],
   ];
   for (const [code, n, typed] of rejects) {
     const l = LANGS.find((x) => x.code === code)!;

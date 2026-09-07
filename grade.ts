@@ -19,6 +19,30 @@ const stripDiacritics = (s: string): string =>
  * without a special case. `ß` folds to `ss`, because a learner on a UK
  * keyboard cannot type `dreißig` and should not be marked wrong for it.
  */
+/**
+ * Does the answer carry any diacritics at all?
+ *
+ * This is the hinge of the grading rule below. Someone typing plain ASCII is
+ * doing the best their keyboard allows; someone typing marks has chosen them,
+ * and in a tonal language the choice is the answer.
+ */
+export function hasDiacritics(s: string): boolean {
+  const n = s.normalize("NFC");
+  return stripDiacritics(n) !== n;
+}
+
+/** Everything `fold` does except removing the marks. */
+export function foldKeepingMarks(s: string): string {
+  return s
+    .normalize("NFC")
+    .trim()
+    .toLowerCase()
+    .replace(/ß/g, "ss")
+    .replace(/[\u00AD\u200B-\u200D\uFEFF]/g, "")
+    .replace(/[\s\-‐‑–—]+/g, " ")
+    .trim();
+}
+
 export function fold(s: string): string {
   return stripDiacritics(s.trim().toLowerCase())
     .replace(/ß/g, "ss")
@@ -46,9 +70,28 @@ export function accepted(lang: Language, n: number): string[] {
   return [...new Set(out.map(fold))];
 }
 
+/**
+ * Grading is lenient about what a keyboard can produce and strict about what a
+ * learner chose to type.
+ *
+ * Plain ASCII is compared with the marks removed from both sides, so `zero`,
+ * `dreissig` and `hai muoi tu` all pass — nobody should be marked wrong for
+ * lacking a key. But an answer that *does* carry marks is held to them,
+ * because in a tonal language they are not decoration. Vietnamese 11 is
+ * mười một; mười mốt is a different word, and folding the tones away made the
+ * grader accept it — the very substitution the language turns on.
+ */
 export function isCorrect(lang: Language, n: number, answer: string): boolean {
-  const a = fold(answer);
-  return a !== "" && accepted(lang, n).includes(a);
+  if (answer.trim() === "") return false;
+  const item = lang.compose(n);
+  const forms = [item.form, item.reading, ...(item.alt ?? [])].filter(
+    (f): f is string => typeof f === "string" && f !== "",
+  );
+  if (hasDiacritics(answer)) {
+    const a = foldKeepingMarks(answer);
+    return forms.some((f) => foldKeepingMarks(f) === a);
+  }
+  return accepted(lang, n).includes(fold(answer));
 }
 
 /** Parse the numeral side of a reading drill. Rejects anything not 0-100. */

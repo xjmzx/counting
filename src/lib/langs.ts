@@ -6,10 +6,12 @@ import { pt } from "../../lang/pt.ts";
 import { es } from "../../lang/es.ts";
 import { it } from "../../lang/it.ts";
 import { ja } from "../../lang/ja.ts";
+import { th } from "../../lang/th.ts";
+import { vi } from "../../lang/vi.ts";
 
 // The frontend imports the language modules directly rather than compose.ts,
 // which is a node CLI. There is no second copy of the rules.
-export const LANGS: Language[] = [zh, fr, it, pt, es, de, ja];
+export const LANGS: Language[] = [zh, fr, it, pt, es, de, ja, th, vi];
 
 export type SkillId = "read" | "write" | "listen" | "speak";
 

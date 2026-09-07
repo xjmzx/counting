@@ -1,5 +1,22 @@
 # Changelog
 
+## Unreleased
+
+- **Thai and Vietnamese**, taking the roster to nine. All 202 new forms agreed
+  with ICU on the first run; the cross-check now covers 909.
+- Thai: twenty is ยี่สิบ, using a word for two found nowhere else in the
+  range, and a one in the ones position is เอ็ด, never หนึ่ง. A romanisation
+  is carried and accepted as an answer, as pinyin is for Mandarin.
+- Vietnamese: three ones-words change shape inside a compound, and not in the
+  same places — fourteen is *mười bốn* but twenty-four is *hai mươi tư*. Ten
+  shifts tone in the tens, *mười* against *mươi*, which the audio probe
+  confirms is a real difference and not just spelling.
+- **Grading bug, found by Vietnamese and fixed for every language.** `fold`
+  stripped diacritics from both sides, so `mười mốt` passed for eleven — the
+  precise substitution the language teaches. An answer carrying marks is now
+  held to them; an answer with none is still compared leniently, so no keyboard
+  is a disadvantage.
+
 ## v0.3.0
 
 - **A version chip in the header**, in the suite's format: `major.minor.patch`

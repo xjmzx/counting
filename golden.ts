@@ -43,6 +43,37 @@ export const golden: Record<string, Record<number, string>> = {
     99: "quatre-vingt-dix-neuf",
     100: "cent",
   },
+  th: {
+    0: "ศูนย์",
+    1: "หนึ่ง",
+    10: "สิบ",
+    11: "สิบเอ็ด",      // one becomes เอ็ด in the ones position
+    12: "สิบสอง",
+    20: "ยี่สิบ",       // ยี่, not สอง — only here in the whole range
+    21: "ยี่สิบเอ็ด",
+    30: "สามสิบ",       // and back to the ordinary digit from thirty
+    31: "สามสิบเอ็ด",
+    71: "เจ็ดสิบเอ็ด",
+    99: "เก้าสิบเก้า",
+    100: "หนึ่งร้อย",
+  },
+  vi: {
+    0: "không",
+    4: "bốn",
+    5: "năm",
+    10: "mười",
+    11: "mười một",     // một, NOT mốt, in the teens
+    14: "mười bốn",     // bốn, NOT tư, in the teens
+    15: "mười lăm",     // but five does change, even here
+    20: "hai mươi",     // mười -> mươi, a tone change
+    21: "hai mươi mốt", // and from here one does change
+    24: "hai mươi tư",  // as does four
+    25: "hai mươi lăm",
+    71: "bảy mươi mốt",
+    74: "bảy mươi tư",
+    99: "chín mươi chín",
+    100: "một trăm",
+  },
   ja: {
     0: "零",
     4: "四",

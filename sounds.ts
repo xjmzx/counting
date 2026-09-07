@@ -331,6 +331,72 @@ export const SOUND_RULES: Record<string, SoundRule[]> = {
     },
   ],
 
+  th: [
+    {
+      id: "th-yi",
+      test: /ยี่/,
+      hint: "ยี่ is an old word for two that survives only in twenty — everywhere else two is สอง.",
+    },
+    {
+      id: "th-et",
+      test: /เอ็ด/,
+      hint: "เอ็ด is one in the ones position of a compound. หนึ่ง never appears there.",
+    },
+    {
+      id: "th-silent-h",
+      test: /ห[นมลงยว]/,
+      hint: "A ห in front of another consonant is silent — it sets the tone. หนึ่ง begins with an n, not an h.",
+    },
+    {
+      id: "th-final-stop",
+      test: /สิบ|เจ็ด|แปด|หก|เอ็ด/,
+      hint: "Final stops are not released — สิบ ends with the lips simply closing, no puff of air after it.",
+    },
+    // Last, and true of everything.
+    {
+      id: "th-tones",
+      test: /./,
+      hint: "Thai has five tones and they distinguish words. The marks above the letters are tones, not stress or emphasis.",
+      contrast: ["ห้า", "หา"],
+    },
+  ],
+
+  vi: [
+    {
+      id: "vi-muoi",
+      test: /mươi|mười/,
+      hint: "mười and mươi differ only in tone, and that is the whole difference between “ten” and the tens — mười is ten, hai mươi is twenty.",
+      contrast: ["mười", "mươi"],
+    },
+    {
+      id: "vi-compound-forms",
+      test: /mốt|tư|lăm/,
+      hint: "mốt, tư and lăm exist only inside a compound. Alone, one four and five are một, bốn and năm.",
+    },
+    {
+      id: "vi-horned-vowels",
+      test: /[ươ]/,
+      hint: "⟨ư⟩ and ⟨ơ⟩ have no English equivalent — the lips stay unrounded where English would round them. mươi, tư.",
+    },
+    {
+      id: "vi-ch",
+      test: /ch/,
+      hint: "⟨ch⟩ is close to an English “ch” but flatter, made with the tongue against the palate — chín.",
+    },
+    {
+      id: "vi-ng",
+      test: /ng/,
+      hint: "⟨ng⟩ can begin a syllable, not only end one — không starts with the sound English only puts at the end of “sing”.",
+    },
+    // Last, and true of everything.
+    {
+      id: "vi-tones",
+      test: /./,
+      hint: "Vietnamese has six tones. The marks are tone, not stress and not vowel quality — the same letters at a different pitch are a different word.",
+      contrast: ["năm", "nam"],
+    },
+  ],
+
   ja: [
     {
       id: "ja-counting-readings",

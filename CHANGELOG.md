@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Fixed a Hindi hint that wrote ा on its own. A combining mark with no base
+  renders as a dotted-circle placeholder — the shaper doing the right thing,
+  and a broken glyph to the reader. `make data` now asserts that no hint, note
+  or language description contains one, across all ten languages.
+- The same rule's character class contained a stray space, so it matched any
+  form with a space in it as well as the vowel signs it meant to.
+
 - **Grouping moved to top-level families** — Sino-Tibetan, Indo-European,
   Japonic, Kra-Dai, Austroasiatic — a standard classification rather than a
   judgement call. Five pills instead of seven.

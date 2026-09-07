@@ -114,6 +114,12 @@ every other language surveyed scored 69% or more.
   *app*, is macOS-only, and is what a Dock or Spotlight shortcut points at. Do
   not merge them, and do not let `make install` start producing a bundle: the
   CLI install must keep working without a Rust toolchain.
+- **Never write a combining mark on its own in user-visible text.** With no
+  base to attach to, the shaper draws a dotted-circle placeholder (U+25CC) and
+  it reads as a broken glyph — this is correct behaviour, not a font or
+  encoding fault. Devanagari ा, Thai tone marks and Arabic harakat are all
+  combining. Name the sound in words and show it inside a word instead.
+  `make data` asserts it across every hint, note and language description.
 - **`queue.ts` and `grade.ts` live at the repo root, not in `src/`.** It is pure, it has no
   DOM, and `compose.ts check` tests it. Moved into `src/` it would become the
   one piece of load-bearing logic with no test. Same for anything else the

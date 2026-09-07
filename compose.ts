@@ -337,6 +337,40 @@ function check(): boolean {
     checked += 10;
   }
 
+  // A combining mark with nothing to attach to renders as a dotted-circle
+  // placeholder — correct behaviour by the shaper, and a broken glyph to the
+  // reader. Every mark in user-visible text needs a base before it.
+  {
+    const orphans = (s: string): string[] => {
+      const cs = [...s];
+      return cs.filter((c, i) => {
+        if (!/\p{M}/u.test(c)) return false;
+        const prev = cs[i - 1];
+        return prev === undefined || !/[\p{L}\p{N}\p{M}]/u.test(prev);
+      });
+    };
+    const visible: [string, string][] = [];
+    for (const [, rules] of Object.entries(SOUND_RULES)) {
+      for (const r of rules) visible.push([`sounds:${r.id}`, r.hint]);
+    }
+    for (const l of LANGS) {
+      visible.push([`numerals:${l.code}`, l.numerals]);
+      for (const a of l.atoms) if (a.note) visible.push([`atom:${l.code}:${a.n}`, a.note]);
+      for (const n of RANGE) {
+        const note = l.compose(n).note;
+        if (note) visible.push([`item:${l.code}:${n}`, note]);
+      }
+    }
+    for (const [where, text] of visible) {
+      const orphaned = orphans(text);
+      if (orphaned.length) {
+        const cps = orphaned.map((c) => `U+${c.codePointAt(0)!.toString(16).toUpperCase()}`).join(", ");
+        console.error(`  ✗ text: ${where} has a combining mark with no base (${cps})`); bad++;
+      }
+    }
+    checked += visible.length;
+  }
+
   // Pronunciation hints. A rule that matches nothing is dead weight; a
   // language with poor coverage is the gap worth knowing about.
   {

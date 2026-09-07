@@ -354,8 +354,12 @@ export const SOUND_RULES: Record<string, SoundRule[]> = {
     },
     {
       id: "hi-long-vowel",
-      test: /[ाीूै ो]/,
-      hint: "Vowel length is meaningful, not decorative — the ा in चार is held roughly twice as long as a short a.",
+      // No stray space in the class — that made it match any spaced form too.
+      test: /[ािीुूेैोौ]/,
+      // Never write a combining mark on its own: with no base to attach to,
+      // the shaper draws a dotted circle placeholder and it reads as a broken
+      // glyph. Name the sound and show it inside a word instead.
+      hint: "Vowel length is meaningful, not decorative — the long ā of चार is held about twice as long as a short a.",
     },
   ],
 

@@ -80,6 +80,24 @@ the word for 3, the composer contributes nothing and the language is a word
 list wearing the app's clothes. Hindi is the example: 0% ones-visibility, where
 every other language surveyed scored 69% or more.
 
+## CI
+
+`.github/workflows/check.yml` runs on every push: the data assertions on both
+platforms, both typecheck projects, `cargo test`, and the ICU cross-check on
+macOS. `release.yml` fires only on a `v*` tag and builds the `.deb` and `.dmg`.
+
+- **The `data` job installs nothing on purpose.** `make data` is documented as
+  running on a bare clone, and omitting `npm ci` is what turns that from a
+  claim into something enforced — an accidental dependency in the data layer
+  fails there rather than years later. Do not add an install step to it.
+- **A red `icu` job with a green `data` job means suspect ICU, not the
+  composers.** A macOS runner image update can change a spelling. The fix is a
+  settled difference in crosscheck's ACCEPTED map, or an `alt` on the form —
+  not an edit to a table that `golden.ts` still agrees with.
+- **`soundcheck` is deliberately not in CI.** It reports rather than fails, and
+  the runners have a different set of installed voices, so it would be noise
+  with no signal.
+
 ## Traps specific to this repo
 
 - **The version chip is borrowed; the top-bar grammar still is not.** The chip

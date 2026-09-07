@@ -1,0 +1,136 @@
+name: Check
+
+# Everything that can fail without running the app. release.yml only fires on a
+# `v*` tag, so before this nothing was verified on a push at all — and
+# `cargo test` ran nowhere, on any trigger.
+#
+# Split into four jobs rather than one `make check` so a failure names itself,
+# and so the two that need no dependencies stay fast.
+
+on:
+  push:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# A newer push to the same ref makes the older run irrelevant.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  # Node 23+ is required, not preferred: this repo runs `node compose.ts`
+  # with no build step. release.yml pins the same version for the same reason.
+  NODE_VERSION: "24"
+
+# Every job carries the same guard. A pull request opened from a branch of this
+# repo would otherwise be checked twice — once for the push, once for the PR —
+# while a fork PR produces no push event here and needs the pull_request
+# trigger to be checked at all.
+jobs:
+  # The 1143 assertions in compose.ts: golden forms, the composers' invariants,
+  # grading tolerances, the queue's weighting, voice selection, the scale
+  # ladders, and that no user-visible string carries an orphaned combining mark.
+  #
+  # Deliberately no `npm ci`. `make data` is documented as running on a bare
+  # clone with no dependencies, and omitting the install is what turns that
+  # claim into something CI enforces: an accidental import of a package into
+  # the data layer fails here rather than in six months.
+  #
+  # Run on both platforms because the same document says it runs *anywhere*.
+  data:
+    name: Data (${{ matrix.os }})
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, macos-14]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      # Node 23+ strips the types natively, which is why this needs no build
+      # step. Below that it fails loudly with ERR_UNKNOWN_FILE_EXTENSION — it
+      # cannot pass without running.
+      - name: Check the composed data
+        run: node compose.ts check
+
+  typecheck:
+    name: Typecheck
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+      - run: npm ci
+      # Both projects: the app (DOM, JSX, no node types) and the CLI plus build
+      # tooling (node types, no DOM). Keeping them apart is what stops the
+      # frontend importing something that only exists in node.
+      - run: npm run typecheck
+
+  # The four tts.rs tests — the `say -v '?'` parser, whose real entries include
+  # multi-word names like `Eddy (German (Germany))`. They have never run in CI.
+  rust:
+    name: Rust tests
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v6
+
+      # The same Tauri 2 set release.yml installs. Needed even for `cargo test`,
+      # because the tauri crate itself links against webkit2gtk.
+      - name: Install Tauri system deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            libxdo-dev \
+            libssl-dev \
+            build-essential \
+            curl wget file
+
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      # No frontend build first: verified that `cargo test` succeeds with no
+      # `dist/` present, even after forcing build.rs to re-run. Only the release
+      # bundle needs the frontend.
+      - name: cargo test
+        working-directory: src-tauri
+        run: cargo test
+
+  # The independent oracle: every composed form against ICU's spell-out via
+  # Foundation. This is the only check here that is not marking its own
+  # homework — golden.ts was written by whoever wrote the composers, so it
+  # proves consistency; ICU is a separate implementation.
+  #
+  # macOS-only because it reaches ICU through `swift`, and needs no `npm ci`
+  # for the same reason the data job does not.
+  #
+  # If this fails and `make data` passes, suspect the runner's ICU before the
+  # composers: a macOS image update can change a spelling. The fix is then a
+  # settled difference in crosscheck's ACCEPTED map or an `alt` on the form,
+  # not a change to a table that golden.ts still agrees with.
+  icu:
+    name: ICU cross-check
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Cross-check every form against ICU
+        run: node tools/crosscheck.ts

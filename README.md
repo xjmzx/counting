@@ -112,6 +112,15 @@ in the shared `Atom` type, because only German needs it.
 That asymmetry is teaching content. It is also what a drill needs in order to
 say *why* an answer was wrong rather than just marking it red.
 
+## CI
+
+Every push runs `check.yml`: the data assertions on Linux *and* macOS, both
+typecheck projects, `cargo test`, and the ICU cross-check. Tagging `v*` runs
+`release.yml`, which builds a `.deb` and a `.dmg` and publishes them.
+
+The data job installs no dependencies, which is not an optimisation — it is how
+the claim that `make data` runs on a bare clone gets enforced.
+
 ## Verification
 
 **`make crosscheck` is the check that is not marking its own homework.** It

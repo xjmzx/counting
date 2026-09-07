@@ -29,6 +29,18 @@ if ! say -v '?' | grep -q "^$voice "; then
   exit 1
 fi
 
+# Refuse to synthesise into a language whose clips are committed.
+#
+# Those are somebody's recorded voice, and this script would overwrite them
+# with a synthesiser and leave the result staged — losing work that cannot be
+# regenerated, and committing Apple's voices under the ignore rule written to
+# keep them out. git decides, so the check cannot drift from the rule.
+if ! git check-ignore -q "clips/$lang/0.wav" 2>/dev/null; then
+  echo "clips/$lang is committed, so it holds recorded audio rather than synthesised." >&2
+  echo "Refusing to overwrite it. To record instead:  make record L=$lang" >&2
+  exit 1
+fi
+
 mkdir -p "clips/$lang"
 node --input-type=module -e "
 import { LANGS } from './src/lib/langs.ts';

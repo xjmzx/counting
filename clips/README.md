@@ -15,24 +15,33 @@ Sparse coverage is the permanent normal case: 101 numbers across ten languages
 is over a thousand recordings, so the synthesised path never goes away, and the
 app says which one you heard.
 
-## Why the audio is not committed
+## What is committed, and what is not
 
-`make clips` renders Japanese with macOS `say`, because espeak-ng has no kanji
-dictionary and the choice on Linux is a clip or silence. Those clips are the
-output of Apple's system voices, and **whether that output may be redistributed
-is an open question nobody here has answered.** Committing them to a public
-repository, or shipping them inside a `.deb`, is a different act from playing
-them on the machine that made them.
+Clips are gitignored by default and un-ignored one language at a time, which
+fails safe: a language nobody has decided about stays out of the repository
+rather than arriving in it by accident.
 
-So `clips/*/*.wav` is gitignored, and the audio is generated locally:
+**Recorded clips are committed.** They are a contributor's own voice, given
+deliberately, and the app is not much use without them. `clips/en` is the first,
+recorded by the author — English is the interface language and the one table
+whose pronunciation needs no second opinion here. Adding another recorded
+language means adding a line to `.gitignore`, which is the moment to have asked
+the contributor about terms.
+
+**Synthesised clips are not.** `make clips` renders with Apple's system voices,
+because espeak-ng has no kanji dictionary and the choice on Linux was a clip or
+silence. Whether that output may be redistributed is a question nobody here has
+answered, and committing it to a public repository or shipping it inside a
+`.deb` is a different act from playing it on the machine that made it. So
+`clips/ja` is generated locally:
 
     make clips
 
-That is a hold, not a verdict. If the licensing turns out to be fine, deleting
-one line of `.gitignore` ships them. If it does not, the same pipeline works
-with any redistributable engine — open-jtalk's voices are the obvious
-candidate — and then the Linux fix and the clips are the same work.
+That is a hold rather than a verdict. If the licensing turns out to be fine,
+one line of `.gitignore` ships them; if it does not, the same pipeline works
+with a redistributable engine. Since Linux now reads kanji through open-jtalk,
+nothing depends on resolving it.
 
-**Human recordings are a separate question with the same shape.** A submitted
-clip is someone's voice, and the terms need stating before the first one is
-accepted rather than after.
+`make clips` refuses to write into a language whose clips are committed, so it
+cannot overwrite recorded audio with a synthesiser. git decides which is which,
+so the check cannot drift from the rule.

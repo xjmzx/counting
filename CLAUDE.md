@@ -234,6 +234,12 @@ macOS. `release.yml` fires only on a `v*` tag and builds the `.deb` and `.dmg`.
   machine nor CI's Rust job ever compiled it — which is precisely how untested
   code that looks like support gets shipped. Parsing, locale mapping and the
   rate conversion are ordinary functions with ordinary tests.
+- **An excluded language and an empty machine must not show the same panel.**
+  Both produce an empty voice list, so the panel has to be told them apart:
+  `speech_info` carries an `unsupported` list with the reason in the user's
+  words, and a test asserts every entry in it is genuinely unmapped. Without
+  that, Japanese on Linux advised installing espeak-ng — already present, and
+  the very engine that cannot read kanji.
 - **A language is excluded from a backend by not mapping it.** That is the
   whole capability matrix: `voicesFor()` already returns an empty list when
   nothing acceptable is installed and the drill already explains it. Japanese

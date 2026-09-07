@@ -115,6 +115,23 @@ impl Backend {
         }
     }
 
+    /// Languages this backend will not serve, with the reason in the words the
+    /// user should read. Kept next to `normalise_spd_language`, which does the
+    /// excluding, so the two cannot drift apart.
+    fn unsupported(self) -> Vec<Unsupported> {
+        match self {
+            Backend::Say => Vec::new(),
+            Backend::SpeechDispatcher => vec![Unsupported {
+                lang: "ja".to_string(),
+                reason: "espeak-ng has no kanji dictionary: it announces the character class \
+                         once per character rather than reading the number, so no voice is \
+                         offered here. Installing more voices will not help — this needs a \
+                         different engine, such as open-jtalk."
+                    .to_string(),
+            }],
+        }
+    }
+
     /// What to tell someone with no voices. Naming the package is the whole
     /// difference between a dead end and a next step.
     pub fn install_hint(self) -> &'static str {
@@ -255,6 +272,20 @@ pub fn list_voices() -> Result<Vec<Voice>, String> {
     Ok(backend.parse(&backend.list_raw()?))
 }
 
+/// A language this backend cannot serve, and why.
+///
+/// An excluded language and an empty machine are different situations, and
+/// telling them apart is the panel's job. Without this the drill advised
+/// `apt install espeak-ng` for Japanese on Linux — already installed, and the
+/// very engine that cannot read kanji.
+#[derive(Serialize, Clone, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct Unsupported {
+    /// The app's language code, as `voices.ts` uses it.
+    pub lang: String,
+    pub reason: String,
+}
+
 /// Which backend is in use, and what to say when it has no usable voice.
 /// The frontend must not hardcode a macOS sentence — on Ubuntu it is nonsense.
 #[derive(Serialize)]
@@ -262,6 +293,8 @@ pub fn list_voices() -> Result<Vec<Voice>, String> {
 pub struct SpeechInfo {
     pub backend: String,
     pub install_hint: String,
+    /// Languages deliberately not offered here. Empty is the normal case.
+    pub unsupported: Vec<Unsupported>,
 }
 
 #[tauri::command]
@@ -270,10 +303,12 @@ pub fn speech_info() -> SpeechInfo {
         Some(b) => SpeechInfo {
             backend: b.binary().to_string(),
             install_hint: b.install_hint().to_string(),
+            unsupported: b.unsupported(),
         },
         None => SpeechInfo {
             backend: "none".to_string(),
             install_hint: no_backend_message(),
+            unsupported: Vec::new(),
         },
     }
 }
@@ -421,6 +456,24 @@ mod tests {
         // Cantonese trap wearing a different hat.
         assert!(parse_spd_line("Japanese   ja   none").is_none());
         assert!(normalise_spd_language("ja").is_none());
+    }
+
+    #[test]
+    fn every_excluded_language_is_actually_excluded() {
+        // The reason shown to the user and the mapping that drops the language
+        // are two statements of one fact; if they part company the panel lies.
+        for u in Backend::SpeechDispatcher.unsupported() {
+            assert!(
+                normalise_spd_language(&u.lang).is_none(),
+                "{} is listed as unsupported but still maps",
+                u.lang
+            );
+            assert!(!u.reason.trim().is_empty(), "{} has no reason", u.lang);
+        }
+        assert!(
+            Backend::Say.unsupported().is_empty(),
+            "macOS serves all ten; an entry here needs a reason too"
+        );
     }
 
     #[test]

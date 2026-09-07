@@ -24,7 +24,13 @@ export async function listVoices(): Promise<{ voices: Voice[]; error: string | n
   }
 }
 
-export type SpeechInfo = { backend: string; installHint: string };
+export type Unsupported = { lang: string; reason: string };
+export type SpeechInfo = {
+  backend: string;
+  installHint: string;
+  /** Languages this backend will not serve, and why. Usually empty. */
+  unsupported: Unsupported[];
+};
 
 /**
  * Which backend is running and what to tell someone with no usable voice.

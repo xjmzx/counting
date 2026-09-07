@@ -122,6 +122,10 @@ export function Drill({
   };
 
   const noVoice = skill === "listen" && langVoices.length === 0;
+  // An excluded language and an empty machine are different situations. Both
+  // produce an empty voice list, and telling a Linux user to install the very
+  // engine that cannot read their script is worse than saying nothing.
+  const unsupported = speech?.unsupported.find((u) => u.lang === lang.code);
   const voiceLabel = langVoices.find((v) => voiceId(v) === voice)?.name ?? voice;
   const hints = verdict ? hintsFor(lang.code, verdict.item.form) : [];
   const scriptHints = verdict ? scriptHintsFor(lang.code, verdict.item.form) : [];
@@ -181,8 +185,17 @@ export function Drill({
 
         {noVoice && (
           <p className="text-sm text-warn/90 leading-relaxed max-w-prose">
-            No {lang.name} voice is available.{" "}
-            {speech?.installHint ?? "No speech backend was found."}
+            {unsupported ? (
+              <>
+                Listening is not available for {lang.name} through{" "}
+                <span className="font-mono">{speech?.backend}</span>. {unsupported.reason}
+              </>
+            ) : (
+              <>
+                No {lang.name} voice is available.{" "}
+                {speech?.installHint ?? "No speech backend was found."}
+              </>
+            )}
           </p>
         )}
         {speechError && !noVoice && (

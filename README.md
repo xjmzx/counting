@@ -12,7 +12,17 @@ make table      # all 303 forms, side by side
 make stats      # what each language actually costs in atoms
 make emit       # regenerate numbers.json + numbers.tsv
 make typecheck  # tsc --noEmit (run 'make deps' first)
+
+make install    # put a 'counting' command on PATH under ~/.local
+make uninstall  # remove it
 ```
+
+`make install` copies the sources to `$PREFIX/share/counting` and drops a
+`counting` wrapper in `$PREFIX/bin`, so `counting table` works from anywhere.
+Unlike the Tauri repos there is no `install-guard` and no `install.sh`: with no
+bundle and no `.desktop` entry, the same target is correct on macOS and Linux.
+The wrapper refuses to run on Node older than 23, where the types would not be
+stripped.
 
 Node 26 strips the types natively, so `node compose.ts` runs the TypeScript
 directly with no build step and no dependencies. The two devDependencies exist

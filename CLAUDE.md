@@ -23,6 +23,7 @@ so it belongs in Rust, not the webview.
 ```
 make check      # golden forms + invariants — works on a bare clone, no install
 make typecheck  # tsc --noEmit — needs 'make deps' first
+make install    # 'counting' command under ~/.local — runs 'check' first
 ```
 
 `make check` is the one that matters and has no dependencies: Node 26 strips
@@ -43,6 +44,11 @@ devDependencies exist only for `typecheck`.
   form, a listening drill has no correct answer. `check` asserts it.
 - **`noUncheckedIndexedAccess` is on.** Do not turn it off to quiet an array
   access; it has already caught one unproven index here.
+- **`make install` is deliberately not guarded by platform.** The Tauri repos
+  split it (`make install` for the Linux bare-binary layout, `./install.sh` for
+  a macOS `.app`) because they produce a bundle and a `.desktop` entry. This
+  produces neither, so one target is correct on both. Do not copy the guard
+  across.
 - **The written form is not the spoken form** for French or German. Anything
   that claims to teach listening or speaking needs a pronunciation layer first
   — see the gaps section of the README.

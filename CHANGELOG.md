@@ -16,5 +16,8 @@ First cut: the composer only. No app yet.
 - German carries a concept the other two do not: two distinct combining
   contexts (`beforeSuffix`, `inCompound`). It is local to `lang/de.ts`, not in
   the shared `Atom` type.
+- `make install` puts a `counting` command under `$PREFIX` (default
+  `~/.local`), so the drills can be exercised from a shell before any UI
+  exists. One target for both platforms — there is no bundle to get wrong.
 - No IPA for French or German yet. This blocks honest listening and speaking
   drills; see README.

@@ -21,6 +21,7 @@
 //! support gets shipped. Parsing and locale mapping are ordinary functions,
 //! compiled and tested on every platform.
 
+use std::path::PathBuf;
 use std::process::{Child, Command};
 use std::sync::Mutex;
 
@@ -86,7 +87,7 @@ impl Backend {
 
     /// Whichever is installed. Detected by running its list command, so a
     /// binary that exists but cannot run counts as absent.
-    fn detect() -> Option<Backend> {
+    pub fn detect() -> Option<Backend> {
         Backend::order().into_iter().find(|b| b.list_raw().is_ok())
     }
 
@@ -115,20 +116,68 @@ impl Backend {
         }
     }
 
+    /// The binary this backend drives, for a report or a tooltip.
+    pub fn name(self) -> &'static str {
+        self.binary()
+    }
+
+    /// Every voice this backend offers, already normalised and filtered.
+    pub fn voices(self) -> Result<Vec<Voice>, String> {
+        Ok(self.parse(&self.list_raw()?))
+    }
+
+    /// The output modules speech-dispatcher has, from `spd-say -O`.
+    pub fn module_names(self) -> Vec<String> {
+        self.modules()
+    }
+
+    fn modules(self) -> Vec<String> {
+        if self != Backend::SpeechDispatcher {
+            return Vec::new();
+        }
+        let Ok(out) = Command::new("spd-say").arg("-O").output() else {
+            return Vec::new();
+        };
+        String::from_utf8_lossy(&out.stdout)
+            .lines()
+            .map(str::trim)
+            .filter(|l| !l.is_empty() && !l.contains(char::is_whitespace))
+            .map(str::to_string)
+            .collect()
+    }
+
+    /// An open-jtalk output module, if speech-dispatcher has one.
+    ///
+    /// This is what decides whether Japanese is offered on Linux. espeak-ng
+    /// cannot read kanji; open-jtalk can, and `mecab` — the expensive half —
+    /// is already present on a stock desktop. So the exclusion is a property
+    /// of the *module*, not of the language, and installing open-jtalk should
+    /// simply make Japanese work.
+    pub fn japanese_module(self) -> Option<String> {
+        self.modules()
+            .into_iter()
+            .find(|m| m.to_ascii_lowercase().contains("jtalk"))
+    }
+
     /// Languages this backend will not serve, with the reason in the words the
     /// user should read. Kept next to `normalise_spd_language`, which does the
     /// excluding, so the two cannot drift apart.
-    fn unsupported(self) -> Vec<Unsupported> {
+    pub fn unsupported(self) -> Vec<Unsupported> {
         match self {
             Backend::Say => Vec::new(),
-            Backend::SpeechDispatcher => vec![Unsupported {
-                lang: "ja".to_string(),
-                reason: "espeak-ng has no kanji dictionary: it announces the character class \
-                         once per character rather than reading the number, so no voice is \
-                         offered here. Installing more voices will not help — this needs a \
-                         different engine, such as open-jtalk."
-                    .to_string(),
-            }],
+            // Japanese is excluded only while nothing here can read kanji.
+            Backend::SpeechDispatcher if self.japanese_module().is_none() => {
+                vec![Unsupported {
+                    lang: "ja".to_string(),
+                    reason: "espeak-ng has no kanji dictionary: it announces the character \
+                             class once per character rather than reading the number, so no \
+                             voice is offered. Installing `open-jtalk` and a voice — try \
+                             `sudo apt install open-jtalk open-jtalk-mecab-naist-jdic \
+                             hts-voice-nitech-jp-atr503-m001` — makes it work here."
+                        .to_string(),
+                }]
+            }
+            Backend::SpeechDispatcher => Vec::new(),
         }
     }
 
@@ -146,6 +195,64 @@ impl Backend {
             }
         }
     }
+}
+
+/// Plays a recorded clip. Separate from `Backend` because playing a file and
+/// synthesising speech are different jobs with different binaries.
+///
+/// WAV, not a compressed format: `afplay`, `paplay` and `aplay` all decode it
+/// with nothing installed, and a clip that needs a codec on the user's box is
+/// a clip that silently does not play.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum ClipPlayer {
+    Afplay,
+    Paplay,
+    Aplay,
+}
+
+impl ClipPlayer {
+    /// For a report or a tooltip.
+    pub fn name(self) -> &'static str {
+        self.binary()
+    }
+
+    fn binary(self) -> &'static str {
+        match self {
+            ClipPlayer::Afplay => "afplay",
+            ClipPlayer::Paplay => "paplay",
+            ClipPlayer::Aplay => "aplay",
+        }
+    }
+
+    pub fn detect() -> Option<ClipPlayer> {
+        let order = if cfg!(target_os = "macos") {
+            [ClipPlayer::Afplay, ClipPlayer::Paplay, ClipPlayer::Aplay]
+        } else {
+            [ClipPlayer::Paplay, ClipPlayer::Aplay, ClipPlayer::Afplay]
+        };
+        order.into_iter().find(|p| {
+            // --help rather than --version: aplay has no --version.
+            Command::new(p.binary()).arg("--help").output().is_ok()
+        })
+    }
+}
+
+/// Where a clip for this number would live, if one exists.
+///
+/// `clips/<lang>/<n>.wav`, bundled as a Tauri resource. Absent is the normal
+/// case and always will be: 101 numbers times ten languages is a thousand
+/// recordings, so the fallback path is permanent, not temporary.
+pub fn clip_path(app: &tauri::AppHandle, lang: &str, n: u32) -> Option<PathBuf> {
+    use tauri::Manager;
+    // A language code from the frontend must never escape the clips directory.
+    if !lang.chars().all(|c| c.is_ascii_lowercase()) || lang.is_empty() || n > 100 {
+        return None;
+    }
+    let p = app
+        .path()
+        .resolve(format!("clips/{lang}/{n}.wav"), tauri::path::BaseDirectory::Resource)
+        .ok()?;
+    p.is_file().then_some(p)
 }
 
 /// Parse one line of `say -v '?'`.
@@ -323,18 +430,57 @@ fn no_backend_message() -> String {
     }
 }
 
-/// Speak `text` with `voice`. Interrupts anything already speaking.
+/// What actually made the sound.
+///
+/// The frontend needs this so a synthesised reading does not silently pass for
+/// a recorded one — and so a missing clip reads as ordinary rather than as a
+/// fault, which it will be for years: a thousand recordings is the full set.
+#[derive(Serialize, Clone, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct Spoken {
+    /// `clip` or `synth`.
+    pub source: String,
+    /// The binary that played it, for the tooltip.
+    pub detail: String,
+}
+
+/// Speak `text` with `voice`, preferring a recorded clip when one exists.
+///
+/// `lang` and `n` say which number this is, so a recording can be looked up.
+/// Both absent means "just synthesise it".
 ///
 /// `rate` is words per minute; the macOS default is around 175. Slower is
 /// genuinely useful here — a compound like *vierundsiebzig* goes past fast.
 #[tauri::command]
 pub fn speak(
+    app: tauri::AppHandle,
     speaker: tauri::State<'_, Speaker>,
     voice: String,
     text: String,
     rate: Option<u32>,
-) -> Result<(), String> {
+    lang: Option<String>,
+    n: Option<u32>,
+) -> Result<Spoken, String> {
     speaker.silence();
+
+    // A human saying the number beats any synthesiser, so a clip wins whenever
+    // one exists. Rate is ignored here: a recording has the speed it has, and
+    // pitching it would be worse than leaving it alone.
+    if let (Some(lang), Some(n)) = (lang.as_deref(), n) {
+        if let (Some(path), Some(player)) = (clip_path(&app, lang, n), ClipPlayer::detect()) {
+            let child = Command::new(player.binary())
+                .arg(&path)
+                .spawn()
+                .map_err(|e| format!("could not run `{}`: {e}", player.binary()))?;
+            if let Ok(mut guard) = speaker.0.lock() {
+                *guard = Some(child);
+            }
+            return Ok(Spoken {
+                source: "clip".to_string(),
+                detail: player.binary().to_string(),
+            });
+        }
+    }
 
     let Some(backend) = Backend::detect() else {
         return Err(no_backend_message());
@@ -349,6 +495,14 @@ pub fn speak(
             }
         }
         Backend::SpeechDispatcher => {
+            // Japanese only works through an open-jtalk module; the default
+            // one cannot read kanji. Naming it explicitly is what makes the
+            // language usable once the module is installed.
+            if voice == "ja" {
+                if let Some(m) = backend.japanese_module() {
+                    cmd.arg("-o").arg(m);
+                }
+            }
             // `voice` carries the id, which for this backend is the language
             // tag spd-say accepts — bare `fr`, not `fr_FR`, which it rejects.
             cmd.arg("-l").arg(&voice);
@@ -369,7 +523,10 @@ pub fn speak(
     if let Ok(mut guard) = speaker.0.lock() {
         *guard = Some(child);
     }
-    Ok(())
+    Ok(Spoken {
+        source: "synth".to_string(),
+        detail: backend.binary().to_string(),
+    })
 }
 
 #[tauri::command]
@@ -450,10 +607,13 @@ mod tests {
     }
 
     #[test]
-    fn japanese_is_excluded_on_this_backend() {
+    fn japanese_is_not_served_by_the_default_module() {
         // espeak-ng has no kanji dictionary: every character renders in the
         // same 1.04s and it says "Chinese letter". Offering it would be the
-        // Cantonese trap wearing a different hat.
+        // Cantonese trap wearing a different hat. An open-jtalk module lifts
+        // the exclusion at runtime — see Backend::unsupported — but nothing
+        // maps `ja` into the voice list either way, because the module is
+        // selected by name rather than chosen from that list.
         assert!(parse_spd_line("Japanese   ja   none").is_none());
         assert!(normalise_spd_language("ja").is_none());
     }

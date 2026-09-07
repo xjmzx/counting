@@ -37,6 +37,9 @@
       "deb": {
         "desktopTemplate": "counting.desktop"
       }
-    }
+    },
+    "resources": [
+      "../clips"
+    ]
   }
 }

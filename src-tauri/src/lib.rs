@@ -4,7 +4,7 @@
 // entirely in the frontend, where the data already is. Speech is the one thing
 // that has to be here: see the note at the top of tts.rs.
 
-mod tts;
+pub mod tts;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {

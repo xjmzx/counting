@@ -229,6 +229,20 @@ macOS. `release.yml` fires only on a `v*` tag and builds the `.deb` and `.dmg`.
   Cantonese voice reading Mandarin numbers is wrong in a way nothing on screen
   shows. `voices.ts` holds an allowlist of acceptable locales per language and
   `make data` asserts it. Adding a language means adding its locales there.
+- **A recorded clip beats synthesis, and the app says which you heard.** Clips
+  live at `clips/<lang>/<n>.wav` and nothing in the mechanism knows about any
+  particular language — a contributed recording drops in and is preferred from
+  the next launch. Sparse coverage is permanent, not temporary: over a thousand
+  recordings would be a full set, so the synthesised path never goes away and a
+  missing clip must never read as a fault.
+- **The clip audio is not committed, and that is a hold rather than a verdict.**
+  `make clips` renders Japanese with Apple's voices, and whether that output may
+  be redistributed is unanswered. `clips/README.md` states it; one line of
+  `.gitignore` reverses it once it is settled.
+- **Japanese on Linux is excluded by module, not by language.** `japanese_module`
+  looks for an open-jtalk output module; when one is there the exclusion lifts
+  and Japanese is spoken with `-o <module>`. `make speechcheck` reports what a
+  given machine actually has.
 - **Nothing in `tts.rs` is behind `#[cfg]` except which binary is spawned.**
   Gating the Linux implementation out on macOS would mean neither a developer
   machine nor CI's Rust job ever compiled it — which is precisely how untested

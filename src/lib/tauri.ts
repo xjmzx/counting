@@ -46,13 +46,28 @@ export async function speechInfo(): Promise<SpeechInfo | null> {
   }
 }
 
-export async function speak(voice: string, text: string, rate?: number): Promise<string | null> {
-  if (!inTauri()) return "Speech needs the app.";
+/** What made the sound: a recording, or the synthesiser. */
+export type Spoken = { source: "clip" | "synth"; detail: string };
+
+/**
+ * Speak a number, preferring a recorded clip.
+ *
+ * `lang` and `n` let the backend look one up. Passing them is not optional in
+ * practice — without them every number is synthesised, whatever is on disk.
+ */
+export async function speak(
+  voice: string,
+  text: string,
+  rate?: number,
+  lang?: string,
+  n?: number,
+): Promise<{ spoken: Spoken | null; error: string | null }> {
+  if (!inTauri()) return { spoken: null, error: "Speech needs the app." };
   try {
-    await invoke("speak", { voice, text, rate });
-    return null;
+    const spoken = await invoke<Spoken>("speak", { voice, text, rate, lang, n });
+    return { spoken, error: null };
   } catch (e) {
-    return String(e);
+    return { spoken: null, error: String(e) };
   }
 }
 

@@ -5,7 +5,7 @@ import { isCorrect, parseNumeral } from "../../grade.ts";
 import { pickNext, solidCount } from "../../queue.ts";
 import { voicesFor, voiceId, type Voice } from "../../voices.ts";
 import { hintsFor, scriptHintsFor } from "../../sounds.ts";
-import { speak, stopSpeaking, speechInfo, type SpeechInfo } from "../lib/tauri";
+import { speak, stopSpeaking, speechInfo, type SpeechInfo, type Spoken } from "../lib/tauri";
 import { useProgress } from "../lib/useProgress";
 import { cn } from "../lib/cn";
 import { Breakdown } from "./Breakdown";
@@ -39,6 +39,10 @@ export function Drill({
   const [score, setScore] = useState({ right: 0, total: 0 });
   const [streak, setStreak] = useState(0);
   const [speechError, setSpeechError] = useState<string | null>(null);
+  // Which source was last heard. Shown so a synthesised reading never passes
+  // for a recorded one, and so a missing clip reads as ordinary rather than
+  // as a fault — sparse coverage is the normal case and will be for years.
+  const [spoken, setSpoken] = useState<Spoken | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const item = lang.compose(n);
@@ -79,9 +83,12 @@ export function Drill({
   const say = useCallback(
     (rate: number) => {
       if (!voice) return;
-      void speak(voice, item.form, rate).then(setSpeechError);
+      void speak(voice, item.form, rate, lang.code, n).then((r) => {
+        setSpeechError(r.error);
+        setSpoken(r.spoken);
+      });
     },
-    [voice, item.form],
+    [voice, item.form, lang.code, n],
   );
 
   // Only the listening drill speaks unprompted — there the audio *is* the
@@ -112,6 +119,7 @@ export function Drill({
     setN((prev) => pickNext(max, stats, prev));
     setInput("");
     setVerdict(null);
+    setSpoken(null);
   }, [max, stats]);
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -347,6 +355,23 @@ export function Drill({
                   >
                     <Turtle size={18} />
                   </button>
+                )}
+                {spoken && (
+                  <span
+                    title={
+                      spoken.source === "clip"
+                        ? `A recording, played with ${spoken.detail}`
+                        : `Synthesised by ${spoken.detail} — no recording exists for this number yet`
+                    }
+                    className={cn(
+                      "text-xs px-1.5 py-0.5 rounded self-center",
+                      spoken.source === "clip"
+                        ? "text-ok bg-ok/10"
+                        : "text-muted bg-fg/5",
+                    )}
+                  >
+                    {spoken.source === "clip" ? "recording" : "synthesised"}
+                  </span>
                 )}
               </div>
             )}

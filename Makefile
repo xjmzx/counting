@@ -4,7 +4,7 @@ LIBDIR ?= $(PREFIX)/share/counting
 
 SOURCES := compose.ts types.ts golden.ts grade.ts
 
-.PHONY: help deps data crosscheck soundcheck scriptcheck typecheck version check dev web build table stats emit install install-app uninstall clean
+.PHONY: help deps data crosscheck soundcheck scriptcheck speechcheck clips typecheck version check dev web build table stats emit install install-app uninstall clean
 
 help:
 	@echo "Targets:"
@@ -13,6 +13,8 @@ help:
 	@echo "  make crosscheck compare every form against ICU        [macOS only]"
 	@echo "  make soundcheck verify pronunciation rules by audio   [macOS only]"
 	@echo "  make scriptcheck does each voice read its script?     [macOS only]"
+	@echo "  make speechcheck what this machine can speak, and why  [any platform]"
+	@echo "  make clips       render Japanese clips locally         [macOS only]"
 	@echo "  make dev        run the app with hot reload"
 	@echo "  make web        frontend only in a browser, no Tauri"
 	@echo "  make build      release build of frontend + app bundle"
@@ -60,6 +62,19 @@ soundcheck:
 # soundcheck: reports, never fails a build, and one-way (a varied spread is not
 # proof of a correct reading). Validated against espeak-ng, where Japanese
 # spreads 0.00 and every other language 0.15 or more.
+# Reports what the app itself sees — same detection, same parser, same locale
+# mapping — rather than a script that could agree with the app while both were
+# wrong. On Linux it answers whether an open-jtalk install is visible, and so
+# whether Japanese is offered.
+speechcheck:
+	cd src-tauri && cargo run --quiet --bin speechcheck
+
+# Recorded clips are preferred over synthesis. These are gitignored and
+# generated locally; clips/README.md has the licensing question that gates
+# committing them.
+clips:
+	bash tools/make-clips.sh ja Kyoko
+
 scriptcheck:
 	node tools/scriptcheck.ts
 

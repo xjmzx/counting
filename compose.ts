@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { rmSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import type { Item, Language } from "./types.ts";
 import { zh } from "./lang/zh.ts";
@@ -21,7 +21,7 @@ import {
 } from "./queue.ts";
 import { pickVoice, voicesFor, LOCALE_PREFERENCE, type Voice } from "./voices.ts";
 import { SOUND_RULES, SCRIPT_RULES, hintsFor, scriptHintsFor } from "./sounds.ts";
-import { readWav, writeWav, trim, MARGIN_MS, type Wav } from "./tools/wav.ts";
+import { readWav, writeWav, trim, inspectWav, ALLOWED_CHUNKS, MARGIN_MS, type Wav } from "./tools/wav.ts";
 
 const LANGS: Language[] = [zh, fr, it, pt, es, en, de, hi, ja, th, vi];
 const RANGE = Array.from({ length: 101 }, (_, i) => i);
@@ -389,6 +389,48 @@ function check(): boolean {
       console.error("  ✗ wav: samples changed in a round trip"); bad++;
     }
     checked += 7;
+  }
+
+  // Committed clips carry no metadata.
+  //
+  // A WAV can hold LIST/INFO with an artist, a date and the software that made
+  // it, so a clip exported from an editor is a small biography of whoever
+  // recorded it. The recorder strips all of that by rebuilding the file from
+  // samples — but a contributed clip need not have come through the recorder,
+  // and this is the check that stands between one and the repository.
+  {
+    // Nothing is written by writeWav that is not fmt and data.
+    const tmp2 = `${tmpdir()}/counting-meta-check.wav`;
+    writeWav(tmp2, { rate: 22050, channels: 1, samples: new Int16Array(2205) });
+    const own = inspectWav(tmp2);
+    rmSync(tmp2, { force: true });
+    if (!own || own.chunks.join(",") !== ALLOWED_CHUNKS.join(",")) {
+      console.error(`  ✗ clips: writeWav emitted ${own?.chunks.join(", ")}`); bad++;
+    }
+
+    // And every clip actually committed. Absent on a bare clone, which is
+    // normal — synthesised languages are gitignored by design.
+    let scanned = 0;
+    for (const dir of existsSync("clips") ? readdirSync("clips") : []) {
+      const langDir = `clips/${dir}`;
+      if (!statSync(langDir).isDirectory()) continue;
+      for (const f of readdirSync(langDir).filter((x) => x.endsWith(".wav"))) {
+        const path = `${langDir}/${f}`;
+        const w = inspectWav(path);
+        scanned++;
+        if (!w) { console.error(`  ✗ clips: ${path} is not a readable WAV`); bad++; continue; }
+        const extra = w.chunks.filter((c) => !ALLOWED_CHUNKS.includes(c));
+        if (extra.length) {
+          console.error(`  ✗ clips: ${path} carries ${extra.join(", ")} — run \`make clipclean L=${dir}\``); bad++;
+        }
+        if (w.rate !== 22050 || w.channels !== 1 || w.bits !== 16) {
+          console.error(`  ✗ clips: ${path} is ${w.rate}Hz ${w.channels}ch ${w.bits}bit, want 22050/1/16`); bad++;
+        }
+        if (w.peak < 0.01) { console.error(`  ✗ clips: ${path} is silent`); bad++; }
+        if (w.seconds > 6) { console.error(`  ✗ clips: ${path} is ${w.seconds.toFixed(1)}s — too long for a number`); bad++; }
+      }
+    }
+    checked += 1 + scanned;
   }
 
   // Voice selection. Picking a zh_HK voice for Mandarin would read every

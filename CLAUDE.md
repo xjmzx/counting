@@ -263,6 +263,14 @@ macOS. `release.yml` fires only on a `v*` tag and builds the `.deb` and `.dmg`.
   the next launch. Sparse coverage is permanent, not temporary: over a thousand
   recordings would be a full set, so the synthesised path never goes away and a
   missing clip must never read as a fault.
+- **A committed clip carries `fmt ` and `data` and nothing else.** WAV holds
+  `LIST`/`INFO` — artist, date, the software that made it — so an editor's
+  export is a small biography of whoever recorded it, and committing one makes
+  that public permanently. `make data` fails on any other chunk, on the wrong
+  sample rate, on silence, and on a clip too long to be a number.
+  `make clipclean L=xx` re-encodes from samples, which is the only reliable
+  strip, and is idempotent. Verified by planting a LIST/INFO chunk and watching
+  the check fail.
 - **The recorder is a `tools/` CLI, not a mode in the app.** That is
   `docs/collaboration-design-2026-09-07.md`'s decision, not an accident: a
   separate recorder is what keeps `counting` small, verifiable and offline.

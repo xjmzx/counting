@@ -85,3 +85,60 @@ export function trim(w: Wav): { trimmed: Wav; peak: number; before: number; afte
   return { trimmed, peak: peak / 32768, before, after: trimmed.samples.length / w.rate };
 }
 
+
+/** Everything a check needs to know about a clip, without decoding it twice. */
+export type WavFacts = {
+  chunks: string[];
+  rate: number;
+  channels: number;
+  bits: number;
+  seconds: number;
+  peak: number;
+};
+
+/**
+ * Read a clip's shape, including which RIFF chunks it carries.
+ *
+ * The chunk list is the point. A WAV can hold `LIST`/`INFO` with an artist,
+ * a creation date and the software that made it — so a clip exported from an
+ * editor carries a small biography of whoever recorded it. Files written by
+ * `writeWav` carry `fmt ` and `data` and nothing else; anything more came from
+ * somewhere else and should be re-encoded before it is committed.
+ *
+ * CoreAudio's own output is a case in point: `say -o` adds `JUNK` and `FLLR`
+ * padding. Harmless in content, but it is the same door.
+ */
+export function inspectWav(path: string): WavFacts | null {
+  const b = readFileSync(path);
+  if (b.length < 12 || b.toString("ascii", 0, 4) !== "RIFF") return null;
+  const chunks: string[] = [];
+  let off = 12;
+  let rate = 0;
+  let channels = 0;
+  let bits = 0;
+  let frames = 0;
+  let peak = 0;
+  while (off + 8 <= b.length) {
+    const id = b.toString("ascii", off, off + 4);
+    const size = b.readUInt32LE(off + 4);
+    const body = off + 8;
+    chunks.push(id);
+    if (id === "fmt ") {
+      channels = b.readUInt16LE(body + 2);
+      rate = b.readUInt32LE(body + 4);
+      bits = b.readUInt16LE(body + 14);
+    } else if (id === "data") {
+      const end = Math.min(body + size, b.length);
+      frames = Math.floor((end - body) / 2);
+      for (let i = body; i + 1 < end; i += 2) {
+        const v = Math.abs(b.readInt16LE(i));
+        if (v > peak) peak = v;
+      }
+    }
+    off = body + size + (size % 2);
+  }
+  return { chunks, rate, channels, bits, seconds: rate ? frames / rate : 0, peak: peak / 32768 };
+}
+
+/** The only chunks a clip in this repository may carry. */
+export const ALLOWED_CHUNKS = ["fmt ", "data"];

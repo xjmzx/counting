@@ -51,6 +51,12 @@ for (let n = 0; n <= 100; n++) console.log(n + '\t' + l.compose(n).form);
   say -v "$voice" -o "clips/$lang/$n.wav" --data-format=LEI16@22050 "$form"
 done
 
+# CoreAudio pads its output with JUNK and FLLR chunks. Harmless in content,
+# but a clip in this repository carries `fmt ` and `data` and nothing else,
+# whoever or whatever made it — so synthesised clips go through the same
+# re-encode a recorded one would.
+node tools/clean-clips.ts "$lang" | tail -1
+
 count=$(ls "clips/$lang"/*.wav 2>/dev/null | wc -l | tr -d ' ')
 echo "wrote $count clips to clips/$lang/ ($(du -sh "clips/$lang" | cut -f1)) with $voice"
 echo "These are gitignored. See clips/README.md for why."

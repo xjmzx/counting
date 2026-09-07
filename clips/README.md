@@ -15,6 +15,22 @@ Sparse coverage is the permanent normal case: 101 numbers across ten languages
 is over a thousand recordings, so the synthesised path never goes away, and the
 app says which one you heard.
 
+## No metadata, ever
+
+A clip here carries `fmt ` and `data` and nothing else. WAV can hold a
+`LIST`/`INFO` chunk with an artist, a creation date and the software that
+produced the file, so a clip exported from an editor is a small biography of
+whoever recorded it — and once committed, that is public and permanent.
+
+The recorder cannot leak any of it: it rebuilds each file from its samples, so
+there is nowhere for a chunk to survive. A clip that arrives some other way
+might, so `make data` checks every committed clip and fails on anything beyond
+those two chunks — along with the wrong sample rate, silence, or a length no
+number could need. `make clipclean L=xx` is the fix, and is idempotent.
+
+Even CoreAudio's own output needed it: `say -o` pads with `JUNK` and `FLLR`,
+which is harmless in content but the same door.
+
 ## What is committed, and what is not
 
 Clips are gitignored by default and un-ignored one language at a time, which

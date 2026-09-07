@@ -206,7 +206,11 @@ every other language surveyed scored 69% or more.
 - **Speech is macOS-only and says so.** `espeak-ng` is the intended Linux
   backend but is unimplemented on purpose — an honest error beats untested code
   that looks like support, which is the whole lesson of the nchat audio note
-  below.
+  below. **Do not wire up a Linux backend without reading
+  `docs/linux-audio-design-2026-09-07.md`.** Nine of the ten languages are
+  measured as usable; Japanese is not mispronounced but *unpronounced* —
+  espeak-ng has no kanji dictionary and says "Chinese letter" once per
+  character, which is the Cantonese trap in a new costume.
 - **Audio does not need a pronunciation layer.** A TTS voice says
   *soixante-treize* correctly from the written string; IPA is only wanted for
   *showing* a learner how a word sounds. An earlier version of these notes had

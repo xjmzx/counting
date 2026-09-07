@@ -147,10 +147,13 @@ listening drill has no correct answer. Nothing collides in these three.
   spellings in one script, and these are facts about pinyin, which the voice is
   not reading. They rest on description alone.
 - **Speech is macOS-only.** `say` is wired up; `espeak-ng` is the intended
-  backend elsewhere but is deliberately unimplemented rather than guessed at —
-  nothing here has been run on Linux, and this repo's own notes are about
-  exactly that mistake. The listening drill reports it rather than showing a
-  mute button.
+  backend elsewhere but is deliberately unimplemented rather than guessed at,
+  which is what this repo's own notes are about. The listening drill reports it
+  rather than showing a mute button. The rest of the app *has* now been run on
+  Linux — `make check` passes there and the window opens — so speech is the
+  only gap on that platform, not the app. What a Linux backend would cost, and
+  the one language that blocks it, are measured in
+  `docs/linux-audio-design-2026-09-07.md`.
 - **No speaker of French or German has reviewed the tables.** `make crosscheck`
   now covers most of what that review would catch, but a second implementation
   agreeing is not the same as a person judging what sounds right when counting

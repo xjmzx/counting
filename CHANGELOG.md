@@ -37,6 +37,29 @@
   brief to be a syllable.
 - Every committed clip is checked for embedded metadata, format, silence and
   length. A WAV can carry the artist, the date and the software that made it.
+- **English is audible on Linux**, which it was not when the recordings first
+  shipped. `normalise_spd_language` had no `en`, so every English voice from
+  speech-dispatcher was dropped, and `noVoice` disabled the play buttons before
+  any clip was reached — the language carrying all 101 recordings reported that
+  it had no audio, and advised installing a synthesiser that was already there
+  and worse than the recordings behind the message. macOS could not have shown
+  it: `say` lists en_GB and en_US natively.
+- **Japanese offers one voice on Linux, because there is one.** `spd-say -L`
+  enumerates the listing engine, which is espeak-ng, so Japanese arrived as 101
+  entries — `Japanese`, `Japanese+Adam`, `Japanese+Alicia` — while `speak` sends
+  `-o openjtalk -l ja` and never passes a variant. Every name resolved to the
+  same open-jtalk voice, and choosing one got a male HMM voice under the name of
+  an engine that was not speaking. Ubuntu packages exactly one open-jtalk voice,
+  so a single entry is not a simplification: it is the count.
+- **`make install-app` works on Linux**, installing under PREFIX with a desktop
+  entry and hicolor icons, so the app reaches the dash without root.
+- Open JTalk is confirmed to read kanji — four of four kanji/kana pairs agree on
+  trimmed audio, 七十三 at 0.69s against ななじゅうさん at 0.66s, where espeak-ng
+  gave 3.00s against 0.80s. It is also the only open-jtalk voice Ubuntu packages,
+  on 2003-era data, which is the argument for recording Japanese rather than
+  tuning an engine for it.
+- `make data` checks that the version agrees in all five files. Four are
+  obvious; `package-lock.json` carries it twice and was left behind at v0.6.0.
 
 - The `.deb` now recommends `speech-dispatcher`, `espeak-ng` and the three
   open-jtalk packages. Recommends rather than depends, because reading and

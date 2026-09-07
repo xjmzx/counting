@@ -85,6 +85,7 @@ export default function App() {
             id: l.code,
             label: l.name.replace(" Chinese", ""),
             group: l.family,
+            subgroup: l.branch,
           }))}
         />
         <Segmented

@@ -114,6 +114,13 @@ every other language surveyed scored 69% or more.
   *app*, is macOS-only, and is what a Dock or Spotlight shortcut points at. Do
   not merge them, and do not let `make install` start producing a bundle: the
   CLI install must keep working without a Rust toolchain.
+- **Hint text is plain text, not markdown.** `*before*` renders with its
+  asterisks visible. `make data` asserts against paired asterisks and
+  backticks — but a *single leading* asterisk is the linguistic convention for
+  an unattested form (`zwei would predict *zweizig`) and is allowed on purpose.
+- **`SCRIPT_RULES` is separate from `SOUND_RULES`** and shown first. How to
+  decode the writing system precedes how to pronounce what you decoded. Only
+  non-Latin scripts need entries.
 - **Never write a combining mark on its own in user-visible text.** With no
   base to attach to, the shaper draws a dotted-circle placeholder (U+25CC) and
   it reads as a broken glyph — this is correct behaviour, not a font or

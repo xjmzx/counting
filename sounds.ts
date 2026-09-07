@@ -495,3 +495,86 @@ export const SOUND_RULES: Record<string, SoundRule[]> = {
 export function hintsFor(lang: string, form: string, limit = 2): SoundRule[] {
   return (SOUND_RULES[lang] ?? []).filter((r) => r.test.test(form)).slice(0, limit);
 }
+
+/**
+ * How the writing system works — a different question from how the words
+ * sound, and for some scripts the harder one.
+ *
+ * A learner meeting เจ็ด has to know that the first glyph is a vowel that is
+ * *pronounced after* the consonant beside it, or the word will not decode at
+ * all. That is not pronunciation advice; it is how to read left to right in a
+ * script that does not always mean left to right.
+ *
+ * Only non-Latin scripts need these. Nothing here applies to French or German,
+ * where the letters run in the order you say them.
+ */
+export const SCRIPT_RULES: Record<string, SoundRule[]> = {
+  th: [
+    {
+      id: "th-preposed-vowel",
+      test: /[เแโใไ]/,
+      hint: "เ and แ are written to the left of the consonant but pronounced after it. เจ็ด is read ch-e-t, not e-ch-t — the first glyph you see is the second sound you say.",
+    },
+    {
+      id: "th-final-consonant",
+      test: /[ดบจ]$|[ดบ]/,
+      hint: "A consonant at the end of a syllable takes a limited value: ด is read -t and บ is read -p. That is why สิบ is “sip” and เจ็ด is “chet”, not “sib” and “ched”.",
+    },
+    {
+      id: "th-no-spaces",
+      // Only for forms that really are more than one word — length is not the
+      // test, since หนึ่ง is five characters and one word.
+      test: /สิบ.|.สิบ|ร้อย/,
+      hint: "Thai leaves no space between words, so สิบเจ็ด is two words with no visible join. The break falls where the next syllable starts — here at เ, the beginning of เจ็ด.",
+    },
+    {
+      id: "th-maitaikhu",
+      test: /็/,
+      hint: "The small ◌็ above shortens the vowel. เจ็ด has it, so the vowel is clipped; เก้า does not, so its vowel runs long.",
+    },
+    {
+      id: "th-tone-not-just-mark",
+      test: /./,
+      hint: "Tone is not read off the tone mark alone. It comes from the consonant’s class, the vowel’s length and the final consonant together, with the mark adjusting the result — which is why an unmarked syllable still has a tone.",
+    },
+  ],
+
+  hi: [
+    {
+      id: "hi-inherent-vowel",
+      test: /./,
+      hint: "Devanagari is an abugida: every consonant already carries a short “a” unless something replaces it. In तीन the vowel sign on त overrides that built-in “a”, and the final न keeps it — which is why it ends “-na”, not “-n”.",
+    },
+    {
+      id: "hi-matra-position",
+      test: /[ािीुूेैोौ]/,
+      hint: "Vowel signs sit around the consonant — after, above, below, even before it — but are spoken after it in every case. Compare तीन, where the sign follows त, with तिरसठ, where it is drawn to the left of त and still spoken after it.",
+    },
+    {
+      id: "hi-shirorekha",
+      test: /./,
+      hint: "The line along the top is not decoration or a letter: it joins the characters of a word, and a break in it marks where one word ends.",
+    },
+  ],
+
+  zh: [
+    {
+      id: "zh-one-char-one-syllable",
+      test: /./,
+      hint: "Each character is exactly one syllable, so 七十三 is three syllables and three morphemes — the shape of the number is visible in the number of characters.",
+    },
+  ],
+
+  ja: [
+    {
+      id: "ja-kanji-reading",
+      test: /./,
+      hint: "The kanji are borrowed from Chinese and so are their readings here — ichi, ni, san are Chinese loans. The character says which number; it does not say which of its readings to use.",
+    },
+  ],
+};
+
+/** Script rules that apply to one written form. */
+export function scriptHintsFor(lang: string, form: string, limit = 2): SoundRule[] {
+  return (SCRIPT_RULES[lang] ?? []).filter((r) => r.test.test(form)).slice(0, limit);
+}

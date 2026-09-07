@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+- **Script hints**, in their own “How it's written” panel shown above the
+  pronunciation one — decoding the writing system comes before pronouncing
+  what you decoded. Thai gets five: เ and แ are written to the left of their
+  consonant but spoken after it, a final ด reads -t and บ reads -p (hence
+  “sip chet”), there are no word spaces, ◌็ shortens the vowel, and tone comes
+  from consonant class and vowel length together rather than the mark alone.
+  Devanagari, Chinese and Japanese have their own; Latin scripts need none.
+- **Branches show as a gap inside the family pill** — Romance, then German,
+  then Hindi, all still within Indo-European. Deep grouping is right, but
+  flattening Romance away lost a real distinction.
+- `make data` now asserts hint text contains no markdown, since these strings
+  render literally. A single leading asterisk is exempt: it is the linguistic
+  mark for an unattested form, not emphasis.
+
 - Fixed a Hindi hint that wrote ा on its own. A combining mark with no base
   renders as a dotted-circle placeholder — the shaper doing the right thing,
   and a broken glyph to the reader. `make data` now asserts that no hint, note

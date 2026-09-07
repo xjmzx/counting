@@ -18,7 +18,7 @@ import {
   type Stats,
 } from "./queue.ts";
 import { pickVoice, voicesFor, LOCALE_PREFERENCE, type Voice } from "./voices.ts";
-import { SOUND_RULES, hintsFor } from "./sounds.ts";
+import { SOUND_RULES, SCRIPT_RULES, hintsFor, scriptHintsFor } from "./sounds.ts";
 
 const LANGS: Language[] = [zh, fr, it, pt, es, de, hi, ja, th, vi];
 const RANGE = Array.from({ length: 101 }, (_, i) => i);
@@ -280,6 +280,30 @@ function check(): boolean {
     checked += LANGS.length * 2;
   }
 
+  // Script rules: same discipline as the sound rules. A rule matching nothing
+  // is dead weight, and one firing on a single-word form while talking about
+  // word boundaries is worse than nothing.
+  {
+    const ids = new Set<string>();
+    for (const [code, rules] of Object.entries(SCRIPT_RULES)) {
+      const lang = LANGS.find((l) => l.code === code);
+      if (!lang) { console.error(`  ✗ script: rules for unknown language ${code}`); bad++; continue; }
+      for (const r of rules) {
+        if (ids.has(r.id)) { console.error(`  ✗ script: duplicate rule id ${r.id}`); bad++; }
+        ids.add(r.id);
+        if (!RANGE.some((n) => r.test.test(lang.compose(n).form))) {
+          console.error(`  ✗ script: rule ${r.id} matches no number in 0-100`); bad++;
+        }
+      }
+    }
+    // The word-boundary rule must not fire on a form that is one word.
+    const thTen = LANGS.find((l) => l.code === "th")!.compose(10).form;
+    if (scriptHintsFor("th", thTen, 9).some((r) => r.id === "th-no-spaces")) {
+      console.error("  ✗ script: th-no-spaces fires on สิบ, which is a single word"); bad++;
+    }
+    checked += ids.size + 1;
+  }
+
   // Voice selection. Picking a zh_HK voice for Mandarin would read every
   // answer aloud in Cantonese, and nothing on screen would look wrong.
   {
@@ -346,12 +370,19 @@ function check(): boolean {
       return cs.filter((c, i) => {
         if (!/\p{M}/u.test(c)) return false;
         const prev = cs[i - 1];
-        return prev === undefined || !/[\p{L}\p{N}\p{M}]/u.test(prev);
+        // U+25CC DOTTED CIRCLE is the standard placeholder for showing a
+        // combining mark deliberately, as the Unicode charts do. Written
+        // explicitly it is correct; the fault is letting the shaper supply
+        // one because nothing else was there.
+        return prev === undefined || !/[\p{L}\p{N}\p{M}\u25CC]/u.test(prev);
       });
     };
     const visible: [string, string][] = [];
     for (const [, rules] of Object.entries(SOUND_RULES)) {
       for (const r of rules) visible.push([`sounds:${r.id}`, r.hint]);
+    }
+    for (const [, rules] of Object.entries(SCRIPT_RULES)) {
+      for (const r of rules) visible.push([`script:${r.id}`, r.hint]);
     }
     for (const l of LANGS) {
       visible.push([`numerals:${l.code}`, l.numerals]);
@@ -364,8 +395,18 @@ function check(): boolean {
     for (const [where, text] of visible) {
       const orphaned = orphans(text);
       if (orphaned.length) {
-        const cps = orphaned.map((c) => `U+${c.codePointAt(0)!.toString(16).toUpperCase()}`).join(", ");
+        const cps = orphaned
+          .map((c) => `U+${c.codePointAt(0)!.toString(16).toUpperCase()}`)
+          .join(", ");
         console.error(`  ✗ text: ${where} has a combining mark with no base (${cps})`); bad++;
+      }
+      // These strings render as plain text, so markdown emphasis appears
+      // literally — *before* showed on screen with its asterisks. Only PAIRED
+      // asterisks are markdown: a single leading one is the linguistic
+      // convention for a form that does not exist, as in "zwei would predict
+      // *zweizig", and that is correct usage worth keeping.
+      if (/\*[^*\s][^*]*\*|`/.test(text)) {
+        console.error(`  ✗ text: ${where} contains markdown, which renders literally`); bad++;
       }
     }
     checked += visible.length;

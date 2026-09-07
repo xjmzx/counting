@@ -176,7 +176,18 @@ in Rust (`src-tauri/src/tts.rs`), not the webview, for the reason `SUITE.md`
 records against `nchat`. There is a normal and a slow replay, because a
 compound like *vierundsiebzig* goes past quickly.
 
-**Every revealed spelling comes with a pronunciation hint**, collapsed behind
+**Two kinds of hint, and the script one comes first.** How a writing system
+works is a different question from how the words sound, and for some scripts
+the harder one: a learner meeting เจ็ด has to know that the first glyph is a
+vowel *pronounced after* the consonant beside it, or the word will not decode
+at all. `SCRIPT_RULES` covers that — pre-posed vowels, the limited values a
+final consonant takes (ด is read -t, which is why สิบเจ็ด is “sip chet”), the
+absence of word spaces, and that Thai tone comes from consonant class and
+vowel length together rather than the tone mark alone. Devanagari, Chinese and
+Japanese have their own. Latin-script languages have none, because the letters
+run in the order you say them.
+
+**Every revealed spelling also comes with a pronunciation hint**, collapsed behind
 a “How it sounds” disclosure so it does not crowd the answer. The choice is
 remembered per language: expand it once for German and it stays expanded, while
 a language you already read stays quiet. Without it an English reader reads

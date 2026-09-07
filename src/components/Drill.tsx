@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Check, X, ArrowRight, RotateCcw, Volume2, Rabbit, Turtle, ChevronRight } from "lucide-react";
+import { Check, X, ArrowRight, RotateCcw, Volume2, Rabbit, Turtle } from "lucide-react";
 import type { Item, Language } from "../../types.ts";
 import { isCorrect, parseNumeral } from "../../grade.ts";
 import { pickNext, solidCount } from "../../queue.ts";
 import { voicesFor, type Voice } from "../../voices.ts";
-import { hintsFor } from "../../sounds.ts";
+import { hintsFor, scriptHintsFor } from "../../sounds.ts";
 import { speak, stopSpeaking } from "../lib/tauri";
 import { useProgress } from "../lib/useProgress";
 import { cn } from "../lib/cn";
 import { Breakdown } from "./Breakdown";
+import { HintDisclosure } from "./HintDisclosure";
 
 type Verdict = { ok: boolean; item: Item; given: string };
 
@@ -68,22 +69,6 @@ export function Drill({
     }
   }, [lang.code, voiceName]);
 
-  const [showHints, setShowHints] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem(`counting.hints.${lang.code}`) === "1";
-    } catch {
-      return false;
-    }
-  });
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(`counting.hints.${lang.code}`, showHints ? "1" : "0");
-    } catch {
-      // Not remembering the preference is survivable.
-    }
-  }, [lang.code, showHints]);
-
   const say = useCallback(
     (rate: number) => {
       if (skill !== "listen" || !voiceName) return;
@@ -129,6 +114,7 @@ export function Drill({
 
   const noVoice = skill === "listen" && langVoices.length === 0;
   const hints = verdict ? hintsFor(lang.code, verdict.item.form) : [];
+  const scriptHints = verdict ? scriptHintsFor(lang.code, verdict.item.form) : [];
 
   return (
     <div className="space-y-4">
@@ -285,46 +271,22 @@ export function Drill({
               </p>
             )}
 
-            {/* Why it does not sound like it looks. Collapsed by default so it
-                does not crowd the answer, but the choice is remembered: a
-                learner who needs these should not reopen them every question.
-                Focus goes back to the input so Enter still moves on. */}
-            {hints.length > 0 && (
-              <div className="space-y-2 pt-1">
-                <button
-                  onClick={() => {
-                    setShowHints((v) => !v);
-                    inputRef.current?.focus();
-                  }}
-                  aria-expanded={showHints}
-                  aria-controls="sound-hints"
-                  className={cn(
-                    "flex items-center gap-1 text-sm text-digital/90",
-                    "hover:text-digital transition-colors",
-                  )}
-                >
-                  <ChevronRight
-                    size={14}
-                    className={cn("transition-transform", showHints && "rotate-90")}
-                  />
-                  How it sounds
-                  {!showHints && <span className="text-muted ml-1">({hints.length})</span>}
-                </button>
-                {showHints && (
-                  <div id="sound-hints" className="space-y-2">
-                    {hints.map((h) => (
-                      <p
-                        key={h.id}
-                        className="text-sm text-digital/90 leading-relaxed max-w-prose flex gap-2"
-                      >
-                        <Volume2 size={14} className="shrink-0 mt-1 opacity-70" />
-                        <span>{h.hint}</span>
-                      </p>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+            {/* How the writing system works comes first: if the script cannot
+                be decoded, the pronunciation note has nothing to attach to. */}
+            <HintDisclosure
+              label="How it's written"
+              kind="script"
+              hints={scriptHints}
+              storageKey={`counting.script.${lang.code}`}
+              onToggle={() => inputRef.current?.focus()}
+            />
+            <HintDisclosure
+              label="How it sounds"
+              kind="sound"
+              hints={hints}
+              storageKey={`counting.hints.${lang.code}`}
+              onToggle={() => inputRef.current?.focus()}
+            />
           </div>
         )}
       </div>

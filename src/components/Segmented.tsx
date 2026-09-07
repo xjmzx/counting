@@ -12,6 +12,14 @@ export interface SegmentedOption<T extends string> {
    * contiguous; `make data` asserts that for the language roster.
    */
   group?: string;
+  /**
+   * A division *inside* a group, shown as a gap rather than a pill of its own.
+   * Indo-European is the right family to group by, but Romance, Germanic and
+   * Indo-Aryan diverge enough that flattening them loses something real — the
+   * four Romance languages reinforce each other in a way German does not.
+   * A gap keeps that visible without claiming they are separate families.
+   */
+  subgroup?: string;
 }
 
 /** Split a flat list into runs of equal `group`, preserving order. */
@@ -51,8 +59,11 @@ export function Segmented<T extends string>({
           role="presentation"
           className="flex flex-wrap rounded-md bg-surface p-0.5"
         >
-          {group.map((o) => {
+          {group.map((o, oi) => {
             const active = o.id === value;
+            // A gap, not a rule: the list wraps, and a divider at the start of
+            // a line reads as a stray mark. See the note above the tablist.
+            const newBranch = oi > 0 && group[oi - 1]?.subgroup !== o.subgroup;
             return (
               <button
                 key={o.id}
@@ -60,12 +71,13 @@ export function Segmented<T extends string>({
                 aria-selected={active}
                 // The family is not spelled out once grouped, so name it here
                 // for anyone who cannot see the grouping.
-                title={o.title ?? o.group}
+                title={o.title ?? [o.group, o.subgroup].filter(Boolean).join(" · ")}
                 onClick={() => onChange(o.id)}
                 className={cn(
                   "px-3 py-1.5 rounded text-sm transition-colors whitespace-nowrap",
                   active ? "bg-surfaceHover text-fg" : "text-muted hover:text-fg",
                   o.pending && !active && "opacity-50",
+                  newBranch && "ml-4",
                 )}
               >
                 {o.label}

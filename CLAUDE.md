@@ -48,6 +48,26 @@ tokens in `src/index.css`, taken from `nping`. Do not reach further.
   this app does not have. The title still toggles the theme, which is the part
   worth keeping.
 
+## Adding a language
+
+Five places, and `make data` fails until all of them are done:
+
+1. `lang/xx.ts` — atoms plus `compose(n)`.
+2. `golden.ts` — hand-checked forms for every irregularity.
+3. `voices.ts` — acceptable locales, best first. Never a bare prefix match.
+4. `sounds.ts` — pronunciation rules; at least 90% of the range must be
+   explained, which the check enforces.
+5. The `LANGS` arrays in `compose.ts` and `src/lib/langs.ts`, plus the locale
+   in `tools/spell.swift` and `tools/crosscheck.ts`.
+
+Then `make crosscheck` for free verification against ICU, and `make soundcheck`
+for whatever the audio probes can confirm.
+
+**Check compositionality before starting.** If the word for 23 does not contain
+the word for 3, the composer contributes nothing and the language is a word
+list wearing the app's clothes. Hindi is the example: 0% ones-visibility, where
+every other language surveyed scored 69% or more.
+
 ## Traps specific to this repo
 
 - **`golden.ts` is the specification, not a regression net.** If the composer

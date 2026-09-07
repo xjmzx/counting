@@ -1,7 +1,7 @@
 # counting
 
-0–100 in Mandarin, French and German, generated from a small table of lexical
-atoms plus one rule set per language. Groundwork for a Tauri app that drills
+0–100 in Mandarin, French, German, Spanish, Portuguese and Italian, generated
+from a small table of lexical atoms plus one rule set per language. Groundwork for a Tauri app that drills
 the four skills — reading, writing, listening, speaking — over that range.
 
 A Tauri 2 · React app with two of the four skills working, and the other two
@@ -46,13 +46,24 @@ rule changes, the diff shows exactly which of the 303 forms moved.
 
 ## What the first cut settled
 
-**The premise holds.** 101 numbers cost between 12 and 23 lexical items:
+**The premise holds.** 101 numbers cost between 12 and 29 lexical items:
 
 | | atoms | irregular |
 |---|---|---|
 | Mandarin | 12 | 1 (tone sandhi at 一百) |
 | German | 16 | 9 |
 | French | 23 | 9 |
+| Spanish | 25 | 6 |
+| Portuguese | 29 | 6 |
+| Italian | 29 | 4 |
+
+Portuguese is the most regular of the six after Mandarin — *tens* + *e* + *ones*
+with no exception anywhere. Spanish splits in two: 16–29 fuse into one word and
+the fusion forces a written accent (*veintidós*, *veintiséis*), while from 31 the
+pieces separate again and the accents vanish — *treinta y seis*, never
+*treinta y séis*. Italian glues its compounds with no separator and drops the
+tens word's final vowel before the only two ones-words starting with a vowel:
+*venti* + *uno* is **ventuno**, *venti* + *otto* is **ventotto**.
 
 **One generic rule engine would have been a mistake.** French 71 vs 81, German
 stem alternation, and Chinese exceptionlessness have nothing in common. What
@@ -83,9 +94,9 @@ say *why* an answer was wrong rather than just marking it red.
 ## Verification
 
 **`make crosscheck` is the check that is not marking its own homework.** It
-compares all 303 forms against ICU's rule-based spell-out via Foundation — a
-separate implementation of the same three languages, by people who are not us.
-All 303 agree. French matches on every one of its 101 forms, including the
+compares all 606 forms against ICU's rule-based spell-out via Foundation — a
+separate implementation of the same six languages, by people who are not us.
+All 606 agree, and the three Romance tables matched on the first run. French matches on every one of its 101 forms, including the
 awkward ones (71, 80, 81, 91, 97).
 
 Two differences are settled rather than fixed, because both forms are correct:

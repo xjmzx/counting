@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+- **Spanish, Portuguese and Italian.** One family, added together because their
+  pronunciation rules overlap. All 303 new forms agreed with ICU on the first
+  run, taking the cross-check to 606/606.
+- Portuguese is the most regular of the six after Mandarin; Spanish fuses 16–29
+  into accented single words and separates again from 31; Italian elides the
+  tens vowel before *uno* and *otto*.
+- **`contrast` probes**, for rules claiming a distinction rather than an
+  equivalence. Italian gemination is the case: `sette` and `sete` *must* differ,
+  and the probe now asserts that. 20 of 21 probes confirm.
+- The language tab list wraps instead of overflowing — six languages are wider
+  than the 420px minimum window, and the sixth was being hidden with nothing to
+  show it was there.
+- The header and footer counts are derived from the roster rather than written
+  out; they said "three languages" the moment there were six.
+
 - **Hints collapse behind a “How it sounds” disclosure**, remembered per
   language — expand once for German and it stays open, while a language you
   already read stays quiet. Focus returns to the input so Enter still moves on.

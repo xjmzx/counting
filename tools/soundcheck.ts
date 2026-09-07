@@ -56,7 +56,8 @@ for (const [code, rules] of Object.entries(SOUND_RULES)) {
   const voice = pickVoice(code, all);
   console.log(`\n${code}${voice ? `  (${voice.name} · ${voice.locale})` : "  — no voice installed"}`);
   for (const r of rules) {
-    if (!r.evidence) {
+    const pair = r.evidence ?? r.contrast;
+    if (!pair) {
       console.log(`  ·  ${r.id} — no probe`);
       unprovable.push(r.id);
       continue;
@@ -66,10 +67,14 @@ for (const [code, rules] of Object.entries(SOUND_RULES)) {
       continue;
     }
     probed++;
-    const [word, alt] = r.evidence;
+    const [word, alt] = pair;
     const same = digest(voice.name, word) === digest(voice.name, alt);
-    if (same) confirmed++;
-    console.log(`  ${same ? "✓" : "✗"}  ${r.id}  ${word} ~ ${alt}`);
+    // An `evidence` pair claims they sound alike; a `contrast` pair claims the
+    // opposite. Either way the claim is what has to hold.
+    const wantSame = r.evidence !== undefined;
+    const ok = same === wantSame;
+    if (ok) confirmed++;
+    console.log(`  ${ok ? "✓" : "✗"}  ${r.id}  ${word} ${wantSame ? "~" : "≠"} ${alt}`);
   }
 }
 

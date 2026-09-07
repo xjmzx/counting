@@ -9,7 +9,7 @@ import Foundation
 let f = NumberFormatter()
 f.numberStyle = .spellOut
 
-for code in ["zh_CN", "fr_FR", "de_DE"] {
+for code in ["zh_CN", "fr_FR", "de_DE", "pt_BR", "es_ES", "it_IT"] {
     f.locale = Locale(identifier: code)
     for n in 0...100 {
         print("\(code)\t\(n)\t\(f.string(from: NSNumber(value: n)) ?? "")")

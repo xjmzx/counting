@@ -20,7 +20,14 @@ export function Segmented<T extends string>({
   ariaLabel: string;
 }) {
   return (
-    <div role="tablist" aria-label={ariaLabel} className="inline-flex rounded-md bg-surface p-0.5">
+    <div
+      role="tablist"
+      aria-label={ariaLabel}
+      // Wraps rather than overflowing: six languages are wider than the 420px
+      // minimum window, and a tab list that runs off the edge hides options
+      // with nothing to indicate they are there.
+      className="flex flex-wrap max-w-full rounded-md bg-surface p-0.5"
+    >
       {options.map((o) => {
         const active = o.id === value;
         return (

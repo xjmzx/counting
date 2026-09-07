@@ -4,6 +4,9 @@ import type { Item, Language } from "./types.ts";
 import { zh } from "./lang/zh.ts";
 import { fr } from "./lang/fr.ts";
 import { de } from "./lang/de.ts";
+import { pt } from "./lang/pt.ts";
+import { es } from "./lang/es.ts";
+import { it } from "./lang/it.ts";
 import { golden } from "./golden.ts";
 import { accepted, isCorrect, parseNumeral, fold } from "./grade.ts";
 import {
@@ -13,7 +16,7 @@ import {
 import { pickVoice, voicesFor, LOCALE_PREFERENCE, type Voice } from "./voices.ts";
 import { SOUND_RULES, hintsFor } from "./sounds.ts";
 
-const LANGS: Language[] = [zh, fr, de];
+const LANGS: Language[] = [zh, fr, de, es, pt, it];
 const RANGE = Array.from({ length: 101 }, (_, i) => i);
 
 const all = (l: Language): Item[] => RANGE.map((n) => l.compose(n));

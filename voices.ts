@@ -18,6 +18,12 @@ export const LOCALE_PREFERENCE: Record<string, string[]> = {
   // usable, just not the accent these tables were written against.
   fr: ["fr_FR", "fr_CA"],
   de: ["de_DE", "de_AT", "de_CH"],
+  // Latin American Spanish is as valid as peninsular for counting; the words
+  // are identical and only the accent differs.
+  es: ["es_ES", "es_MX", "es_AR", "es_US"],
+  // Brazilian leads, matching the spellings the tables use.
+  pt: ["pt_BR", "pt_PT"],
+  it: ["it_IT", "it_CH"],
 };
 
 const norm = (locale: string) => locale.replace("-", "_").trim();

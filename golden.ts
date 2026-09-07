@@ -43,6 +43,68 @@ export const golden: Record<string, Record<number, string>> = {
     99: "quatre-vingt-dix-neuf",
     100: "cent",
   },
+  es: {
+    0: "cero",
+    15: "quince",
+    16: "dieciséis",  // fused, and the fusion forces the accent
+    17: "diecisiete",
+    19: "diecinueve",
+    20: "veinte",
+    21: "veintiuno",
+    22: "veintidós",  // accent
+    23: "veintitrés", // accent
+    26: "veintiséis", // accent
+    29: "veintinueve",
+    30: "treinta",
+    31: "treinta y uno",   // separate again from here
+    36: "treinta y seis",  // and NO accent, unlike 26
+    40: "cuarenta",
+    50: "cincuenta",
+    60: "sesenta",
+    70: "setenta",
+    80: "ochenta",
+    99: "noventa y nueve",
+    100: "cien",
+  },
+  pt: {
+    0: "zero",
+    14: "catorze",
+    16: "dezesseis",   // Brazilian; European dezasseis
+    17: "dezessete",
+    18: "dezoito",
+    19: "dezenove",
+    20: "vinte",
+    21: "vinte e um",  // the "e" never drops
+    23: "vinte e três",
+    30: "trinta",
+    50: "cinquenta",
+    60: "sessenta",
+    71: "setenta e um",
+    99: "noventa e nove",
+    100: "cem",
+  },
+  it: {
+    0: "zero",
+    16: "sedici",
+    17: "diciassette",
+    19: "diciannove",
+    20: "venti",
+    21: "ventuno",     // venti loses its vowel
+    22: "ventidue",
+    23: "ventitré",    // and tre gains an accent
+    26: "ventisei",
+    28: "ventotto",    // vowel lost again
+    30: "trenta",
+    31: "trentuno",
+    33: "trentatré",
+    38: "trentotto",
+    71: "settantuno",
+    73: "settantatré",
+    78: "settantotto",
+    88: "ottantotto",
+    99: "novantanove",
+    100: "cento",
+  },
   de: {
     0: "null",
     1: "eins",

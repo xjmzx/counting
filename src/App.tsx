@@ -7,6 +7,11 @@ import { Drill, type DrillSkill } from "./components/Drill";
 import { useVoices } from "./lib/useVoices";
 import { Unbuilt } from "./components/Unbuilt";
 
+// Derived, not written out: these strings went stale the moment three
+// languages became six.
+const COUNT_WORD = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+const spell = (n: number) => COUNT_WORD[n] ?? String(n);
+
 export default function App() {
   const [upleb, setUpleb] = useState(false);
   const [langCode, setLangCode] = useState(LANGS[0]!.code);
@@ -34,7 +39,9 @@ export default function App() {
           <span className="text-accent">count</span>
           <span className="text-mauve">ing</span>
         </button>
-        <span className="text-xs text-muted hidden sm:inline">0–100 in three languages</span>
+        <span className="text-xs text-muted hidden sm:inline">
+          0–100 in {spell(LANGS.length)} languages
+        </span>
       </header>
 
       <div className="px-5 py-4 flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-surface/60">
@@ -87,7 +94,8 @@ export default function App() {
       </main>
 
       <footer className="px-5 py-3 border-t border-surface/60 text-xs text-muted">
-        0–100, three languages. Three skills; speaking is a long-term aim.
+        0–100 in {spell(LANGS.length)} languages. Read, write and listen; speaking is a long-term
+        aim.
       </footer>
     </div>
   );

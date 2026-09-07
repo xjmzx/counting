@@ -30,6 +30,13 @@ export type SoundRule = {
   hint: string;
   /** [word, alternative spelling that should sound identical] */
   evidence?: [string, string];
+  /**
+   * [word, near-spelling that must sound DIFFERENT] — for rules that claim a
+   * distinction rather than an equivalence. Italian gemination is the case:
+   * if `sette` and `sete` produced the same audio, the rule saying the double
+   * consonant matters would be false.
+   */
+  contrast?: [string, string];
 };
 
 export const SOUND_RULES: Record<string, SoundRule[]> = {
@@ -191,6 +198,127 @@ export const SOUND_RULES: Record<string, SoundRule[]> = {
       id: "fr-huit",
       test: /huit/,
       hint: "The ⟨h⟩ is silent — huit is roughly “weet”.",
+    },
+  ],
+
+  es: [
+    {
+      id: "es-v-b",
+      test: /v/,
+      hint: "⟨v⟩ and ⟨b⟩ are the same sound in Spanish — veinte begins like “b”, and nueve is “NWEH-beh”.",
+      evidence: ["veinte", "beinte"],
+    },
+    {
+      id: "es-c-soft",
+      test: /c[ei]/,
+      hint: "⟨c⟩ before e or i is “th” in Spain and “s” across Latin America — cinco, cero, cien.",
+      evidence: ["cinco", "zinco"],
+    },
+    {
+      id: "es-z",
+      test: /z/,
+      hint: "⟨z⟩ takes the same two values as soft ⟨c⟩ — diez is “dyeth” in Spain, “dyes” elsewhere.",
+    },
+    {
+      id: "es-qu-k",
+      test: /qu/,
+      hint: "⟨qu⟩ is a plain /k/ with no “w” — quince is “KEEN-seh”.",
+      evidence: ["quince", "kince"],
+    },
+    {
+      id: "es-accent",
+      test: /[áéíóú]/,
+      hint: "The written accent marks which syllable is stressed — veintidós lands on the last one.",
+    },
+    {
+      id: "es-s",
+      test: /s/,
+      hint: "⟨s⟩ always hisses and never buzzes — dos ends like “dose”, not “doze”. Spanish has no /z/ at all.",
+    },
+    {
+      id: "es-r",
+      test: /r/,
+      hint: "⟨r⟩ is a single flick of the tongue tip against the ridge behind the teeth — tres, cuatro.",
+    },
+    // Last on purpose: true of every number, so it is the safety net rather
+    // than the headline, and the two-hint limit keeps it out of the way.
+    {
+      id: "es-vowels",
+      test: /[aeiou]/,
+      hint: "The five vowels are pure and never glide — uno is “OO-noh”, not “YOO-noh”, and ocho keeps both o’s short and clean.",
+    },
+  ],
+
+  pt: [
+    {
+      id: "pt-final-e",
+      test: /e$/,
+      hint: "In Brazil a final -e is said as “i”, and a ⟨t⟩ before it turns to “ch” — vinte is “VEEN-chi”, sete “SEH-chi”.",
+    },
+    {
+      id: "pt-nasal",
+      test: /\bum\b|cem|cin|vin|on|en/,
+      hint: "Vowels before ⟨m⟩ or ⟨n⟩ are nasal and the consonant is not sounded — um is “oong”, cem is “seng”.",
+    },
+    {
+      id: "pt-ss",
+      test: /ss/,
+      hint: "⟨ss⟩ holds a hard /s/ where a single ⟨s⟩ between vowels would buzz — sessenta, dezesseis.",
+    },
+    {
+      id: "pt-z",
+      test: /z/,
+      hint: "⟨z⟩ between vowels buzzes — doze, treze and catorze all end on that sound.",
+    },
+    {
+      id: "pt-ei",
+      test: /ei/,
+      hint: "⟨ei⟩ is “ay” — seis is “says”, dezesseis ends the same way.",
+    },
+    {
+      id: "pt-oi",
+      test: /oi/,
+      hint: "⟨oi⟩ is “oy” — oito is “OY-too”, and dois ends “doysh” in Portugal, “doys” in Brazil.",
+    },
+    {
+      id: "pt-r",
+      test: /r/,
+      hint: "⟨r⟩ between vowels is a quick tap, not the English retroflex — quatro, quarenta, três.",
+    },
+  ],
+
+  it: [
+    {
+      id: "it-double",
+      test: /(tt|ss|nn|cc|ll|zz|pp|bb|dd|gg|mm|rr|ff)/,
+      hint: "A double consonant is genuinely held longer, and the length carries meaning — sette, otto, sessanta.",
+      contrast: ["sette", "sete"],
+    },
+    {
+      id: "it-c-soft",
+      test: /c[ei]/,
+      hint: "⟨c⟩ before e or i is “ch” — cinque is “CHEEN-kweh”, cento “CHEN-toh”, dieci “dee-EH-chee”.",
+    },
+    {
+      id: "it-qu",
+      test: /qu/,
+      hint: "⟨qu⟩ keeps its “w” — quattro is “KWAT-troh”. Spanish and French both drop it.",
+      evidence: ["quattro", "cuattro"],
+    },
+    {
+      id: "it-z",
+      test: /z/,
+      hint: "⟨z⟩ is “dz” or “ts”, never a plain English z — zero starts like the end of “kids”.",
+    },
+    {
+      id: "it-final-vowel",
+      test: /[aeiou]$/,
+      hint: "Every final vowel is sounded — venti is two clear syllables, where a French ending would fall silent.",
+    },
+    {
+      id: "it-accent",
+      test: /é/,
+      hint: "The accent marks stress on the final syllable — ventitré ends hard, on the “tray”.",
     },
   ],
 

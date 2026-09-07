@@ -273,25 +273,49 @@ export function Drill({
                 is an approximation; the audio is the thing it approximates, so
                 the two belong on the same line rather than in different parts
                 of the panel. Focus returns to the input so Enter still moves
-                on. */}
-            {verdict.item.reading && (
+                on.
+
+                Latin-script languages carry no reading — their spelling shows
+                the sound — so there is nothing to enlarge, but the audio is
+                just as useful. They get the controls without the big line
+                rather than having the word repeated back at them. */}
+            {(verdict.item.reading || voiceName) && (
               <div className="flex items-baseline gap-3 flex-wrap">
-                <button
-                  onClick={() => {
-                    say(RATE_NORMAL);
-                    inputRef.current?.focus();
-                  }}
-                  disabled={!voiceName}
-                  title={voiceName ? `Hear it — ${voiceName}` : "No voice installed for this language"}
-                  className={cn(
-                    "flex items-baseline gap-2 text-3xl sm:text-4xl font-medium tracking-wide",
-                    "text-digital break-words text-left transition-opacity",
-                    voiceName ? "hover:opacity-80" : "opacity-60 cursor-default",
-                  )}
-                >
-                  {verdict.item.reading}
-                  {voiceName && <Volume2 size={20} className="shrink-0 opacity-50" />}
-                </button>
+                {verdict.item.reading ? (
+                  <button
+                    onClick={() => {
+                      say(RATE_NORMAL);
+                      inputRef.current?.focus();
+                    }}
+                    disabled={!voiceName}
+                    title={
+                      voiceName ? `Hear it — ${voiceName}` : "No voice installed for this language"
+                    }
+                    className={cn(
+                      "flex items-baseline gap-2 text-3xl sm:text-4xl font-medium tracking-wide",
+                      "text-digital break-words text-left transition-opacity",
+                      voiceName ? "hover:opacity-80" : "opacity-60 cursor-default",
+                    )}
+                  >
+                    {verdict.item.reading}
+                    {voiceName && <Volume2 size={20} className="shrink-0 opacity-50" />}
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      say(RATE_NORMAL);
+                      inputRef.current?.focus();
+                    }}
+                    title={`Hear it — ${voiceName}`}
+                    className={cn(
+                      "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm",
+                      "text-digital bg-digital/10 hover:bg-digital/20 transition-colors",
+                    )}
+                  >
+                    <Volume2 size={16} />
+                    Hear it
+                  </button>
+                )}
                 {voiceName && (
                   <button
                     onClick={() => {

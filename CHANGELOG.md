@@ -1,6 +1,17 @@
 # Changelog
 
-## Unreleased
+## v0.4.0
+
+- **The transliteration is set large and plays.** Clicking it speaks the
+  number, with a slow option beside it — a romanisation is an approximation and
+  the audio is what it approximates, so they sit on one line. Only the non-Latin
+  languages carry a reading, so the enlargement lands exactly where the spelling
+  does not show the sound, and the tone marks are legible at that size.
+- **Audio in every language, not just the ones with a transliteration.** The
+  Latin-script languages carry no reading — their spelling shows the sound — so
+  they get the play controls without a big line rather than the word repeated
+  back at them. Vietnamese, French, German, Spanish, Portuguese and Italian all
+  have a voice installed.
 
 - **The transliteration plays.** Clicking it speaks the number, with a slow
   option beside it — the romanisation is an approximation and the audio is what
@@ -74,14 +85,6 @@
   precise substitution the language teaches. An answer carrying marks is now
   held to them; an answer with none is still compared leniently, so no keyboard
   is a disadvantage.
-
-## Unreleased
-
-- **The transliteration is set large**, in the colour the sound hints use.
-  Only the non-Latin languages carry one — the Latin-script tables have no
-  reading field — so this lands exactly where the sound is invisible in the
-  spelling, and it is the line most worth seeing. Tone marks are legible at
-  that size, which was the point.
 
 ## v0.3.0
 

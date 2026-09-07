@@ -246,6 +246,13 @@ macOS. `release.yml` fires only on a `v*` tag and builds the `.deb` and `.dmg`.
   `make clips` renders Japanese with Apple's voices, and whether that output may
   be redistributed is unanswered. `clips/README.md` states it; one line of
   `.gitignore` reverses it once it is settled.
+- **`make speechprobe L=xx` is the cross-platform half of `scriptcheck`.**
+  That one measures rendered files with `afinfo` and cannot run off macOS,
+  because speech-dispatcher will not write audio to disk. This times the
+  blocking utterance instead, best of two, and reports a spread. Wall time
+  carries about a second of constant overhead, so its threshold is 0.10s
+  against scriptcheck's 0.06s — and like every check of this kind it reports
+  and never fails a build.
 - **Japanese on Linux is excluded by module, not by language.** `japanese_module`
   looks for an open-jtalk output module; when one is there the exclusion lifts
   and Japanese is spoken with `-o <module>`. `make speechcheck` reports what a

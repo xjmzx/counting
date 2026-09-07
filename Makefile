@@ -4,7 +4,7 @@ LIBDIR ?= $(PREFIX)/share/counting
 
 SOURCES := compose.ts types.ts golden.ts grade.ts
 
-.PHONY: help deps data crosscheck soundcheck scriptcheck speechcheck clips typecheck version check dev web build table stats emit install install-app uninstall clean
+.PHONY: help deps data crosscheck soundcheck scriptcheck speechcheck speechprobe clips typecheck version check dev web build table stats emit install install-app uninstall clean
 
 help:
 	@echo "Targets:"
@@ -14,6 +14,7 @@ help:
 	@echo "  make soundcheck verify pronunciation rules by audio   [macOS only]"
 	@echo "  make scriptcheck does each voice read its script?     [macOS only]"
 	@echo "  make speechcheck what this machine can speak, and why  [any platform]"
+	@echo "  make speechprobe L=ja  does that voice read the script? [any platform]"
 	@echo "  make clips       render Japanese clips locally         [macOS only]"
 	@echo "  make dev        run the app with hot reload"
 	@echo "  make web        frontend only in a browser, no Tauri"
@@ -74,6 +75,18 @@ speechcheck:
 # committing them.
 clips:
 	bash tools/make-clips.sh ja Kyoko
+
+# The cross-platform half of scriptcheck. That one measures rendered files with
+# afinfo and is macOS-only; speech-dispatcher will not write audio to disk, so
+# this times the blocking utterance instead. Same question: a voice with no
+# dictionary for a script cannot vary its length.
+speechprobe:
+	@L=$${L:-ja}; \
+	words=$$(node --input-type=module -e "import { LANGS } from './src/lib/langs.ts'; \
+	  const l = LANGS.find((x) => x.code === '$$L'); \
+	  if (!l) { console.error('unknown language: $$L'); process.exit(1); } \
+	  console.log([0, 1, 3, 5, 10, 100].map((n) => l.compose(n).form).join(' '));") && \
+	cd src-tauri && cargo run --quiet --example speechcheck -- --probe $$L $$words
 
 scriptcheck:
 	node tools/scriptcheck.ts

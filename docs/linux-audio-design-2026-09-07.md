@@ -185,6 +185,70 @@ would need mapping rather than passing through.
 | Vietnamese, Mandarin | **usable** | tonal, and tones are the answer — worth a second listen before shipping |
 | Japanese | **blocked** | no kanji dictionary; needs `open-jtalk` or a kana field |
 
+## Testing an open-jtalk install on Linux
+
+Japanese is excluded by **module**, not by language: `japanese_module()` looks
+for an open-jtalk output module, and when one is there the exclusion lifts and
+Japanese is spoken with `-o <module>`. So installing the engine should be the
+whole fix, with no code change. Three steps settle whether it is.
+
+### 1. Is it visible to speech-dispatcher?
+
+    make speechcheck
+
+Look for the line beginning `Japanese engine:`.
+
+- **`Japanese engine: <module name>`** — speech-dispatcher can see it, and the
+  app will offer Japanese. Go to step 2.
+- **`Japanese engine: none`** — installed but not visible, which is a
+  speech-dispatcher configuration matter rather than an app one. The module has
+  to appear in `spd-say -O`.
+
+Japanese should also read a voice count rather than `excluded` in the table
+below that line.
+
+### 2. Does it actually read kanji, or fall back?
+
+This is the question the whole exclusion exists for, and it cannot be answered
+by whether audio comes out — espeak-ng produces audio too, and says "Chinese
+letter".
+
+    make speechprobe L=ja
+
+It speaks six distinct atoms and times each, best of two runs.
+
+- **`Varies`** — the words are being read. Not proof the reading is *correct*,
+  but the fallback is ruled out.
+- **`FLAT`** — every word takes the same time, which a real reading cannot do.
+  That is espeak-ng answering, not open-jtalk, whatever step 1 said.
+
+For reference, macOS with Kyoko spreads about 0.2s across those six; espeak-ng
+renders every kanji in exactly 1.04s. The failure is not subtle.
+
+`make scriptcheck` is the sharper version of this test and is macOS-only: it
+measures rendered files with `afinfo`, which speech-dispatcher cannot produce
+because it will not write audio to disk. `speechprobe` times the blocking
+utterance instead and runs anywhere.
+
+### 3. Listen to it
+
+Open the app, choose Japanese and Listen. The marker beside the play buttons
+will read **synthesised**, because the clips are gitignored and a Linux build
+has none — that is expected and not a fault. What matters is whether 七十三
+sounds like a number.
+
+### If it works
+
+Nothing to change: the exclusion lifts by itself. Worth recording in this doc
+that open-jtalk is the supported Japanese engine on Linux, and worth deciding
+whether the `.deb` should `Recommends:` it.
+
+### If it does not
+
+The clip route is the fallback, and it is blocked on the licensing question in
+`clips/README.md` rather than on any code. A recording by a Japanese speaker
+answers both that question and the collaboration doc's Phase 1 at once.
+
 ## Resolved in the build
 
 - **Japanese does not block the feature, and needed no new UI.** The capability

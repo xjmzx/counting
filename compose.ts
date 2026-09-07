@@ -16,7 +16,7 @@ import {
 import { pickVoice, voicesFor, LOCALE_PREFERENCE, type Voice } from "./voices.ts";
 import { SOUND_RULES, hintsFor } from "./sounds.ts";
 
-const LANGS: Language[] = [zh, fr, de, es, pt, it];
+const LANGS: Language[] = [zh, fr, it, pt, es, de];
 const RANGE = Array.from({ length: 101 }, (_, i) => i);
 
 const all = (l: Language): Item[] => RANGE.map((n) => l.compose(n));
@@ -210,6 +210,25 @@ function check(): boolean {
     if (solidCount(prog, 100) !== 1) { console.error("  ✗ queue: solidCount wrong"); bad++; }
     if (emptyStat().seen !== 0) { console.error("  ✗ queue: emptyStat wrong"); bad++; }
     checked += 12;
+  }
+
+  // Language families. The picker groups by them and draws a divider where the
+  // family changes, so a family split across the roster would render as two
+  // groups with the same name.
+  {
+    const seen = new Set<string>();
+    let prev = "";
+    for (const l of LANGS) {
+      if (!l.family?.trim()) { console.error(`  ✗ family: ${l.code} has none`); bad++; continue; }
+      if (l.family !== prev) {
+        if (seen.has(l.family)) {
+          console.error(`  ✗ family: ${l.family} is split across the roster — group it`); bad++;
+        }
+        seen.add(l.family);
+        prev = l.family;
+      }
+    }
+    checked += LANGS.length;
   }
 
   // Voice selection. Picking a zh_HK voice for Mandarin would read every

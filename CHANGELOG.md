@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- **The language picker groups by family** — Sinitic, Romance, Germanic — one
+  pill per family with a gap between. `Language` gained a `family` field, and
+  `make data` fails if a family is split across the roster, since the picker
+  groups by runs and a split would silently render as two groups of the same
+  name.
+
 - **Spanish, Portuguese and Italian.** One family, added together because their
   pronunciation rules overlap. All 303 new forms agreed with ICU on the first
   run, taking the cross-check to 606/606.

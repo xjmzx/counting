@@ -8,7 +8,7 @@ import { it } from "../../lang/it.ts";
 
 // The frontend imports the language modules directly rather than compose.ts,
 // which is a node CLI. There is no second copy of the rules.
-export const LANGS: Language[] = [zh, fr, de, es, pt, it];
+export const LANGS: Language[] = [zh, fr, it, pt, es, de];
 
 export type SkillId = "read" | "write" | "listen" | "speak";
 

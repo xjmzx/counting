@@ -65,4 +65,4 @@ function compose(n: number): Item {
   };
 }
 
-export const zh: Language = { code: "zh", name: "Mandarin Chinese", atoms, compose };
+export const zh: Language = { code: "zh", family: "Sinitic", name: "Mandarin Chinese", atoms, compose };

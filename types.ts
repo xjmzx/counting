@@ -28,6 +28,12 @@ export type Item = {
 export type Language = {
   code: string;
   name: string;
+  /**
+   * Language family. Not decoration: the families are why these were built in
+   * batches — Romance rules and vocabulary reinforce each other, so learning
+   * or adding one makes the next cheaper. The UI groups the picker by it.
+   */
+  family: string;
   atoms: Atom[];
   compose(n: number): Item;
 };

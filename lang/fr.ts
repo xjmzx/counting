@@ -90,4 +90,4 @@ function compose(n: number): Item {
   };
 }
 
-export const fr: Language = { code: "fr", name: "French", atoms, compose };
+export const fr: Language = { code: "fr", family: "Romance", name: "French", atoms, compose };

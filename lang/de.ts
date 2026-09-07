@@ -82,4 +82,4 @@ function compose(n: number): Item {
   };
 }
 
-export const de: Language = { code: "de", name: "German", atoms, compose };
+export const de: Language = { code: "de", family: "Germanic", name: "German", atoms, compose };

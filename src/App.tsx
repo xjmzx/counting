@@ -49,7 +49,11 @@ export default function App() {
           ariaLabel="Language"
           value={langCode}
           onChange={setLangCode}
-          options={LANGS.map((l) => ({ id: l.code, label: l.name.replace(" Chinese", "") }))}
+          options={LANGS.map((l) => ({
+            id: l.code,
+            label: l.name.replace(" Chinese", ""),
+            group: l.family,
+          }))}
         />
         <Segmented
           ariaLabel="Skill"

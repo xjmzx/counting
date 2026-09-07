@@ -76,4 +76,4 @@ function compose(n: number): Item {
   return { n, form, parts: [tens, ones], note };
 }
 
-export const it: Language = { code: "it", name: "Italian", atoms, compose };
+export const it: Language = { code: "it", family: "Romance", name: "Italian", atoms, compose };

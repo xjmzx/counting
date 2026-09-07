@@ -52,13 +52,15 @@ tokens in `src/index.css`, taken from `nping`. Do not reach further.
 
 Five places, and `make data` fails until all of them are done:
 
-1. `lang/xx.ts` — atoms plus `compose(n)`.
+1. `lang/xx.ts` — atoms plus `compose(n)`, and its `family`.
 2. `golden.ts` — hand-checked forms for every irregularity.
 3. `voices.ts` — acceptable locales, best first. Never a bare prefix match.
 4. `sounds.ts` — pronunciation rules; at least 90% of the range must be
    explained, which the check enforces.
-5. The `LANGS` arrays in `compose.ts` and `src/lib/langs.ts`, plus the locale
-   in `tools/spell.swift` and `tools/crosscheck.ts`.
+5. The `LANGS` arrays in `compose.ts` and `src/lib/langs.ts` — **keep each
+   family contiguous**, since the picker groups by runs and `make data` fails
+   on a split family — plus the locale in `tools/spell.swift` and
+   `tools/crosscheck.ts`.
 
 Then `make crosscheck` for free verification against ICU, and `make soundcheck`
 for whatever the audio probes can confirm.
@@ -69,6 +71,12 @@ list wearing the app's clothes. Hindi is the example: 0% ones-visibility, where
 every other language surveyed scored 69% or more.
 
 ## Traps specific to this repo
+
+- **The language picker groups into one pill per family, not one list with
+  dividers.** A divider element is wrong because the list wraps: at the 420px
+  minimum window each family lands on its own line and a leading divider reads
+  as a stray tick. Separate pills survive wrapping and stay legible on one line
+  or three.
 
 - **`golden.ts` is the specification, not a regression net.** If the composer
   disagrees with it, the composer is wrong. Never edit a golden value to make a

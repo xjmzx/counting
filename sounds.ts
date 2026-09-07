@@ -74,6 +74,23 @@ export const SOUND_RULES: Record<string, SoundRule[]> = {
       hint: "⟨ie⟩ is a long “ee” — the opposite way round from ⟨ei⟩. vier is “feer”, sieben “zeeben”.",
     },
     {
+      id: "de-eu",
+      test: /eu/,
+      hint: "⟨eu⟩ is “oy” — neun is “noyn”, and neunzig starts the same way.",
+      evidence: ["neun", "näun"],
+    },
+    {
+      id: "de-ch",
+      test: /acht/,
+      hint: "⟨ch⟩ after ⟨a⟩ is the rasping sound in Scottish “loch” — acht is not “akt”.",
+    },
+    {
+      id: "de-u-umlaut",
+      test: /ü/,
+      hint: "⟨ü⟩ has no English equivalent — say “ee” with the lips rounded. fünf.",
+      evidence: ["fünf", "fuenf"],
+    },
+    {
       id: "de-eszett",
       test: /ß/,
       hint: "⟨ß⟩ is a plain /s/ — dreißig is “dry-sig”. It is never a “b” or a “beta”.",
@@ -148,6 +165,27 @@ export const SOUND_RULES: Record<string, SoundRule[]> = {
       test: /neuf/,
       hint: "The ⟨f⟩ of neuf is sounded — “nuhf”, again against the usual rule.",
       evidence: ["neuf", "neufe"],
+    },
+    {
+      id: "fr-r",
+      test: /r/,
+      hint: "French ⟨r⟩ comes from the back of the throat, not the tip of the tongue — trois, trente, quarante.",
+    },
+    {
+      id: "fr-ei",
+      test: /ei/,
+      hint: "⟨ei⟩ is a plain “e” as in “bed” — seize is “sez”, treize is “trez”.",
+      evidence: ["seize", "sèze"],
+    },
+    {
+      id: "fr-un-nasal",
+      test: /\bun\b/,
+      hint: "⟨un⟩ is a nasal vowel with no “n” sound in it — the tongue never touches the roof of the mouth.",
+    },
+    {
+      id: "fr-final-e",
+      test: /e$/,
+      hint: "A final -e is not sounded — onze, douze and quatre all end on the consonant before it.",
     },
     {
       id: "fr-huit",

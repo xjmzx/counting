@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- **Hints collapse behind a “How it sounds” disclosure**, remembered per
+  language — expand once for German and it stays open, while a language you
+  already read stays quiet. Focus returns to the input so Enter still moves on.
+- Filled the coverage gaps the disclosure exposed: German ⟨eu⟩ (*neun* is
+  “noyn”), ⟨ü⟩ and the ⟨ch⟩ of *acht*; French ⟨r⟩, ⟨ei⟩, nasal *un* and the
+  silent final -e. Coverage is now 101/101 for Mandarin and French, 98/101 for
+  German, and `make data` asserts at least 90% per language.
+- 15 of 16 audio probes confirm, up from 12 of 13. `acht ~ achd` was dropped as
+  evidence for the ⟨ch⟩ rule — it demonstrates final devoicing, not the ⟨ch⟩
+  sound, and the rule it appeared to support now carries no probe instead.
+
 - **Pronunciation hints.** Revealing the spelling without explaining it taught
   the wrong sound: an English reader reads *vier* as "veer". Rules in
   `sounds.ts` explain why the word does not sound like it looks, shown wherever

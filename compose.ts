@@ -287,7 +287,10 @@ function check(): boolean {
       // Every language the app ships must have some coverage, or the drill
       // reveals a spelling with nothing to stop it being misread.
       const covered = RANGE.filter((n) => hintsFor(code, lang.compose(n).form).length > 0).length;
-      if (covered < RANGE.length / 2) {
+      // 90%, not 100%: a few words really do read the way an English speaker
+      // would guess (null, elf, hundert), and inventing a hint for those would
+      // be noise. A new language falling below this has a real gap.
+      if (covered < RANGE.length * 0.9) {
         console.error(`  ✗ sounds: ${code} explains only ${covered}/101 numbers`); bad++;
       }
     }

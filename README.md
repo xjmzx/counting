@@ -152,16 +152,22 @@ in Rust (`src-tauri/src/tts.rs`), not the webview, for the reason `SUITE.md`
 records against `nchat`. There is a normal and a slow replay, because a
 compound like *vierundsiebzig* goes past quickly.
 
-**Every revealed spelling comes with a pronunciation hint**, because an
-English reader will otherwise read *vier* with English values and learn the
-wrong sound. German ⟨v⟩ is /f/, ⟨z⟩ is /ts/, ⟨ei⟩ is "eye" and ⟨ie⟩ is "ee";
+**Every revealed spelling comes with a pronunciation hint**, collapsed behind
+a “How it sounds” disclosure so it does not crowd the answer. The choice is
+remembered per language: expand it once for German and it stays expanded, while
+a language you already read stays quiet. Without it an English reader reads
+*vier* with English values and learns the wrong sound. German ⟨v⟩ is /f/, ⟨z⟩ is /ts/, ⟨ei⟩ is "eye" and ⟨ie⟩ is "ee";
 French *vingt* is "van" and the ⟨x⟩ in *soixante* is /s/. Almost every German
 number in the range hits at least one of these — 81 of 101 contain a ⟨z⟩ alone.
+Coverage is 101/101 for Mandarin and French and 98/101 for German; the three
+left bare — *null*, *elf*, *hundert* — genuinely do read the way an English
+speaker would guess, and `make data` asserts each language explains at least
+90% of the range.
 
 **`make soundcheck` proves the rules that can be proved.** Each rule may carry
 an alternative spelling that should sound identical; the tool speaks both and
 compares the audio byte for byte. `vier` and `fier` produce the same file, so
-⟨v⟩ = /f/ is a fact about the engine's phonemes, not an opinion. 12 of 13
+⟨v⟩ = /f/ is a fact about the engine's phonemes, not an opinion. 15 of 16
 probes confirm. **The test is one-way**: a mismatch proves nothing, since the
 alternative spelling may simply be invalid orthography — German ⟨z⟩ *is* /ts/,
 so "zieben" reads as "tsieben" and the probe fails while the rule stays true.

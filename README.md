@@ -15,7 +15,8 @@ make check      # data + typecheck + cargo test
 make data       # golden forms, invariants, grading — works on a bare clone
 make crosscheck # compare every form against ICU        [macOS only]
 make soundcheck # verify pronunciation rules by audio   [macOS only]
-                # both refuse with a one-line reason elsewhere
+make scriptcheck # does each voice read its script?     [macOS only]
+                # all three refuse with a one-line reason elsewhere
 make table      # all 303 forms, side by side
 make stats      # what each language actually costs in atoms
 make emit       # regenerate numbers.json + numbers.tsv

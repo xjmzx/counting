@@ -4,7 +4,7 @@ LIBDIR ?= $(PREFIX)/share/counting
 
 SOURCES := compose.ts types.ts golden.ts grade.ts
 
-.PHONY: help deps data crosscheck soundcheck typecheck version check dev web build table stats emit install install-app uninstall clean
+.PHONY: help deps data crosscheck soundcheck scriptcheck typecheck version check dev web build table stats emit install install-app uninstall clean
 
 help:
 	@echo "Targets:"
@@ -12,6 +12,7 @@ help:
 	@echo "  make check      data + typecheck + cargo test      (needs 'make deps')"
 	@echo "  make crosscheck compare every form against ICU        [macOS only]"
 	@echo "  make soundcheck verify pronunciation rules by audio   [macOS only]"
+	@echo "  make scriptcheck does each voice read its script?     [macOS only]"
 	@echo "  make dev        run the app with hot reload"
 	@echo "  make web        frontend only in a browser, no Tauri"
 	@echo "  make build      release build of frontend + app bundle"
@@ -51,6 +52,16 @@ crosscheck:
 # the rule is wrong. macOS-only, like crosscheck.
 soundcheck:
 	node tools/soundcheck.ts
+
+# Renders several distinct atoms per language and compares their durations. A
+# voice with no dictionary for a script emits one fixed fallback per character,
+# so a flat spread across different words is proof it is not reading them —
+# which is how espeak-ng's missing kanji dictionary was caught on Linux. Like
+# soundcheck: reports, never fails a build, and one-way (a varied spread is not
+# proof of a correct reading). Validated against espeak-ng, where Japanese
+# spreads 0.00 and every other language 0.15 or more.
+scriptcheck:
+	node tools/scriptcheck.ts
 
 # The suite's 'make check' shape: everything that can fail without running.
 # cargo test rather than cargo check — it compiles the same and also runs the

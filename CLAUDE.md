@@ -22,6 +22,7 @@ so it belongs in Rust, not the webview.
 
 ```
 make data       # golden forms, invariants, grading — bare clone, no install
+make scriptcheck # does each voice read its script at all?   [macOS only]
 make check      # data + typecheck + cargo test — the suite's 'check' shape
 make dev        # the app, hot reload
 make web        # frontend only in a browser
@@ -207,6 +208,13 @@ macOS. `release.yml` fires only on a `v*` tag and builds the `.deb` and `.dmg`.
   produce different files while plainly being the same word. Use
   `durationEvidence` there; it discriminates a one-mora reading from a
   two-mora one, which is what the counting readings turn on.
+- **`make scriptcheck` answers a different question from `soundcheck`.**
+  soundcheck asks whether a pronunciation rule is true; scriptcheck asks the
+  cruder thing — whether the voice is reading the writing system at all. A
+  voice with no dictionary for a script emits one fixed fallback per character,
+  so a flat duration spread across distinct atoms is proof it is not reading
+  them. That is how espeak-ng's missing kanji dictionary was caught. It is
+  one-way in the same way soundcheck is, and it never fails a build.
 - **`make soundcheck` is one-way, and the code says so.** A confirmed probe is
   real evidence; a failed one means no clean probe exists, not that the rule is
   wrong. Never delete a rule because its probe fails, and never make soundcheck

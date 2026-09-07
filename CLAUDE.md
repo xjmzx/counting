@@ -239,14 +239,13 @@ macOS. `release.yml` fires only on a `v*` tag and builds the `.deb` and `.dmg`.
   nothing acceptable is installed and the drill already explains it. Japanese
   is absent from `normalise_spd_language` because espeak-ng has no kanji
   dictionary and says "Chinese letter" once per character — the drill would
-  play audio, grade an answer, and look entirely correct.
+  play audio, grade an answer, and look entirely correct. The measurements
+  behind that, for all ten languages, are in
+  `docs/linux-audio-design-2026-09-07.md`; `make scriptcheck` is the standing
+  test for it.
 - **Locale namespaces are normalised in Rust, never in `voices.ts`.** The
   allowlist holds one namespace. `Voice.id` carries whatever the backend needs
-  back, which on speech-dispatcher is a bare `fr` — `fr_FR` is rejected. **Do not wire up a Linux backend without reading
-  `docs/linux-audio-design-2026-09-07.md`.** Nine of the ten languages are
-  measured as usable; Japanese is not mispronounced but *unpronounced* —
-  espeak-ng has no kanji dictionary and says "Chinese letter" once per
-  character, which is the Cantonese trap in a new costume.
+  back, which on speech-dispatcher is a bare `fr` — `fr_FR` is rejected.
 - **Audio does not need a pronunciation layer.** A TTS voice says
   *soixante-treize* correctly from the written string; IPA is only wanted for
   *showing* a learner how a word sounds. An earlier version of these notes had

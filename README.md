@@ -83,11 +83,17 @@ listening drill has no correct answer. Nothing collides in these three.
 
 ## Known gaps
 
+- **French and German have not been checked by anyone who speaks them.** The 56
+  golden forms are hand-checked, but by the same hand that wrote the composer;
+  they are a consistency guarantee, not an independent one. Mandarin has been
+  spot-checked against the read drill by an intermediate speaker. Treat the
+  German und-compounds as the likeliest place for a wrong answer to be hiding.
+
 - **No IPA for French or German.** The written form is not the spoken form —
   *vingt* is /vɛ̃/ alone but /vɛ̃t/ in *vingt-deux*, and *six*/*dix*/*huit*
-  change under liaison. Needed before the listening and speaking drills are
-  honest; not needed to check the composer. Pinyin is emitted for Mandarin
-  because there the script genuinely withholds the pronunciation.
+  change under liaison. This does **not** block audio: a TTS voice handles it.
+  It blocks only *showing* a learner how a word sounds. Pinyin is emitted for
+  Mandarin because there the script genuinely withholds the pronunciation.
 - **Traditional French hyphenation.** `vingt et un`, not the 1990 reform's
   `vingt-et-un`. Both are correct; a grader should accept either.
 - **Regional variants not implemented.** Belgian and Swiss French replace
@@ -104,8 +110,8 @@ listening drill has no correct answer. Nothing collides in these three.
 |---|---|---|
 | **Read** | see the word → type the number | **working** |
 | **Write** | see the number → type the word | **working** |
-| Listening | hear it → type the number | unbuilt — needs TTS in Rust, and IPA |
-| Speaking | see it → say it → checked | unbuilt — needs the same, plus recognition |
+| Listening | hear it → type the number | next — needs a voice, in Rust |
+| Speaking | see it → say it → checked | parked — a long-term aim |
 
 The unbuilt two appear in the UI with a panel saying what is missing, rather
 than being hidden. They are part of the plan; pretending otherwise would make

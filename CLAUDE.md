@@ -77,9 +77,16 @@ tokens in `src/index.css`, taken from `nping`. Do not reach further.
 - **The unbuilt skills stay visible.** Listen and Speak render a panel saying
   what is missing. Do not hide them to make the app look finished, and do not
   wire them up with a browser API — see the audio note above.
-- **The written form is not the spoken form** for French or German. Anything
-  that claims to teach listening or speaking needs a pronunciation layer first
-  — see the gaps section of the README.
+- **Audio does not need a pronunciation layer.** A TTS voice says
+  *soixante-treize* correctly from the written string; IPA is only wanted for
+  *showing* a learner how a word sounds. An earlier version of these notes had
+  this backwards and made listening look far more expensive than it is.
+- **Scope is 0–100 and staying there.** Refining the three existing tables and
+  the two working drills beats adding skills or languages. Speaking is parked
+  by decision, not by oversight — do not propose it as a next step.
+- **French and German are unverified by a speaker.** The golden file is
+  self-consistent, not independently correct. Mandarin has been spot-checked by
+  an intermediate speaker against the read drill; the other two have not.
 
 ## Not here
 

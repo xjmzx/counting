@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- Scope narrowed on purpose: **0–100, refined**, rather than more skills or
+  more languages. Listening stays the next target; speaking is parked as a
+  long-term aim.
+- **Corrected a claim that made listening look expensive.** Audio does not need
+  a phonetic layer — a TTS voice carries its own pronunciation model. The
+  README, `CLAUDE.md` and the in-app panels all said or implied otherwise.
+- Recorded that Mandarin has been spot-checked by an intermediate speaker,
+  while French and German have not been checked by anyone who speaks them.
+
 ## v0.1.0 — the app
 
 - A Tauri 2 · React window over the composed data, scaffolded from `nping`.

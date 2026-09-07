@@ -17,14 +17,14 @@ export const SKILLS: { id: SkillId; label: string; ready: boolean; blocked?: str
     label: "Listen",
     ready: false,
     blocked:
-      "Needs speech synthesis, and it has to run in Rust rather than the webview — SUITE.md records nchat shipping Web Audio that worked on macOS and was silent on Linux, and WebKit2GTK cannot play media from app URL schemes. It also needs a pronunciation layer: there is no IPA for French or German yet, so the written form is still standing in for the spoken one.",
+      "Next up. It needs a voice speaking the written form and nothing more — a text-to-speech engine has its own pronunciation model, so no phonetic transcription is required to say soixante-treize correctly. The one constraint is where it runs: in Rust, not the webview. SUITE.md records nchat shipping Web Audio that worked on macOS and was silent on Linux, and WebKit2GTK cannot play media from app URL schemes.",
   },
   {
     id: "speak",
     label: "Speak",
     ready: false,
     blocked:
-      "Needs the same pronunciation layer, plus a way to hear you back. There is no speech recognition in the macOS webview. The saving grace is that this is not general recognition — it is a check against one of 101 known strings — but nothing is wired up yet.",
+      "A long-term aim rather than a planned next step. Judging a spoken answer means recognition and scoring, which is a large amount of machinery for one corner of a small app — so it is parked deliberately, not merely unstarted.",
   },
 ];
 

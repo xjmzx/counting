@@ -72,8 +72,7 @@ export default function App() {
       </main>
 
       <footer className="px-5 py-3 border-t border-surface/60 text-xs text-muted">
-        Two of four skills. Listening and speaking need a pronunciation layer first — the
-        written form is not the spoken form.
+        0–100, three languages. Listening is next; speaking is a long-term aim.
       </footer>
     </div>
   );

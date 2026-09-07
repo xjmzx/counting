@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- The `.deb` now recommends `speech-dispatcher`, `espeak-ng` and the three
+  open-jtalk packages. Recommends rather than depends, because reading and
+  writing work with no audio at all — but apt installs recommends by default,
+  so a normal install gets all ten languages speaking rather than nine and an
+  apt line.
+
 ## v0.5.0 — Linux
 
 - **The app runs on Linux.** Built, packaged and verified there rather than

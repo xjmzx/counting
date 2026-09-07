@@ -156,7 +156,15 @@ listening drill has no correct answer. Nothing collides in these three.
 - **The Mandarin hints carry no audio evidence.** The probe compares two
   spellings in one script, and these are facts about pinyin, which the voice is
   not reading. They rest on description alone.
-- **Speech is macOS-only.** `say` is wired up; `espeak-ng` is the intended
+- **The `.deb` recommends the speech stack.** `speech-dispatcher`, `espeak-ng`
+and the three open-jtalk packages are `Recommends:`, not `Depends:` — the app
+is useful with no audio at all, since reading and writing work, so a missing
+synthesiser must not block installation. apt installs recommends by default, so
+a normal `apt install ./counting_*.deb` gets all ten languages speaking,
+Japanese included; `--no-install-recommends` gets a working app with a
+listening drill that explains what is absent.
+
+**Speech is macOS-only.** `say` is wired up; `espeak-ng` is the intended
   backend elsewhere but is deliberately unimplemented rather than guessed at,
   which is what this repo's own notes are about. The listening drill reports it
   rather than showing a mute button. The rest of the app *has* now been run on

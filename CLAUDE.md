@@ -274,6 +274,14 @@ macOS. `release.yml` fires only on a `v*` tag and builds the `.deb` and `.dmg`.
   carries about a second of constant overhead, so its threshold is 0.10s
   against scriptcheck's 0.06s — and like every check of this kind it reports
   and never fails a build.
+- **The speech stack is `Recommends:`, never `Depends:`.** Reading and writing
+  work with no audio, so a missing synthesiser must not block installation —
+  but apt installs recommends by default, so the normal case is all ten
+  languages speaking. Tauri exposes no `suggests`, and it would be the wrong
+  strength anyway: apt skips those, leaving the listening drill dead on a
+  standard install. **Nothing in CI builds a `.deb`**, so a bad key in the deb
+  config surfaces only at the next tag — validate against
+  `node_modules/@tauri-apps/cli/config.schema.json` after editing it.
 - **Japanese on Linux is excluded by module, not by language.** `japanese_module`
   looks for an open-jtalk output module; when one is there the exclusion lifts
   and Japanese is spoken with `-o <module>`. `make speechcheck` reports what a

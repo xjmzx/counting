@@ -72,6 +72,13 @@ every other language surveyed scored 69% or more.
 
 ## Traps specific to this repo
 
+- **The version chip is borrowed; the top-bar grammar still is not.** The chip
+  follows the suite format exactly — short version on the face, full string in
+  the tooltip — because it is a component, not a layout. That does not open the
+  door to the three-zone header, which SUITE.md scopes to the media apps.
+- **Bump with `make version V=x.y.z`, never by hand.** Five files carry the
+  version and the chip reads the bundle's, so a partial bump shows a number
+  that disagrees with what is installed.
 - **The language picker groups into one pill per family, not one list with
   dividers.** A divider element is wrong because the list wraps: at the 420px
   minimum window each family lands on its own line and a leading divider reads

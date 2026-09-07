@@ -4,7 +4,7 @@ LIBDIR ?= $(PREFIX)/share/counting
 
 SOURCES := compose.ts types.ts golden.ts grade.ts
 
-.PHONY: help deps data crosscheck soundcheck typecheck check dev web build table stats emit install install-app uninstall clean
+.PHONY: help deps data crosscheck soundcheck typecheck version check dev web build table stats emit install install-app uninstall clean
 
 help:
 	@echo "Targets:"
@@ -25,6 +25,7 @@ help:
 	@echo "  make install      the 'counting' CLI -> PREFIX/bin, terminal only"
 	@echo "  make uninstall    remove the CLI (not the .app)"
 	@echo "  make deps       npm install + cargo fetch"
+	@echo "  make version V=0.3.0   bump the version in all five files at once"
 	@echo "  make clean      remove node_modules, dist and src-tauri/target"
 
 deps:
@@ -113,6 +114,17 @@ uninstall:
 	rm -rf $(LIBDIR)
 	@echo "uninstalled the CLI from $(PREFIX)"
 	@echo "  the .app, if installed, is at /Applications/counting.app"
+
+# Five files carry the version and they must move together, or the chip in the
+# header disagrees with the bundle. Borrowed from nplay unchanged.
+version:
+	@test -n "$(V)" || { echo "usage: make version V=0.3.0" >&2; exit 2; }
+	@npm version --no-git-tag-version --allow-same-version "$(V)" >/dev/null
+	@sed -i.bak -E 's/^version = ".*"/version = "$(V)"/' src-tauri/Cargo.toml && rm -f src-tauri/Cargo.toml.bak
+	@python3 -c 'import re,sys; v=sys.argv[1]; p="src-tauri/tauri.conf.json"; s=open(p).read(); s2,k=re.subn(r"^(  \"version\"\s*:\s*)\"[^\"]*\"", lambda m: m.group(1)+"\""+v+"\"", s, count=1, flags=re.M); open(p,"w").write(s2) if k==1 else sys.exit("no top-level version key in "+p)' "$(V)"
+	@name=$$(grep -m1 '^name = ' src-tauri/Cargo.toml | cut -d'"' -f2); python3 -c 'import re,sys; n,v=sys.argv[1],sys.argv[2]; p="src-tauri/Cargo.lock"; s=open(p).read(); s2,k=re.subn(r"(\[\[package\]\]\nname = \""+re.escape(n)+r"\"\nversion = )\"[^\"]*\"", lambda m: m.group(1)+"\""+v+"\"", s, count=1); open(p,"w").write(s2) if k==1 else sys.exit("no Cargo.lock entry for "+n)' "$$name" "$(V)"
+	@echo "version set to $(V) in all five places:"
+	@git diff --stat -- package.json package-lock.json src-tauri/Cargo.toml src-tauri/Cargo.lock src-tauri/tauri.conf.json
 
 clean:
 	rm -rf node_modules dist src-tauri/target

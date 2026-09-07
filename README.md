@@ -20,6 +20,7 @@ make stats      # what each language actually costs in atoms
 make emit       # regenerate numbers.json + numbers.tsv
 
 ./install.sh    # build the .app and put it in /Applications   [macOS]
+make version V=0.3.1   # bump the version in all five files at once
 make install    # put the 'counting' CLI on PATH under ~/.local
 make uninstall  # remove the CLI
 ```

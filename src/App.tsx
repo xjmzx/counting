@@ -1,14 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Languages } from "lucide-react";
 import { cn } from "./lib/cn";
 import { LANGS, RANGES, SKILLS, type SkillId } from "./lib/langs";
 import { Segmented } from "./components/Segmented";
 import { Drill, type DrillSkill } from "./components/Drill";
 import { useVoices } from "./lib/useVoices";
+import { appVersion } from "./lib/tauri";
 import { Unbuilt } from "./components/Unbuilt";
 
 // Derived, not written out: these strings went stale the moment three
 // languages became six.
+/**
+ * Suite convention: the chip shows only major.minor.patch, and any
+ * pre-release or build suffix moves to the tooltip. That keeps the chip a
+ * fixed width as releases run from 0.2.0-beta.2 to 1.3.1, so the header does
+ * not reflow on a release.
+ */
+function shortVersion(v: string): string {
+  return v.split(/[-+]/)[0] ?? v;
+}
+
 const COUNT_WORD = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
 const spell = (n: number) => COUNT_WORD[n] ?? String(n);
 
@@ -17,6 +28,11 @@ export default function App() {
   const [langCode, setLangCode] = useState(LANGS[0]!.code);
   const [skill, setSkill] = useState<SkillId>("read");
   const [max, setMax] = useState(20);
+
+  const [version, setVersion] = useState<string | null>(null);
+  useEffect(() => {
+    void appVersion().then(setVersion);
+  }, []);
 
   const { voices, error: voiceError, loading: voicesLoading } = useVoices();
   const lang = LANGS.find((l) => l.code === langCode) ?? LANGS[0]!;
@@ -39,6 +55,18 @@ export default function App() {
           <span className="text-accent">count</span>
           <span className="text-mauve">ing</span>
         </button>
+        {/* Version chip, in the suite's format: short version on the face, the
+            full string in the tooltip. Null outside the app, where there is no
+            bundle to read it from. */}
+        {version && (
+          <span
+            className="hidden md:inline-flex items-center px-2 py-1 rounded-md
+                       bg-surface text-mauve font-mono text-xs shrink-0"
+            title={`v${version}`}
+          >
+            v{shortVersion(version)}
+          </span>
+        )}
         <span className="text-xs text-muted hidden sm:inline">
           0–100 in {spell(LANGS.length)} languages
         </span>

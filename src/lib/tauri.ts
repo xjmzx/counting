@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { getVersion } from "@tauri-apps/api/app";
 import type { Voice } from "../../voices.ts";
 
 /**
@@ -39,5 +40,19 @@ export async function stopSpeaking(): Promise<void> {
     await invoke("stop_speaking");
   } catch {
     // Nothing useful to do — it was already quiet, or the host went away.
+  }
+}
+
+/**
+ * The running app's version, read from the bundle rather than from
+ * package.json, so the chip cannot drift from what was actually installed.
+ * Null outside the app — `make web` has no host to ask.
+ */
+export async function appVersion(): Promise<string | null> {
+  if (!inTauri()) return null;
+  try {
+    return await getVersion();
+  } catch {
+    return null;
   }
 }

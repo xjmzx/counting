@@ -1,6 +1,6 @@
 [package]
 name = "counting"
-version = "0.1.0"
+version = "0.3.0"
 description = "0-100 in Mandarin, French and German"
 authors = ["xjmzx"]
 edition = "2021"

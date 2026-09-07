@@ -1,6 +1,19 @@
 # Changelog
 
-## Unreleased
+## v0.3.0
+
+- **A version chip in the header**, in the suite's format: `major.minor.patch`
+  on the face, the full string in the tooltip, so the chip keeps a fixed width
+  across releases. It reads the version from the running bundle via Tauri
+  rather than from `package.json`, so it cannot disagree with what was
+  installed, and it is absent in `make web` where there is no bundle to ask.
+- **`make version V=x.y.z`**, borrowed from `nplay`, bumping all five files
+  that carry the version at once.
+- Fixed a duplicate `v0.1.0` heading here: the composer-only release and the
+  app release both claimed it. Nothing was ever tagged, so the app release is
+  now `v0.2.0` and everything since is `v0.3.0` — which is what the chip has
+  been added to show, and the app had been reporting `v0.1.0` while carrying
+  the whole UI, audio, the weighted queue, hints and seven languages.
 
 - **Japanese.** Structurally Mandarin — 二十三 is “two ten three” — but the
   difficulty sits in the readings: counting uses yon, nana and kyū, not shi,
@@ -112,7 +125,7 @@
 - Recorded that Mandarin has been spot-checked by an intermediate speaker,
   while French and German have not been checked by anyone who speaks them.
 
-## v0.1.0 — the app
+## v0.2.0 — the app
 
 - A Tauri 2 · React window over the composed data, scaffolded from `nping`.
 - **Read** and **Write** drills work: prompt, tolerant grading, score and

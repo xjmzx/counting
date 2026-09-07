@@ -10,6 +10,10 @@
 //! and therefore whether Japanese is offered.
 //!
 //!     make speechcheck
+//!
+//! Deliberately an example rather than a second [[bin]]: with two bin targets
+//! the Tauri bundler shipped *this* as the app binary, and the .app launched
+//! a diagnostic instead of the drill. Examples are never bundled.
 
 use counting_lib::tts::{Backend, ClipPlayer};
 

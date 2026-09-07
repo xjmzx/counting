@@ -67,7 +67,7 @@ soundcheck:
 # wrong. On Linux it answers whether an open-jtalk install is visible, and so
 # whether Japanese is offered.
 speechcheck:
-	cd src-tauri && cargo run --quiet --bin speechcheck
+	cd src-tauri && cargo run --quiet --example speechcheck
 
 # Recorded clips are preferred over synthesis. These are gitignored and
 # generated locally; clips/README.md has the licensing question that gates

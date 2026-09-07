@@ -229,6 +229,13 @@ macOS. `release.yml` fires only on a `v*` tag and builds the `.deb` and `.dmg`.
   Cantonese voice reading Mandarin numbers is wrong in a way nothing on screen
   shows. `voices.ts` holds an allowlist of acceptable locales per language and
   `make data` asserts it. Adding a language means adding its locales there.
+- **Never add a second `[[bin]]` to `src-tauri`.** The Tauri bundler picks a
+  binary to ship and picked the wrong one: the `.app` launched `speechcheck`
+  instead of the drill, with `Contents/MacOS/` holding only the diagnostic.
+  Extra tools go in `src-tauri/examples/`, which is never bundled.
+- **Resources are mapped, not passed as `../` paths.** `"resources": ["../clips"]`
+  lands them under `Resources/_up_/clips`, which no lookup expects. The object
+  form `{"../clips": "clips"}` puts them where the code looks.
 - **A recorded clip beats synthesis, and the app says which you heard.** Clips
   live at `clips/<lang>/<n>.wav` and nothing in the mechanism knows about any
   particular language — a contributed recording drops in and is preferred from

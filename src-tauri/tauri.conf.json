@@ -38,8 +38,8 @@
         "desktopTemplate": "counting.desktop"
       }
     },
-    "resources": [
-      "../clips"
-    ]
+    "resources": {
+      "../clips": "clips"
+    }
   }
 }

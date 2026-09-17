@@ -10,9 +10,16 @@ RESDIR  ?= $(PREFIX)/lib/counting
 DESKDIR ?= $(PREFIX)/share/applications
 ICONDIR ?= $(PREFIX)/share/icons/hicolor
 
+# Linux icons crop the grid margin. The masters carry the art in an 824 square
+# on a 1024 canvas (Apple's grid, ICONS.md), which fills 80.5% of the tile --
+# visibly smaller in the dock than Yaru's own icons, which fill 89%. Cropping to
+# this viewBox gets the same 89% out of the master with no re-export. The .icns
+# and the .ico keep the full canvas.
+LINUX_VIEWBOX ?= 49 49 926 926
+
 SOURCES := compose.ts types.ts golden.ts grade.ts
 
-.PHONY: help deps data install-app-linux uninstall-app crosscheck soundcheck scriptcheck speechcheck speechprobe clips clipcheck cliptrim clipclean record typecheck version check dev web build table stats emit install install-app uninstall clean
+.PHONY: help deps icons data install-app-linux uninstall-app crosscheck soundcheck scriptcheck speechcheck speechprobe clips clipcheck cliptrim clipclean record typecheck version check dev web build table stats emit install install-app uninstall clean
 
 help:
 	@echo "Targets:"
@@ -197,6 +204,27 @@ install-app:
 # StartupWMClass must then follow the *file name* too, and say `counting-app`.
 # It has to match the window's real WM_CLASS, and that is taken from the
 # executable's name — not, as is easy to assume, from the bundle identifier.
+# Regenerate the icon set from icon.svg (run once per icon change). The Tauri
+# raster set feeds the .deb and the Linux window icon, and `make install-app-linux`
+# ships 32x32 and 128x128 into hicolor, so those are re-rendered margin-cropped
+# (89% fill); the .icns, the .ico and the mobile sets keep Apple's grid.
+# Needs rsvg-convert and ImageMagick. PNG32: because ImageMagick writes palette
+# PNGs at the small sizes, which tauri::generate_context! rejects as "not RGBA".
+icons:
+	rsvg-convert -w 2048 -h 2048 icon.svg -o app-icon.png
+	npm run tauri icon ./app-icon.png
+	rm -f app-icon.png
+	sed '1s|viewBox="[^"]*"|viewBox="$(LINUX_VIEWBOX)"|' icon.svg > app-icon-linux.svg
+	rsvg-convert -w 2048 -h 2048 app-icon-linux.svg -o app-icon-linux.png
+	@for n in 32x32 64x64 128x128 128x128@2x 256x256 icon; do \
+		p=src-tauri/icons/$$n.png; \
+		[ -f $$p ] || continue; \
+		s=$$(identify -format '%w' $$p); \
+		convert app-icon-linux.png -resize $${s}x$${s} PNG32:$$p; \
+		echo "  linux icon -> $$p ($$s)"; \
+	done
+	rm -f app-icon-linux.svg app-icon-linux.png
+
 # Measured with xwininfo after renaming: the window reports `counting-app`. Get
 # this wrong and the window floats free of its launcher, showing a blank icon
 # beside the real one in the dash rather than joining the entry it came from.
@@ -208,7 +236,9 @@ install-app-linux: data
 	rm -rf $(RESDIR)/clips
 	cp -R clips $(RESDIR)/clips
 	install -d $(ICONDIR)/scalable/apps
-	install -m 0644 icon.svg $(ICONDIR)/scalable/apps/counting.svg
+	@# Linux fill: crop the grid margin on the way in (see LINUX_VIEWBOX).
+	sed '1s|viewBox="[^"]*"|viewBox="$(LINUX_VIEWBOX)"|' icon.svg > $(ICONDIR)/scalable/apps/counting.svg
+	chmod 0644 $(ICONDIR)/scalable/apps/counting.svg
 	@for s in 32 128; do \
 	  install -d $(ICONDIR)/$${s}x$${s}/apps; \
 	  install -m 0644 src-tauri/icons/$${s}x$${s}.png \

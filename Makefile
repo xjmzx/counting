@@ -279,7 +279,14 @@ uninstall:
 	rm -f $(BINDIR)/counting
 	rm -rf $(LIBDIR)
 	@echo "uninstalled the CLI from $(PREFIX)"
-	@echo "  the .app, if installed, is at /Applications/counting.app"
+	@# The GUI is a separate install with its own binary ($(APPBIN)), launcher
+	@# and icons, so this target leaves it alone on purpose. Say so on both
+	@# platforms: naming only the macOS .app reads as "nothing else is left",
+	@# and a stale ~/.local launcher + icons outrank a .deb's, so the dock keeps
+	@# drawing the old app long after the package is installed.
+	@echo "  the app is NOT removed by this target:"
+	@echo "    Linux  -> make uninstall-app   ($(APPBIN), launcher, icons, clips)"
+	@echo "    macOS  -> /Applications/counting.app"
 
 # Five files carry the version and they must move together, or the chip in the
 # header disagrees with the bundle. Borrowed from nplay unchanged.

@@ -273,6 +273,11 @@ uninstall-app:
 	      $(ICONDIR)/128x128/apps/counting.png
 	@command -v update-desktop-database >/dev/null 2>&1 && \
 	  update-desktop-database $(DESKDIR) 2>/dev/null || true
+	@# install rebuilt the cache with counting.svg in it; left alone, it keeps
+	@# pointing at the deleted file and shadows the .deb's icon in the shell.
+	@if command -v gtk-update-icon-cache >/dev/null 2>&1; then \
+		gtk-update-icon-cache -f -t $(PREFIX)/share/icons/hicolor >/dev/null 2>&1 || true; \
+	fi
 	@echo "removed the app from $(PREFIX) (the CLI, if installed, is untouched)"
 
 uninstall:

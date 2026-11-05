@@ -168,7 +168,7 @@ audio, still grades the answer, and teaches badly with nothing on screen
 looking wrong. **Curation before voting.** An allowlist of contributors is
 unglamorous, works on day one, and is honest about what it is.
 
-Worth noting: `relay.fizx.uk`'s `restricted_writes` is *usable* here. These are
+Worth noting: `relay.nfunc.xyz`'s pubkey whitelist is *usable* here. These are
 ordinary signed events, so unlike `nchat`'s gift wrap — which cannot pass a
 pubkey allowlist because every wrap is signed by a throwaway key — a
 whitelisted relay is a working curation mechanism rather than a contradiction.

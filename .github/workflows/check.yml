@@ -48,7 +48,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, macos-14]
+        os: [ubuntu-22.04, macos-15]
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -126,7 +126,7 @@ jobs:
   icu:
     name: ICU cross-check
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
